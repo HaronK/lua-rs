@@ -1365,8 +1365,9 @@ pub unsafe extern "C" fn lua_topointer(
                 as *const libc::c_void
         }
         22 => {
-            return ::std::mem::transmute::<lua_CFunction, size_t>((*o).value_.f)
-                as *mut libc::c_void
+            return ((*o).value_.f.unwrap() as size_t) as *mut libc::c_void
+            // return ::std::mem::transmute::<lua_CFunction, size_t>((*o).value_.f)
+            //     as *mut libc::c_void
         }
         8 => {
             return &mut (*((*o).value_.gc as *mut GCUnion)).th as *mut lua_State
