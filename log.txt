@@ -1,0 +1,398 @@
+exporting ast from lapi.c
+In file included from lapi.c:16:
+./lua.h:231:22: warning: variadic functions are not fully supported.
+LUA_API const char *(lua_pushfstring) (lua_State *L, const char *fmt, ...);
+~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from lapi.c:18:
+In file included from ./lapi.h:12:
+In file included from ./lstate.h:12:
+./lobject.h:456:10: warning: this may be an unsupported flexible array member with size of 1, omit the size if this field is intended to be a flexible array member. See
+      section 6.7.2.1 of the C99 Standard for more details.
+  UpVal *upvals[1];  /* list of upvalues */
+  ~~~~~~~^~~~~~~~
+./lobject.h:449:10: warning: this may be an unsupported flexible array member with size of 1, omit the size if this field is intended to be a flexible array member. See
+      section 6.7.2.1 of the C99 Standard for more details.
+  TValue upvalue[1];  /* list of upvalues */
+  ~~~~~~~^~~~~~~~~
+3 warnings generated.
+ importing ast from lapi.c.cbor
+exporting ast from lauxlib.c
+In file included from lauxlib.c:27:
+./lauxlib.h:68:17: warning: variadic functions are not fully supported.
+LUALIB_API int (luaL_error) (lua_State *L, const char *fmt, ...);
+~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./lauxlib.h:68:17: warning: variadic functions are not fully supported.
+LUALIB_API int (luaL_error) (lua_State *L, const char *fmt, ...);
+~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./lauxlib.h:68:17: warning: variadic functions are not fully supported.
+LUALIB_API int (luaL_error) (lua_State *L, const char *fmt, ...);
+~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./lauxlib.h:68:17: warning: variadic functions are not fully supported.
+LUALIB_API int (luaL_error) (lua_State *L, const char *fmt, ...);
+~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./lauxlib.h:68:17: warning: variadic functions are not fully supported.
+LUALIB_API int (luaL_error) (lua_State *L, const char *fmt, ...);
+~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./lauxlib.h:68:17: warning: variadic functions are not fully supported.
+LUALIB_API int (luaL_error) (lua_State *L, const char *fmt, ...);
+~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./lauxlib.h:68:17: warning: variadic functions are not fully supported.
+LUALIB_API int (luaL_error) (lua_State *L, const char *fmt, ...);
+~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./lauxlib.h:68:17: warning: variadic functions are not fully supported.
+LUALIB_API int (luaL_error) (lua_State *L, const char *fmt, ...);
+~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./lauxlib.h:68:17: warning: variadic functions are not fully supported.
+LUALIB_API int (luaL_error) (lua_State *L, const char *fmt, ...);
+~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./lauxlib.h:68:17: warning: variadic functions are not fully supported.
+LUALIB_API int (luaL_error) (lua_State *L, const char *fmt, ...);
+~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./lauxlib.h:68:17: warning: variadic functions are not fully supported.
+LUALIB_API int (luaL_error) (lua_State *L, const char *fmt, ...);
+~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./lauxlib.h:68:17: warning: variadic functions are not fully supported.
+LUALIB_API int (luaL_error) (lua_State *L, const char *fmt, ...);
+~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./lauxlib.h:68:17: warning: variadic functions are not fully supported.
+LUALIB_API int (luaL_error) (lua_State *L, const char *fmt, ...);
+~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+13 warnings generated.
+ importing ast from lauxlib.c.cbor
+exporting ast from lbaselib.c
+ importing ast from lbaselib.c.cbor
+exporting ast from lbitlib.c
+ importing ast from lbitlib.c.cbor
+exporting ast from lcode.c
+In file included from lcode.c:18:
+In file included from ./lcode.h:10:
+In file included from ./llex.h:10:
+./lobject.h:456:10: warning: this may be an unsupported flexible array member with size of 1, omit the size if this field is intended to be a flexible array member. See
+      section 6.7.2.1 of the C99 Standard for more details.
+  UpVal *upvals[1];  /* list of upvalues */
+  ~~~~~~~^~~~~~~~
+./lobject.h:449:10: warning: this may be an unsupported flexible array member with size of 1, omit the size if this field is intended to be a flexible array member. See
+      section 6.7.2.1 of the C99 Standard for more details.
+  TValue upvalue[1];  /* list of upvalues */
+  ~~~~~~~^~~~~~~~~
+2 warnings generated.
+ importing ast from lcode.c.cbor
+exporting ast from lcorolib.c
+ importing ast from lcorolib.c.cbor
+exporting ast from lctype.c
+ importing ast from lctype.c.cbor
+exporting ast from ldblib.c
+ importing ast from ldblib.c.cbor
+exporting ast from ldebug.c
+In file included from ldebug.c:19:
+In file included from ./lapi.h:12:
+In file included from ./lstate.h:12:
+./lobject.h:456:10: warning: this may be an unsupported flexible array member with size of 1, omit the size if this field is intended to be a flexible array member. See
+      section 6.7.2.1 of the C99 Standard for more details.
+  UpVal *upvals[1];  /* list of upvalues */
+  ~~~~~~~^~~~~~~~
+./lobject.h:449:10: warning: this may be an unsupported flexible array member with size of 1, omit the size if this field is intended to be a flexible array member. See
+      section 6.7.2.1 of the C99 Standard for more details.
+  TValue upvalue[1];  /* list of upvalues */
+  ~~~~~~~^~~~~~~~~
+In file included from ldebug.c:21:
+./ldebug.h:32:19: warning: variadic functions are not fully supported.
+LUAI_FUNC l_noret luaG_runerror (lua_State *L, const char *fmt, ...);
+~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./ldebug.h:32:19: warning: variadic functions are not fully supported.
+LUAI_FUNC l_noret luaG_runerror (lua_State *L, const char *fmt, ...);
+~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./ldebug.h:32:19: warning: variadic functions are not fully supported.
+LUAI_FUNC l_noret luaG_runerror (lua_State *L, const char *fmt, ...);
+~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./ldebug.h:32:19: warning: variadic functions are not fully supported.
+LUAI_FUNC l_noret luaG_runerror (lua_State *L, const char *fmt, ...);
+~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./ldebug.h:32:19: warning: variadic functions are not fully supported.
+LUAI_FUNC l_noret luaG_runerror (lua_State *L, const char *fmt, ...);
+~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+7 warnings generated.
+ importing ast from ldebug.c.cbor
+exporting ast from ldo.c
+In file included from ldo.c:19:
+In file included from ./lapi.h:12:
+In file included from ./lstate.h:12:
+./lobject.h:456:10: warning: this may be an unsupported flexible array member with size of 1, omit the size if this field is intended to be a flexible array member. See
+      section 6.7.2.1 of the C99 Standard for more details.
+  UpVal *upvals[1];  /* list of upvalues */
+  ~~~~~~~^~~~~~~~
+./lobject.h:449:10: warning: this may be an unsupported flexible array member with size of 1, omit the size if this field is intended to be a flexible array member. See
+      section 6.7.2.1 of the C99 Standard for more details.
+  TValue upvalue[1];  /* list of upvalues */
+  ~~~~~~~^~~~~~~~~
+2 warnings generated.
+ importing ast from ldo.c.cbor
+exporting ast from ldump.c
+In file included from ldump.c:17:
+./lobject.h:456:10: warning: this may be an unsupported flexible array member with size of 1, omit the size if this field is intended to be a flexible array member. See
+      section 6.7.2.1 of the C99 Standard for more details.
+  UpVal *upvals[1];  /* list of upvalues */
+  ~~~~~~~^~~~~~~~
+./lobject.h:449:10: warning: this may be an unsupported flexible array member with size of 1, omit the size if this field is intended to be a flexible array member. See
+      section 6.7.2.1 of the C99 Standard for more details.
+  TValue upvalue[1];  /* list of upvalues */
+  ~~~~~~~^~~~~~~~~
+2 warnings generated.
+ importing ast from ldump.c.cbor
+exporting ast from lfunc.c
+In file included from lfunc.c:17:
+In file included from ./lfunc.h:11:
+./lobject.h:456:10: warning: this may be an unsupported flexible array member with size of 1, omit the size if this field is intended to be a flexible array member. See
+      section 6.7.2.1 of the C99 Standard for more details.
+  UpVal *upvals[1];  /* list of upvalues */
+  ~~~~~~~^~~~~~~~
+./lobject.h:449:10: warning: this may be an unsupported flexible array member with size of 1, omit the size if this field is intended to be a flexible array member. See
+      section 6.7.2.1 of the C99 Standard for more details.
+  TValue upvalue[1];  /* list of upvalues */
+  ~~~~~~~^~~~~~~~~
+2 warnings generated.
+ importing ast from lfunc.c.cbor
+exporting ast from lgc.c
+In file included from lgc.c:17:
+In file included from ./ldebug.h:11:
+In file included from ./lstate.h:12:
+./lobject.h:456:10: warning: this may be an unsupported flexible array member with size of 1, omit the size if this field is intended to be a flexible array member. See
+      section 6.7.2.1 of the C99 Standard for more details.
+  UpVal *upvals[1];  /* list of upvalues */
+  ~~~~~~~^~~~~~~~
+./lobject.h:449:10: warning: this may be an unsupported flexible array member with size of 1, omit the size if this field is intended to be a flexible array member. See
+      section 6.7.2.1 of the C99 Standard for more details.
+  TValue upvalue[1];  /* list of upvalues */
+  ~~~~~~~^~~~~~~~~
+2 warnings generated.
+ importing ast from lgc.c.cbor
+exporting ast from linit.c
+ importing ast from linit.c.cbor
+exporting ast from liolib.c
+ importing ast from liolib.c.cbor
+exporting ast from llex.c
+In file included from llex.c:19:
+In file included from ./ldebug.h:11:
+In file included from ./lstate.h:12:
+./lobject.h:456:10: warning: this may be an unsupported flexible array member with size of 1, omit the size if this field is intended to be a flexible array member. See
+      section 6.7.2.1 of the C99 Standard for more details.
+  UpVal *upvals[1];  /* list of upvalues */
+  ~~~~~~~^~~~~~~~
+./lobject.h:449:10: warning: this may be an unsupported flexible array member with size of 1, omit the size if this field is intended to be a flexible array member. See
+      section 6.7.2.1 of the C99 Standard for more details.
+  TValue upvalue[1];  /* list of upvalues */
+  ~~~~~~~^~~~~~~~~
+2 warnings generated.
+ importing ast from llex.c.cbor
+exporting ast from lmathlib.c
+ importing ast from lmathlib.c.cbor
+exporting ast from lmem.c
+In file included from lmem.c:17:
+In file included from ./ldebug.h:11:
+In file included from ./lstate.h:12:
+./lobject.h:456:10: warning: this may be an unsupported flexible array member with size of 1, omit the size if this field is intended to be a flexible array member. See
+      section 6.7.2.1 of the C99 Standard for more details.
+  UpVal *upvals[1];  /* list of upvalues */
+  ~~~~~~~^~~~~~~~
+./lobject.h:449:10: warning: this may be an unsupported flexible array member with size of 1, omit the size if this field is intended to be a flexible array member. See
+      section 6.7.2.1 of the C99 Standard for more details.
+  TValue upvalue[1];  /* list of upvalues */
+  ~~~~~~~^~~~~~~~~
+2 warnings generated.
+ importing ast from lmem.c.cbor
+exporting ast from loadlib.c
+ importing ast from loadlib.c.cbor
+exporting ast from lobject.c
+In file included from lobject.c:23:
+In file included from ./ldebug.h:11:
+In file included from ./lstate.h:12:
+./lobject.h:456:10: warning: this may be an unsupported flexible array member with size of 1, omit the size if this field is intended to be a flexible array member. See
+      section 6.7.2.1 of the C99 Standard for more details.
+  UpVal *upvals[1];  /* list of upvalues */
+  ~~~~~~~^~~~~~~~
+./lobject.h:449:10: warning: this may be an unsupported flexible array member with size of 1, omit the size if this field is intended to be a flexible array member. See
+      section 6.7.2.1 of the C99 Standard for more details.
+  TValue upvalue[1];  /* list of upvalues */
+  ~~~~~~~^~~~~~~~~
+./lobject.h:544:23: warning: variadic functions are not fully supported.
+LUAI_FUNC const char *luaO_pushfstring (lua_State *L, const char *fmt, ...);
+~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./lobject.h:544:23: warning: variadic functions are not fully supported.
+LUAI_FUNC const char *luaO_pushfstring (lua_State *L, const char *fmt, ...);
+~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+4 warnings generated.
+ importing ast from lobject.c.cbor
+exporting ast from lopcodes.c
+ importing ast from lopcodes.c.cbor
+exporting ast from loslib.c
+ importing ast from loslib.c.cbor
+exporting ast from lparser.c
+In file included from lparser.c:17:
+In file included from ./lcode.h:10:
+In file included from ./llex.h:10:
+./lobject.h:456:10: warning: this may be an unsupported flexible array member with size of 1, omit the size if this field is intended to be a flexible array member. See
+      section 6.7.2.1 of the C99 Standard for more details.
+  UpVal *upvals[1];  /* list of upvalues */
+  ~~~~~~~^~~~~~~~
+./lobject.h:449:10: warning: this may be an unsupported flexible array member with size of 1, omit the size if this field is intended to be a flexible array member. See
+      section 6.7.2.1 of the C99 Standard for more details.
+  TValue upvalue[1];  /* list of upvalues */
+  ~~~~~~~^~~~~~~~~
+2 warnings generated.
+ importing ast from lparser.c.cbor
+exporting ast from lstate.c
+In file included from lstate.c:18:
+In file included from ./lapi.h:12:
+In file included from ./lstate.h:12:
+./lobject.h:456:10: warning: this may be an unsupported flexible array member with size of 1, omit the size if this field is intended to be a flexible array member. See
+      section 6.7.2.1 of the C99 Standard for more details.
+  UpVal *upvals[1];  /* list of upvalues */
+  ~~~~~~~^~~~~~~~
+./lobject.h:449:10: warning: this may be an unsupported flexible array member with size of 1, omit the size if this field is intended to be a flexible array member. See
+      section 6.7.2.1 of the C99 Standard for more details.
+  TValue upvalue[1];  /* list of upvalues */
+  ~~~~~~~^~~~~~~~~
+2 warnings generated.
+ importing ast from lstate.c.cbor
+exporting ast from lstring.c
+In file included from lstring.c:17:
+In file included from ./ldebug.h:11:
+In file included from ./lstate.h:12:
+./lobject.h:456:10: warning: this may be an unsupported flexible array member with size of 1, omit the size if this field is intended to be a flexible array member. See
+      section 6.7.2.1 of the C99 Standard for more details.
+  UpVal *upvals[1];  /* list of upvalues */
+  ~~~~~~~^~~~~~~~
+./lobject.h:449:10: warning: this may be an unsupported flexible array member with size of 1, omit the size if this field is intended to be a flexible array member. See
+      section 6.7.2.1 of the C99 Standard for more details.
+  TValue upvalue[1];  /* list of upvalues */
+  ~~~~~~~^~~~~~~~~
+2 warnings generated.
+ importing ast from lstring.c.cbor
+exporting ast from lstrlib.c
+ importing ast from lstrlib.c.cbor
+exporting ast from ltable.c
+In file included from ltable.c:31:
+In file included from ./ldebug.h:11:
+In file included from ./lstate.h:12:
+./lobject.h:456:10: warning: this may be an unsupported flexible array member with size of 1, omit the size if this field is intended to be a flexible array member. See
+      section 6.7.2.1 of the C99 Standard for more details.
+  UpVal *upvals[1];  /* list of upvalues */
+  ~~~~~~~^~~~~~~~
+./lobject.h:449:10: warning: this may be an unsupported flexible array member with size of 1, omit the size if this field is intended to be a flexible array member. See
+      section 6.7.2.1 of the C99 Standard for more details.
+  TValue upvalue[1];  /* list of upvalues */
+  ~~~~~~~^~~~~~~~~
+2 warnings generated.
+ importing ast from ltable.c.cbor
+exporting ast from ltablib.c
+ importing ast from ltablib.c.cbor
+exporting ast from ltm.c
+In file included from ltm.c:17:
+In file included from ./ldebug.h:11:
+In file included from ./lstate.h:12:
+./lobject.h:456:10: warning: this may be an unsupported flexible array member with size of 1, omit the size if this field is intended to be a flexible array member. See
+      section 6.7.2.1 of the C99 Standard for more details.
+  UpVal *upvals[1];  /* list of upvalues */
+  ~~~~~~~^~~~~~~~
+./lobject.h:449:10: warning: this may be an unsupported flexible array member with size of 1, omit the size if this field is intended to be a flexible array member. See
+      section 6.7.2.1 of the C99 Standard for more details.
+  TValue upvalue[1];  /* list of upvalues */
+  ~~~~~~~^~~~~~~~~
+2 warnings generated.
+ importing ast from ltm.c.cbor
+exporting ast from lua.c
+ importing ast from lua.c.cbor
+exporting ast from luac.c
+In file included from luac.c:21:
+./lobject.h:456:10: warning: this may be an unsupported flexible array member with size of 1, omit the size if this field is intended to be a flexible array member. See
+      section 6.7.2.1 of the C99 Standard for more details.
+  UpVal *upvals[1];  /* list of upvalues */
+  ~~~~~~~^~~~~~~~
+./lobject.h:449:10: warning: this may be an unsupported flexible array member with size of 1, omit the size if this field is intended to be a flexible array member. See
+      section 6.7.2.1 of the C99 Standard for more details.
+  TValue upvalue[1];  /* list of upvalues */
+  ~~~~~~~^~~~~~~~~
+2 warnings generated.
+ importing ast from luac.c.cbor
+exporting ast from lundump.c
+In file included from lundump.c:17:
+In file included from ./ldebug.h:11:
+In file included from ./lstate.h:12:
+./lobject.h:456:10: warning: this may be an unsupported flexible array member with size of 1, omit the size if this field is intended to be a flexible array member. See
+      section 6.7.2.1 of the C99 Standard for more details.
+  UpVal *upvals[1];  /* list of upvalues */
+  ~~~~~~~^~~~~~~~
+./lobject.h:449:10: warning: this may be an unsupported flexible array member with size of 1, omit the size if this field is intended to be a flexible array member. See
+      section 6.7.2.1 of the C99 Standard for more details.
+  TValue upvalue[1];  /* list of upvalues */
+  ~~~~~~~^~~~~~~~~
+2 warnings generated.
+ importing ast from lundump.c.cbor
+exporting ast from lutf8lib.c
+ importing ast from lutf8lib.c.cbor
+exporting ast from lvm.c
+In file included from lvm.c:21:
+In file included from ./ldebug.h:11:
+In file included from ./lstate.h:12:
+./lobject.h:456:10: warning: this may be an unsupported flexible array member with size of 1, omit the size if this field is intended to be a flexible array member. See
+      section 6.7.2.1 of the C99 Standard for more details.
+  UpVal *upvals[1];  /* list of upvalues */
+  ~~~~~~~^~~~~~~~
+./lobject.h:449:10: warning: this may be an unsupported flexible array member with size of 1, omit the size if this field is intended to be a flexible array member. See
+      section 6.7.2.1 of the C99 Standard for more details.
+  TValue upvalue[1];  /* list of upvalues */
+  ~~~~~~~^~~~~~~~~
+2 warnings generated.
+ importing ast from lvm.c.cbor
+exporting ast from lzio.c
+In file included from lzio.c:19:
+In file included from ./lstate.h:12:
+./lobject.h:456:10: warning: this may be an unsupported flexible array member with size of 1, omit the size if this field is intended to be a flexible array member. See
+      section 6.7.2.1 of the C99 Standard for more details.
+  UpVal *upvals[1];  /* list of upvalues */
+  ~~~~~~~^~~~~~~~
+./lobject.h:449:10: warning: this may be an unsupported flexible array member with size of 1, omit the size if this field is intended to be a flexible array member. See
+      section 6.7.2.1 of the C99 Standard for more details.
+  TValue upvalue[1];  /* list of upvalues */
+  ~~~~~~~^~~~~~~~~
+2 warnings generated.
+ importing ast from lzio.c.cbor
+ import successful
+ import successful
+ import successful
+ import successful
+ import successful
+ import successful
+ import successful
+ import successful
+ import successful
+ import successful
+ import successful
+ import successful
+ import successful
+ import successful
+ import successful
+ import successful
+ import successful
+ import successful
+ import successful
+ import successful
+ import successful
+ import successful
+ import successful
+ import successful
+ import successful
+ import successful
+ import successful
+ import successful
+ import successful
+ import successful
+ import successful
+ import successful
+ import successful
+ import successful
+ import successful
+translations: 35
+successes...: 35
+failures....: 0
+success
