@@ -1,42 +1,42 @@
 use libc;
 extern "C" {
     /*
-    ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
-    ** Global State
-    ** See Copyright Notice in lua.h
-    */
+     ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
+     ** Global State
+     ** See Copyright Notice in lua.h
+     */
     /*
-
-** Some notes about garbage-collected objects: All objects in Lua must
-** be kept somehow accessible until being freed, so all objects always
-** belong to one (and only one) of these lists, using field 'next' of
-** the 'CommonHeader' for the link:
-**
-** 'allgc': all objects not marked for finalization;
-** 'finobj': all objects marked for finalization;
-** 'tobefnz': all objects ready to be finalized;
-** 'fixedgc': all objects that are not to be collected (currently
-** only small strings, such as reserved words).
-**
-** Moreover, there is another set of lists that control gray objects.
-** These lists are linked by fields 'gclist'. (All objects that
-** can become gray have such a field. The field is not the same
-** in all objects, but it always has this name.)  Any gray object
-** must belong to one of these lists, and all objects in these lists
-** must be gray:
-**
-** 'gray': regular gray objects, still waiting to be visited.
-** 'grayagain': objects that must be revisited at the atomic phase.
-**   That includes
-**   - black objects got in a write barrier;
-**   - all kinds of weak tables during propagation phase;
-**   - all threads.
-** 'weak': tables with weak values to be cleared;
-** 'ephemeron': ephemeron tables with white->white entries;
-** 'allweak': tables with weak keys and/or weak values to be cleared.
-** The last three lists are used only during the atomic phase.
-
-*/
+    
+    ** Some notes about garbage-collected objects: All objects in Lua must
+    ** be kept somehow accessible until being freed, so all objects always
+    ** belong to one (and only one) of these lists, using field 'next' of
+    ** the 'CommonHeader' for the link:
+    **
+    ** 'allgc': all objects not marked for finalization;
+    ** 'finobj': all objects marked for finalization;
+    ** 'tobefnz': all objects ready to be finalized;
+    ** 'fixedgc': all objects that are not to be collected (currently
+    ** only small strings, such as reserved words).
+    **
+    ** Moreover, there is another set of lists that control gray objects.
+    ** These lists are linked by fields 'gclist'. (All objects that
+    ** can become gray have such a field. The field is not the same
+    ** in all objects, but it always has this name.)  Any gray object
+    ** must belong to one of these lists, and all objects in these lists
+    ** must be gray:
+    **
+    ** 'gray': regular gray objects, still waiting to be visited.
+    ** 'grayagain': objects that must be revisited at the atomic phase.
+    **   That includes
+    **   - black objects got in a write barrier;
+    **   - all kinds of weak tables during propagation phase;
+    **   - all threads.
+    ** 'weak': tables with weak values to be cleared;
+    ** 'ephemeron': ephemeron tables with white->white entries;
+    ** 'allweak': tables with weak keys and/or weak values to be cleared.
+    ** The last three lists are used only during the atomic phase.
+    
+    */
     /* defined in ldo.c */
     pub type lua_longjmp;
     #[no_mangle]
@@ -135,7 +135,7 @@ pub struct lua_State {
     pub allowhook: lu_byte,
 }
 /* 16-bit ints */
- /* }{ */
+/* }{ */
 /* } */
 /* chars used as small naturals (so that 'char' is reserved for characters) */
 pub type lu_byte = libc::c_uchar;
@@ -400,7 +400,7 @@ pub type lu_mem = size_t;
 /* call is running a Lua function */
 /* call is running a debug hook */
 /* call is running on a fresh invocation
-                                   of luaV_execute */
+of luaV_execute */
 /* call is a yieldable protected call */
 /* call was tail called */
 /* last hook called yielded */
@@ -1030,7 +1030,7 @@ unsafe extern "C" fn GCTM(mut L: *mut lua_State, mut propagateerrors: libc::c_in
         }
     };
 }
-unsafe extern "C" fn dothecall(mut L: *mut lua_State, mut ud: *mut libc::c_void) -> () {
+unsafe extern "C" fn dothecall(mut L: *mut lua_State, mut _ud: *mut libc::c_void) -> () {
     luaD_callnoyield(L, (*L).top.offset(-2isize), 0i32);
 }
 unsafe extern "C" fn udata2finalize(mut g: *mut global_State) -> *mut GCObject {
@@ -1102,7 +1102,8 @@ pub unsafe extern "C" fn luaC_step(mut L: *mut lua_State) -> () {
             g,
             (-((100i32 as libc::c_ulong)
                 .wrapping_mul(::std::mem::size_of::<TString>() as libc::c_ulong)
-                as libc::c_int) * 10i32) as l_mem,
+                as libc::c_int)
+                * 10i32) as l_mem,
         );
         return;
     } else {
@@ -1496,7 +1497,8 @@ unsafe extern "C" fn removeentry(mut n: *mut Node) -> () {
         && 0 != (*(*(&mut (*n).i_key.tvk as *mut TValue as *const TValue))
             .value_
             .gc)
-            .marked as libc::c_int & (1i32 << 0i32 | 1i32 << 1i32)
+            .marked as libc::c_int
+            & (1i32 << 0i32 | 1i32 << 1i32)
     {
         /* unused and unmarked key; remove it */
         (*n).i_key.nk.tt_ = 9i32 + 1i32
@@ -1974,8 +1976,8 @@ unsafe extern "C" fn traverseLclosure(mut g: *mut global_State, mut cl: *mut LCl
                 /* can be marked in 'remarkupvals' */
                 (*uv).u.open.touched = 1i32
             } else if 0 != (*(*uv).v).tt_ & 1i32 << 6i32
-                && 0
-                    != (*(*(*uv).v).value_.gc).marked as libc::c_int & (1i32 << 0i32 | 1i32 << 1i32)
+                && 0 != (*(*(*uv).v).value_.gc).marked as libc::c_int
+                    & (1i32 << 0i32 | 1i32 << 1i32)
             {
                 reallymarkobject(g, (*(*uv).v).value_.gc);
             }
@@ -2084,7 +2086,8 @@ unsafe extern "C" fn traversestrongtable(mut g: *mut global_State, mut h: *mut T
                 && 0 != (*(*(&mut (*n).i_key.tvk as *mut TValue as *const TValue))
                     .value_
                     .gc)
-                    .marked as libc::c_int & (1i32 << 0i32 | 1i32 << 1i32)
+                    .marked as libc::c_int
+                    & (1i32 << 0i32 | 1i32 << 1i32)
             {
                 reallymarkobject(
                     g,
@@ -2095,8 +2098,8 @@ unsafe extern "C" fn traversestrongtable(mut g: *mut global_State, mut h: *mut T
             }
             /* mark key */
             if 0 != (*n).i_val.tt_ & 1i32 << 6i32
-                && 0
-                    != (*(*n).i_val.value_.gc).marked as libc::c_int & (1i32 << 0i32 | 1i32 << 1i32)
+                && 0 != (*(*n).i_val.value_.gc).marked as libc::c_int
+                    & (1i32 << 0i32 | 1i32 << 1i32)
             {
                 reallymarkobject(g, (*n).i_val.value_.gc);
             }
@@ -2153,8 +2156,8 @@ unsafe extern "C" fn traverseephemeron(mut g: *mut global_State, mut h: *mut Tab
             hasclears = 1i32;
             /* value not marked yet? */
             if 0 != (*n).i_val.tt_ & 1i32 << 6i32
-                && 0
-                    != (*(*n).i_val.value_.gc).marked as libc::c_int & (1i32 << 0i32 | 1i32 << 1i32)
+                && 0 != (*(*n).i_val.value_.gc).marked as libc::c_int
+                    & (1i32 << 0i32 | 1i32 << 1i32)
             {
                 /* white-white entry */
                 hasww = 1i32
@@ -2204,7 +2207,7 @@ unsafe extern "C" fn traverseweakvalue(mut g: *mut global_State, mut h: *mut Tab
         .offset((1i32 << (*h).lsizenode as libc::c_int) as size_t as isize)
         as *mut Node;
     /* if there is array part, assume it may have white values (it is not
-     worth traversing it now just to check) */
+    worth traversing it now just to check) */
     let mut hasclears: libc::c_int = ((*h).sizearray > 0i32 as libc::c_uint) as libc::c_int;
     n = &mut *(*h).node.offset(0isize) as *mut Node;
     while n < limit {
@@ -2218,7 +2221,8 @@ unsafe extern "C" fn traverseweakvalue(mut g: *mut global_State, mut h: *mut Tab
                 && 0 != (*(*(&mut (*n).i_key.tvk as *mut TValue as *const TValue))
                     .value_
                     .gc)
-                    .marked as libc::c_int & (1i32 << 0i32 | 1i32 << 1i32)
+                    .marked as libc::c_int
+                    & (1i32 << 0i32 | 1i32 << 1i32)
             {
                 reallymarkobject(
                     g,
@@ -2439,7 +2443,8 @@ pub unsafe extern "C" fn luaC_checkfinalizer(
         0 as *const TValue
     } else {
         luaT_gettm(mt, TM_GC, (*g).tmname[TM_GC as libc::c_int as usize])
-    }.is_null()
+    }
+    .is_null()
     {
         /* or has no finalizer? */
         /* nothing to be done */

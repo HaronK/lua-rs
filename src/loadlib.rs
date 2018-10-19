@@ -4,18 +4,18 @@ extern "C" {
     pub type _IO_codecvt;
     pub type _IO_marker;
     /*
-    ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
-    ** Lua - A Scripting Language
-    ** Lua.org, PUC-Rio, Brazil (http://www.lua.org)
-    ** See Copyright Notice at the end of this file
-    */
+     ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
+     ** Lua - A Scripting Language
+     ** Lua.org, PUC-Rio, Brazil (http://www.lua.org)
+     ** See Copyright Notice at the end of this file
+     */
     /* mark for precompiled code ('<esc>Lua') */
     /* option for multiple returns in 'lua_pcall' and 'lua_call' */
     /*
-    ** Pseudo-indices
-    ** (-LUAI_MAXSTACK is the minimum valid index; we keep some free empty
-    ** space after that to help overflow detection)
-    */
+     ** Pseudo-indices
+     ** (-LUAI_MAXSTACK is the minimum valid index; we keep some free empty
+     ** space after that to help overflow detection)
+     */
     /* thread status */
     pub type lua_State;
     #[no_mangle]
@@ -45,8 +45,8 @@ extern "C" {
     #[no_mangle]
     fn lua_touserdata(L: *mut lua_State, idx: libc::c_int) -> *mut libc::c_void;
     /*
-    ** push functions (C -> stack)
-    */
+     ** push functions (C -> stack)
+     */
     #[no_mangle]
     fn lua_pushnil(L: *mut lua_State) -> ();
     #[no_mangle]
@@ -82,8 +82,8 @@ extern "C" {
     #[no_mangle]
     fn lua_setmetatable(L: *mut lua_State, objindex: libc::c_int) -> libc::c_int;
     /*
-    ** 'load' and 'call' functions (load and run Lua code)
-    */
+     ** 'load' and 'call' functions (load and run Lua code)
+     */
     #[no_mangle]
     fn lua_callk(
         L: *mut lua_State,
@@ -302,18 +302,16 @@ pub unsafe extern "C" fn luaopen_package(mut L: *mut lua_State) -> libc::c_int {
     return 1i32;
 }
 /* placeholders */
-static mut ll_funcs: [luaL_Reg; 2] = unsafe {
-    [
-        luaL_Reg {
-            name: b"require\x00" as *const u8 as *const libc::c_char,
-            func: Some(ll_require),
-        },
-        luaL_Reg {
-            name: 0 as *const libc::c_char,
-            func: None,
-        },
-    ]
-};
+static mut ll_funcs: [luaL_Reg; 2] = [
+    luaL_Reg {
+        name: b"require\x00" as *const u8 as *const libc::c_char,
+        func: Some(ll_require),
+    },
+    luaL_Reg {
+        name: 0 as *const libc::c_char,
+        func: None,
+    },
+];
 unsafe extern "C" fn ll_require(mut L: *mut lua_State) -> libc::c_int {
     let mut name: *const libc::c_char = luaL_checklstring(L, 1i32, 0 as *mut size_t);
     /* LOADED table will be at index 2 */
@@ -496,15 +494,13 @@ unsafe extern "C" fn noenv(mut L: *mut lua_State) -> libc::c_int {
     return b;
 }
 unsafe extern "C" fn createsearcherstable(mut L: *mut lua_State) -> () {
-    static mut searchers: [lua_CFunction; 5] = unsafe {
-        [
-            Some(searcher_preload),
-            Some(searcher_Lua),
-            Some(searcher_C),
-            Some(searcher_Croot),
-            None,
-        ]
-    };
+    static mut searchers: [lua_CFunction; 5] = [
+        Some(searcher_preload),
+        Some(searcher_Lua),
+        Some(searcher_C),
+        Some(searcher_Croot),
+        None,
+    ];
     let mut i: libc::c_int = 0;
     /* create 'searchers' table */
     lua_createtable(
@@ -746,7 +742,7 @@ unsafe extern "C" fn checkclib(
 ** unique key for table in the registry that keeps handles
 ** for all loaded C libraries
 */
-static mut CLIBS: libc::c_int = unsafe { 0i32 };
+static mut CLIBS: libc::c_int = 0i32;
 /*
 ** Try to find a function named 'sym' in library 'lib'.
 ** Returns the function; in case of error, returns NULL plus an
@@ -995,42 +991,40 @@ unsafe extern "C" fn searcher_preload(mut L: *mut lua_State) -> libc::c_int {
 ** =======================================================
 */
 /* }====================================================== */
-static mut pk_funcs: [luaL_Reg; 8] = unsafe {
-    [
-        luaL_Reg {
-            name: b"loadlib\x00" as *const u8 as *const libc::c_char,
-            func: Some(ll_loadlib),
-        },
-        luaL_Reg {
-            name: b"searchpath\x00" as *const u8 as *const libc::c_char,
-            func: Some(ll_searchpath),
-        },
-        luaL_Reg {
-            name: b"preload\x00" as *const u8 as *const libc::c_char,
-            func: None,
-        },
-        luaL_Reg {
-            name: b"cpath\x00" as *const u8 as *const libc::c_char,
-            func: None,
-        },
-        luaL_Reg {
-            name: b"path\x00" as *const u8 as *const libc::c_char,
-            func: None,
-        },
-        luaL_Reg {
-            name: b"searchers\x00" as *const u8 as *const libc::c_char,
-            func: None,
-        },
-        luaL_Reg {
-            name: b"loaded\x00" as *const u8 as *const libc::c_char,
-            func: None,
-        },
-        luaL_Reg {
-            name: 0 as *const libc::c_char,
-            func: None,
-        },
-    ]
-};
+static mut pk_funcs: [luaL_Reg; 8] = [
+    luaL_Reg {
+        name: b"loadlib\x00" as *const u8 as *const libc::c_char,
+        func: Some(ll_loadlib),
+    },
+    luaL_Reg {
+        name: b"searchpath\x00" as *const u8 as *const libc::c_char,
+        func: Some(ll_searchpath),
+    },
+    luaL_Reg {
+        name: b"preload\x00" as *const u8 as *const libc::c_char,
+        func: None,
+    },
+    luaL_Reg {
+        name: b"cpath\x00" as *const u8 as *const libc::c_char,
+        func: None,
+    },
+    luaL_Reg {
+        name: b"path\x00" as *const u8 as *const libc::c_char,
+        func: None,
+    },
+    luaL_Reg {
+        name: b"searchers\x00" as *const u8 as *const libc::c_char,
+        func: None,
+    },
+    luaL_Reg {
+        name: b"loaded\x00" as *const u8 as *const libc::c_char,
+        func: None,
+    },
+    luaL_Reg {
+        name: 0 as *const libc::c_char,
+        func: None,
+    },
+];
 unsafe extern "C" fn ll_searchpath(mut L: *mut lua_State) -> libc::c_int {
     let mut f: *const libc::c_char = searchpath(
         L,

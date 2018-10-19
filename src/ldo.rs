@@ -17,11 +17,11 @@ extern "C" {
     #[no_mangle]
     fn luaV_finishOp(L: *mut lua_State) -> ();
     /*
-    ** 'module' operation for hashing (size is always a power of 2)
-    */
+     ** 'module' operation for hashing (size is always a power of 2)
+     */
     /*
-    ** (address of) a fixed nil value
-    */
+     ** (address of) a fixed nil value
+     */
     #[no_mangle]
     static luaO_nilobject_: TValue;
     /* not to be called directly */
@@ -33,26 +33,26 @@ extern "C" {
         size: size_t,
     ) -> *mut libc::c_void;
     /*
-    ** $Id: lmem.h,v 1.43.1.1 2017/04/19 17:20:42 roberto Exp $
-    ** Interface to Memory Manager
-    ** See Copyright Notice in lua.h
-    */
+     ** $Id: lmem.h,v 1.43.1.1 2017/04/19 17:20:42 roberto Exp $
+     ** Interface to Memory Manager
+     ** See Copyright Notice in lua.h
+     */
     /*
-    ** This macro reallocs a vector 'b' from 'on' to 'n' elements, where
-    ** each element has size 'e'. In case of arithmetic overflow of the
-    ** product 'n'*'e', it raises an error (calling 'luaM_toobig'). Because
-    ** 'e' is always constant, it avoids the runtime division MAX_SIZET/(e).
-    **
-    ** (The macro is somewhat complex to avoid warnings:  The 'sizeof'
-    ** comparison avoids a runtime comparison when overflow cannot occur.
-    ** The compiler should be able to optimize the real test by itself, but
-    ** when it does it, it may give a warning about "comparison is always
-    ** false due to limited range of data type"; the +1 tricks the compiler,
-    ** avoiding this warning but also this optimization.)
-    */
+     ** This macro reallocs a vector 'b' from 'on' to 'n' elements, where
+     ** each element has size 'e'. In case of arithmetic overflow of the
+     ** product 'n'*'e', it raises an error (calling 'luaM_toobig'). Because
+     ** 'e' is always constant, it avoids the runtime division MAX_SIZET/(e).
+     **
+     ** (The macro is somewhat complex to avoid warnings:  The 'sizeof'
+     ** comparison avoids a runtime comparison when overflow cannot occur.
+     ** The compiler should be able to optimize the real test by itself, but
+     ** when it does it, it may give a warning about "comparison is always
+     ** false due to limited range of data type"; the +1 tricks the compiler,
+     ** avoiding this warning but also this optimization.)
+     */
     /*
-    ** Arrays of chars do not need any test
-    */
+     ** Arrays of chars do not need any test
+     */
     #[no_mangle]
     fn luaM_toobig(L: *mut lua_State) -> !;
     #[no_mangle]
@@ -64,10 +64,10 @@ extern "C" {
     #[no_mangle]
     fn luaT_gettmbyobj(L: *mut lua_State, o: *const TValue, event: TMS) -> *const TValue;
     /*
-    ** $Id: ldebug.h,v 2.14.1.1 2017/04/19 17:20:42 roberto Exp $
-    ** Auxiliary functions from Debug Interface module
-    ** See Copyright Notice in lua.h
-    */
+     ** $Id: ldebug.h,v 2.14.1.1 2017/04/19 17:20:42 roberto Exp $
+     ** Auxiliary functions from Debug Interface module
+     ** See Copyright Notice in lua.h
+     */
     #[no_mangle]
     fn luaG_typeerror(L: *mut lua_State, o: *const TValue, opname: *const libc::c_char) -> !;
     #[no_mangle]
@@ -92,10 +92,10 @@ extern "C" {
         firstchar: libc::c_int,
     ) -> *mut LClosure;
     /*
-    ** $Id: lundump.h,v 1.45.1.1 2017/04/19 17:20:42 roberto Exp $
-    ** load precompiled Lua chunks
-    ** See Copyright Notice in lua.h
-    */
+     ** $Id: lundump.h,v 1.45.1.1 2017/04/19 17:20:42 roberto Exp $
+     ** load precompiled Lua chunks
+     ** See Copyright Notice in lua.h
+     */
     /* data to catch conversion errors */
     /* this is the official format */
     /* load one chunk; from lundump.c */
@@ -164,7 +164,7 @@ pub struct lua_State {
     pub allowhook: lu_byte,
 }
 /* 16-bit ints */
- /* }{ */
+/* }{ */
 /* } */
 /* chars used as small naturals (so that 'char' is reserved for characters) */
 pub type lu_byte = libc::c_uchar;
@@ -474,7 +474,7 @@ pub type lu_mem = size_t;
 /* call is running a Lua function */
 /* call is running a debug hook */
 /* call is running on a fresh invocation
-                                   of luaV_execute */
+of luaV_execute */
 /* call is a yieldable protected call */
 /* call was tail called */
 /* last hook called yielded */
@@ -835,7 +835,7 @@ pub const OP_TFORCALL: OpCode = 41;
 /*	A sBx	R(A)-=R(A+2); pc+=sBx				*/
 pub const OP_FORPREP: OpCode = 40;
 /*	A sBx	R(A)+=R(A+2);
-			if R(A) <?= R(A+1) then { pc+=sBx; R(A+3)=R(A) }*/
+?= R(A+1) then { pc+=sBx; R(A+3)=R(A) }*/
 pub const OP_FORLOOP: OpCode = 39;
 /*	A B	return R(A), ... ,R(A+B-2)	(see note)	*/
 pub const OP_RETURN: OpCode = 38;
@@ -1233,7 +1233,7 @@ unsafe extern "C" fn finishCcall(mut L: *mut lua_State, mut status: libc::c_int)
         (*L).errfunc = (*ci).u.c.old_errfunc
     }
     /* finish 'lua_callk'/'lua_pcall'; CIST_YPCALL and 'errfunc' already
-     handled */
+    handled */
     if (*ci).nresults as libc::c_int == -1i32 && (*(*L).ci).top < (*L).top {
         (*(*L).ci).top = (*L).top
     }
@@ -1572,7 +1572,7 @@ pub unsafe extern "C" fn luaD_shrinkstack(mut L: *mut lua_State) -> () {
         luaE_shrinkCI(L);
     }
     /* if thread is currently not handling a stack overflow and its
-     good size is smaller than current size, shrink its stack */
+    good size is smaller than current size, shrink its stack */
     if inuse <= 1000000i32 - 5i32 && goodsize < (*L).stacksize {
         luaD_reallocstack(L, goodsize);
     };

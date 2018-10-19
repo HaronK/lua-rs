@@ -1,47 +1,47 @@
 use libc;
 extern "C" {
     /*
-    ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
-    ** Global State
-    ** See Copyright Notice in lua.h
-    */
+     ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
+     ** Global State
+     ** See Copyright Notice in lua.h
+     */
     /*
-
-** Some notes about garbage-collected objects: All objects in Lua must
-** be kept somehow accessible until being freed, so all objects always
-** belong to one (and only one) of these lists, using field 'next' of
-** the 'CommonHeader' for the link:
-**
-** 'allgc': all objects not marked for finalization;
-** 'finobj': all objects marked for finalization;
-** 'tobefnz': all objects ready to be finalized;
-** 'fixedgc': all objects that are not to be collected (currently
-** only small strings, such as reserved words).
-**
-** Moreover, there is another set of lists that control gray objects.
-** These lists are linked by fields 'gclist'. (All objects that
-** can become gray have such a field. The field is not the same
-** in all objects, but it always has this name.)  Any gray object
-** must belong to one of these lists, and all objects in these lists
-** must be gray:
-**
-** 'gray': regular gray objects, still waiting to be visited.
-** 'grayagain': objects that must be revisited at the atomic phase.
-**   That includes
-**   - black objects got in a write barrier;
-**   - all kinds of weak tables during propagation phase;
-**   - all threads.
-** 'weak': tables with weak values to be cleared;
-** 'ephemeron': ephemeron tables with white->white entries;
-** 'allweak': tables with weak keys and/or weak values to be cleared.
-** The last three lists are used only during the atomic phase.
-
-*/
+    
+    ** Some notes about garbage-collected objects: All objects in Lua must
+    ** be kept somehow accessible until being freed, so all objects always
+    ** belong to one (and only one) of these lists, using field 'next' of
+    ** the 'CommonHeader' for the link:
+    **
+    ** 'allgc': all objects not marked for finalization;
+    ** 'finobj': all objects marked for finalization;
+    ** 'tobefnz': all objects ready to be finalized;
+    ** 'fixedgc': all objects that are not to be collected (currently
+    ** only small strings, such as reserved words).
+    **
+    ** Moreover, there is another set of lists that control gray objects.
+    ** These lists are linked by fields 'gclist'. (All objects that
+    ** can become gray have such a field. The field is not the same
+    ** in all objects, but it always has this name.)  Any gray object
+    ** must belong to one of these lists, and all objects in these lists
+    ** must be gray:
+    **
+    ** 'gray': regular gray objects, still waiting to be visited.
+    ** 'grayagain': objects that must be revisited at the atomic phase.
+    **   That includes
+    **   - black objects got in a write barrier;
+    **   - all kinds of weak tables during propagation phase;
+    **   - all threads.
+    ** 'weak': tables with weak values to be cleared;
+    ** 'ephemeron': ephemeron tables with white->white entries;
+    ** 'allweak': tables with weak keys and/or weak values to be cleared.
+    ** The last three lists are used only during the atomic phase.
+    
+    */
     /* defined in ldo.c */
     pub type lua_longjmp;
     /*
-    ** Lua Upvalues
-    */
+     ** Lua Upvalues
+     */
     pub type UpVal;
     #[no_mangle]
     fn localeconv() -> *mut lconv;
@@ -69,26 +69,26 @@ extern "C" {
     #[no_mangle]
     fn strlen(_: *const libc::c_char) -> libc::c_ulong;
     /*
-    ** $Id: lctype.h,v 1.12.1.1 2013/04/12 18:48:47 roberto Exp $
-    ** 'ctype' functions for Lua
-    ** See Copyright Notice in lua.h
-    */
+     ** $Id: lctype.h,v 1.12.1.1 2013/04/12 18:48:47 roberto Exp $
+     ** 'ctype' functions for Lua
+     ** See Copyright Notice in lua.h
+     */
     /*
-    ** WARNING: the functions defined here do not necessarily correspond
-    ** to the similar functions in the standard C ctype.h. They are
-    ** optimized for the specific needs of Lua
-    */
+     ** WARNING: the functions defined here do not necessarily correspond
+     ** to the similar functions in the standard C ctype.h. They are
+     ** optimized for the specific needs of Lua
+     */
     /* ASCII case: can use its own tables; faster and fixed */
     /* { */
     /*
-    ** add 1 to char to allow index -1 (EOZ)
-    */
+     ** add 1 to char to allow index -1 (EOZ)
+     */
     /*
-    ** 'lalpha' (Lua alphabetic) and 'lalnum' (Lua alphanumeric) both include '_'
-    */
+     ** 'lalpha' (Lua alphabetic) and 'lalnum' (Lua alphanumeric) both include '_'
+     */
     /*
-    ** this 'ltolower' only works for alphabetic characters
-    */
+     ** this 'ltolower' only works for alphabetic characters
+     */
     /* two more entries for 0 and -1 (EOZ) */
     #[no_mangle]
     static luai_ctype_: [lu_byte; 257];
@@ -207,7 +207,7 @@ pub struct lua_State {
     pub allowhook: lu_byte,
 }
 /* 16-bit ints */
- /* }{ */
+/* }{ */
 /* } */
 /* chars used as small naturals (so that 'char' is reserved for characters) */
 pub type lu_byte = libc::c_uchar;
@@ -436,7 +436,7 @@ pub struct GCObject {
 /* call is running a Lua function */
 /* call is running a debug hook */
 /* call is running on a fresh invocation
-                                   of luaV_execute */
+of luaV_execute */
 /* call is a yieldable protected call */
 /* call was tail called */
 /* last hook called yielded */
@@ -776,13 +776,11 @@ pub union GCUnion {
 ** (address of) a fixed nil value
 */
 #[no_mangle]
-pub static mut luaO_nilobject_: TValue = unsafe {
-    lua_TValue {
-        value_: Value {
-            gc: 0 as *const GCObject as *mut GCObject,
-        },
-        tt_: 0i32,
-    }
+pub static mut luaO_nilobject_: TValue = lua_TValue {
+    value_: Value {
+        gc: 0 as *const GCObject as *mut GCObject,
+    },
+    tt_: 0i32,
 };
 /* size of buffer for 'luaO_utf8esc' function */
 #[no_mangle]
@@ -852,266 +850,264 @@ pub unsafe extern "C" fn luaO_utf8esc(
 #[no_mangle]
 pub unsafe extern "C" fn luaO_ceillog2(mut x: libc::c_uint) -> libc::c_int {
     /* log_2[i] = ceil(log2(i - 1)) */
-    static mut log_2: [lu_byte; 256] = unsafe {
-        [
-            0i32 as lu_byte,
-            1i32 as lu_byte,
-            2i32 as lu_byte,
-            2i32 as lu_byte,
-            3i32 as lu_byte,
-            3i32 as lu_byte,
-            3i32 as lu_byte,
-            3i32 as lu_byte,
-            4i32 as lu_byte,
-            4i32 as lu_byte,
-            4i32 as lu_byte,
-            4i32 as lu_byte,
-            4i32 as lu_byte,
-            4i32 as lu_byte,
-            4i32 as lu_byte,
-            4i32 as lu_byte,
-            5i32 as lu_byte,
-            5i32 as lu_byte,
-            5i32 as lu_byte,
-            5i32 as lu_byte,
-            5i32 as lu_byte,
-            5i32 as lu_byte,
-            5i32 as lu_byte,
-            5i32 as lu_byte,
-            5i32 as lu_byte,
-            5i32 as lu_byte,
-            5i32 as lu_byte,
-            5i32 as lu_byte,
-            5i32 as lu_byte,
-            5i32 as lu_byte,
-            5i32 as lu_byte,
-            5i32 as lu_byte,
-            6i32 as lu_byte,
-            6i32 as lu_byte,
-            6i32 as lu_byte,
-            6i32 as lu_byte,
-            6i32 as lu_byte,
-            6i32 as lu_byte,
-            6i32 as lu_byte,
-            6i32 as lu_byte,
-            6i32 as lu_byte,
-            6i32 as lu_byte,
-            6i32 as lu_byte,
-            6i32 as lu_byte,
-            6i32 as lu_byte,
-            6i32 as lu_byte,
-            6i32 as lu_byte,
-            6i32 as lu_byte,
-            6i32 as lu_byte,
-            6i32 as lu_byte,
-            6i32 as lu_byte,
-            6i32 as lu_byte,
-            6i32 as lu_byte,
-            6i32 as lu_byte,
-            6i32 as lu_byte,
-            6i32 as lu_byte,
-            6i32 as lu_byte,
-            6i32 as lu_byte,
-            6i32 as lu_byte,
-            6i32 as lu_byte,
-            6i32 as lu_byte,
-            6i32 as lu_byte,
-            6i32 as lu_byte,
-            6i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            7i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-            8i32 as lu_byte,
-        ]
-    };
+    static mut log_2: [lu_byte; 256] = [
+        0i32 as lu_byte,
+        1i32 as lu_byte,
+        2i32 as lu_byte,
+        2i32 as lu_byte,
+        3i32 as lu_byte,
+        3i32 as lu_byte,
+        3i32 as lu_byte,
+        3i32 as lu_byte,
+        4i32 as lu_byte,
+        4i32 as lu_byte,
+        4i32 as lu_byte,
+        4i32 as lu_byte,
+        4i32 as lu_byte,
+        4i32 as lu_byte,
+        4i32 as lu_byte,
+        4i32 as lu_byte,
+        5i32 as lu_byte,
+        5i32 as lu_byte,
+        5i32 as lu_byte,
+        5i32 as lu_byte,
+        5i32 as lu_byte,
+        5i32 as lu_byte,
+        5i32 as lu_byte,
+        5i32 as lu_byte,
+        5i32 as lu_byte,
+        5i32 as lu_byte,
+        5i32 as lu_byte,
+        5i32 as lu_byte,
+        5i32 as lu_byte,
+        5i32 as lu_byte,
+        5i32 as lu_byte,
+        5i32 as lu_byte,
+        6i32 as lu_byte,
+        6i32 as lu_byte,
+        6i32 as lu_byte,
+        6i32 as lu_byte,
+        6i32 as lu_byte,
+        6i32 as lu_byte,
+        6i32 as lu_byte,
+        6i32 as lu_byte,
+        6i32 as lu_byte,
+        6i32 as lu_byte,
+        6i32 as lu_byte,
+        6i32 as lu_byte,
+        6i32 as lu_byte,
+        6i32 as lu_byte,
+        6i32 as lu_byte,
+        6i32 as lu_byte,
+        6i32 as lu_byte,
+        6i32 as lu_byte,
+        6i32 as lu_byte,
+        6i32 as lu_byte,
+        6i32 as lu_byte,
+        6i32 as lu_byte,
+        6i32 as lu_byte,
+        6i32 as lu_byte,
+        6i32 as lu_byte,
+        6i32 as lu_byte,
+        6i32 as lu_byte,
+        6i32 as lu_byte,
+        6i32 as lu_byte,
+        6i32 as lu_byte,
+        6i32 as lu_byte,
+        6i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        7i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+        8i32 as lu_byte,
+    ];
     let mut l: libc::c_int = 0i32;
     x = x.wrapping_sub(1);
     while x >= 256i32 as libc::c_uint {
@@ -1206,7 +1202,7 @@ pub unsafe extern "C" fn luaO_arith(
     luaT_trybinTM(L, p1, p2, res, (op - 0i32 + TM_ADD as libc::c_int) as TMS);
 }
 unsafe extern "C" fn numarith(
-    mut L: *mut lua_State,
+    mut _L: *mut lua_State,
     mut op: libc::c_int,
     mut v1: lua_Number,
     mut v2: lua_Number,
@@ -1357,8 +1353,9 @@ unsafe extern "C" fn l_str2dloc(
         /* nothing recognized? */
         return 0 as *const libc::c_char;
     } else {
-        while 0 != luai_ctype_[(*endptr as libc::c_uchar as libc::c_int + 1i32) as usize]
-            as libc::c_int & 1i32 << 3i32
+        while 0
+            != luai_ctype_[(*endptr as libc::c_uchar as libc::c_int + 1i32) as usize] as libc::c_int
+                & 1i32 << 3i32
         {
             /* skip trailing spaces */
             endptr = endptr.offset(1isize)
@@ -1378,8 +1375,9 @@ unsafe extern "C" fn l_str2int(
     let mut a: lua_Unsigned = 0i32 as lua_Unsigned;
     let mut empty: libc::c_int = 1i32;
     let mut neg: libc::c_int = 0;
-    while 0 != luai_ctype_[(*s as libc::c_uchar as libc::c_int + 1i32) as usize] as libc::c_int
-        & 1i32 << 3i32
+    while 0
+        != luai_ctype_[(*s as libc::c_uchar as libc::c_int + 1i32) as usize] as libc::c_int
+            & 1i32 << 3i32
     {
         /* skip initial spaces */
         s = s.offset(1isize)
@@ -1392,8 +1390,9 @@ unsafe extern "C" fn l_str2int(
         /* hex? */
         /* skip '0x' */
         s = s.offset(2isize);
-        while 0 != luai_ctype_[(*s as libc::c_uchar as libc::c_int + 1i32) as usize] as libc::c_int
-            & 1i32 << 4i32
+        while 0
+            != luai_ctype_[(*s as libc::c_uchar as libc::c_int + 1i32) as usize] as libc::c_int
+                & 1i32 << 4i32
         {
             a = a
                 .wrapping_mul(16i32 as libc::c_ulonglong)
@@ -1402,15 +1401,16 @@ unsafe extern "C" fn l_str2int(
             s = s.offset(1isize)
         }
     } else {
-        while 0 != luai_ctype_[(*s as libc::c_uchar as libc::c_int + 1i32) as usize] as libc::c_int
-            & 1i32 << 1i32
+        while 0
+            != luai_ctype_[(*s as libc::c_uchar as libc::c_int + 1i32) as usize] as libc::c_int
+                & 1i32 << 1i32
         {
             let mut d: libc::c_int = *s as libc::c_int - '0' as i32;
             /* overflow? */
             if a >= (9223372036854775807i64 / 10i32 as libc::c_longlong) as lua_Unsigned
                 && (a > (9223372036854775807i64 / 10i32 as libc::c_longlong) as lua_Unsigned
-                    || d
-                        > (9223372036854775807i64 % 10i32 as libc::c_longlong) as libc::c_int + neg)
+                    || d > (9223372036854775807i64 % 10i32 as libc::c_longlong) as libc::c_int
+                        + neg)
             {
                 /* do not accept it (as integer) */
                 return 0 as *const libc::c_char;
@@ -1423,8 +1423,9 @@ unsafe extern "C" fn l_str2int(
             }
         }
     }
-    while 0 != luai_ctype_[(*s as libc::c_uchar as libc::c_int + 1i32) as usize] as libc::c_int
-        & 1i32 << 3i32
+    while 0
+        != luai_ctype_[(*s as libc::c_uchar as libc::c_int + 1i32) as usize] as libc::c_int
+            & 1i32 << 3i32
     {
         /* skip trailing spaces */
         s = s.offset(1isize)
@@ -1481,7 +1482,8 @@ pub unsafe extern "C" fn luaO_tostring(mut L: *mut lua_State, mut obj: StkId) ->
         if buff[strspn(
             buff.as_mut_ptr(),
             b"-0123456789\x00" as *const u8 as *const libc::c_char,
-        ) as usize] as libc::c_int == '\u{0}' as i32
+        ) as usize] as libc::c_int
+            == '\u{0}' as i32
         {
             /* looks like an int? */
             let fresh1 = len;

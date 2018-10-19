@@ -4,47 +4,47 @@ extern "C" {
     pub type _IO_codecvt;
     pub type _IO_marker;
     /*
-    ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
-    ** Global State
-    ** See Copyright Notice in lua.h
-    */
+     ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
+     ** Global State
+     ** See Copyright Notice in lua.h
+     */
     /*
-
-** Some notes about garbage-collected objects: All objects in Lua must
-** be kept somehow accessible until being freed, so all objects always
-** belong to one (and only one) of these lists, using field 'next' of
-** the 'CommonHeader' for the link:
-**
-** 'allgc': all objects not marked for finalization;
-** 'finobj': all objects marked for finalization;
-** 'tobefnz': all objects ready to be finalized;
-** 'fixedgc': all objects that are not to be collected (currently
-** only small strings, such as reserved words).
-**
-** Moreover, there is another set of lists that control gray objects.
-** These lists are linked by fields 'gclist'. (All objects that
-** can become gray have such a field. The field is not the same
-** in all objects, but it always has this name.)  Any gray object
-** must belong to one of these lists, and all objects in these lists
-** must be gray:
-**
-** 'gray': regular gray objects, still waiting to be visited.
-** 'grayagain': objects that must be revisited at the atomic phase.
-**   That includes
-**   - black objects got in a write barrier;
-**   - all kinds of weak tables during propagation phase;
-**   - all threads.
-** 'weak': tables with weak values to be cleared;
-** 'ephemeron': ephemeron tables with white->white entries;
-** 'allweak': tables with weak keys and/or weak values to be cleared.
-** The last three lists are used only during the atomic phase.
-
-*/
+    
+    ** Some notes about garbage-collected objects: All objects in Lua must
+    ** be kept somehow accessible until being freed, so all objects always
+    ** belong to one (and only one) of these lists, using field 'next' of
+    ** the 'CommonHeader' for the link:
+    **
+    ** 'allgc': all objects not marked for finalization;
+    ** 'finobj': all objects marked for finalization;
+    ** 'tobefnz': all objects ready to be finalized;
+    ** 'fixedgc': all objects that are not to be collected (currently
+    ** only small strings, such as reserved words).
+    **
+    ** Moreover, there is another set of lists that control gray objects.
+    ** These lists are linked by fields 'gclist'. (All objects that
+    ** can become gray have such a field. The field is not the same
+    ** in all objects, but it always has this name.)  Any gray object
+    ** must belong to one of these lists, and all objects in these lists
+    ** must be gray:
+    **
+    ** 'gray': regular gray objects, still waiting to be visited.
+    ** 'grayagain': objects that must be revisited at the atomic phase.
+    **   That includes
+    **   - black objects got in a write barrier;
+    **   - all kinds of weak tables during propagation phase;
+    **   - all threads.
+    ** 'weak': tables with weak values to be cleared;
+    ** 'ephemeron': ephemeron tables with white->white entries;
+    ** 'allweak': tables with weak keys and/or weak values to be cleared.
+    ** The last three lists are used only during the atomic phase.
+    
+    */
     /* defined in ldo.c */
     pub type lua_longjmp;
     /*
-    ** Lua Upvalues
-    */
+     ** Lua Upvalues
+     */
     pub type UpVal;
     #[no_mangle]
     fn __ctype_b_loc() -> *mut *const libc::c_ushort;
@@ -230,7 +230,7 @@ pub struct lua_State {
     pub allowhook: lu_byte,
 }
 /* 16-bit ints */
- /* }{ */
+/* }{ */
 /* } */
 /* chars used as small naturals (so that 'char' is reserved for characters) */
 pub type lu_byte = libc::c_uchar;
@@ -459,7 +459,7 @@ pub struct GCObject {
 /* call is running a Lua function */
 /* call is running a debug hook */
 /* call is running on a fresh invocation
-                                   of luaV_execute */
+of luaV_execute */
 /* call is a yieldable protected call */
 /* call was tail called */
 /* last hook called yielded */
@@ -776,7 +776,7 @@ pub const OP_TFORLOOP: OpCode = 42;
 /*	A sBx	R(A)-=R(A+2); pc+=sBx				*/
 pub const OP_FORPREP: OpCode = 40;
 /*	A sBx	R(A)+=R(A+2);
-			if R(A) <?= R(A+1) then { pc+=sBx; R(A+3)=R(A) }*/
+?= R(A+1) then { pc+=sBx; R(A+3)=R(A) }*/
 pub const OP_FORLOOP: OpCode = 39;
 /*	A sBx	pc+=sBx; if (A) close all upvalues >= R(A - 1)	*/
 pub const OP_JMP: OpCode = 30;
@@ -1067,7 +1067,8 @@ unsafe extern "C" fn PrintConstant(mut f: *const Proto, mut i: libc::c_int) -> (
             if buff[strspn(
                 buff.as_mut_ptr(),
                 b"-0123456789\x00" as *const u8 as *const libc::c_char,
-            ) as usize] as libc::c_int == '\u{0}' as i32
+            ) as usize] as libc::c_int
+                == '\u{0}' as i32
             {
                 printf(b".0\x00" as *const u8 as *const libc::c_char);
             }
@@ -1170,9 +1171,10 @@ unsafe extern "C" fn PrintCode(mut f: *const Proto) -> () {
         let mut bx: libc::c_int = (i >> 0i32 + 6i32 + 8i32
             & !((!(0i32 as Instruction)) << 9i32 + 9i32) << 0i32)
             as libc::c_int;
-        let mut sbx: libc::c_int =
-            (i >> 0i32 + 6i32 + 8i32 & !((!(0i32 as Instruction)) << 9i32 + 9i32) << 0i32)
-                as libc::c_int - ((1i32 << 9i32 + 9i32) - 1i32 >> 1i32);
+        let mut sbx: libc::c_int = (i >> 0i32 + 6i32 + 8i32
+            & !((!(0i32 as Instruction)) << 9i32 + 9i32) << 0i32)
+            as libc::c_int
+            - ((1i32 << 9i32 + 9i32) - 1i32 >> 1i32);
         let mut line: libc::c_int = if !(*f).lineinfo.is_null() {
             *(*f).lineinfo.offset(pc as isize)
         } else {
@@ -1192,7 +1194,8 @@ unsafe extern "C" fn PrintCode(mut f: *const Proto) -> () {
             0 => {
                 printf(b"%d\x00" as *const u8 as *const libc::c_char, a);
                 if (luaP_opmodes[o as usize] as libc::c_int >> 4i32 & 3i32) as OpArgMask
-                    as libc::c_uint != OpArgN as libc::c_int as libc::c_uint
+                    as libc::c_uint
+                    != OpArgN as libc::c_int as libc::c_uint
                 {
                     printf(
                         b" %d\x00" as *const u8 as *const libc::c_char,
@@ -1204,7 +1207,8 @@ unsafe extern "C" fn PrintCode(mut f: *const Proto) -> () {
                     );
                 }
                 if (luaP_opmodes[o as usize] as libc::c_int >> 2i32 & 3i32) as OpArgMask
-                    as libc::c_uint != OpArgN as libc::c_int as libc::c_uint
+                    as libc::c_uint
+                    != OpArgN as libc::c_int as libc::c_uint
                 {
                     printf(
                         b" %d\x00" as *const u8 as *const libc::c_char,
@@ -1219,12 +1223,14 @@ unsafe extern "C" fn PrintCode(mut f: *const Proto) -> () {
             1 => {
                 printf(b"%d\x00" as *const u8 as *const libc::c_char, a);
                 if (luaP_opmodes[o as usize] as libc::c_int >> 4i32 & 3i32) as OpArgMask
-                    as libc::c_uint == OpArgK as libc::c_int as libc::c_uint
+                    as libc::c_uint
+                    == OpArgK as libc::c_int as libc::c_uint
                 {
                     printf(b" %d\x00" as *const u8 as *const libc::c_char, -1i32 - bx);
                 }
                 if (luaP_opmodes[o as usize] as libc::c_int >> 4i32 & 3i32) as OpArgMask
-                    as libc::c_uint == OpArgU as libc::c_int as libc::c_uint
+                    as libc::c_uint
+                    == OpArgU as libc::c_int as libc::c_uint
                 {
                     printf(b" %d\x00" as *const u8 as *const libc::c_char, bx);
                 }
@@ -1428,18 +1434,17 @@ unsafe extern "C" fn PrintHeader(mut f: *const Proto) -> () {
 /* default program name */
 /* default output file */
 /* list bytecodes? */
-static mut listing: libc::c_int = unsafe { 0i32 };
+static mut listing: libc::c_int = 0i32;
 /* dump bytecodes? */
-static mut dumping: libc::c_int = unsafe { 1i32 };
+static mut dumping: libc::c_int = 1i32;
 /* strip debug information? */
-static mut stripping: libc::c_int = unsafe { 0i32 };
+static mut stripping: libc::c_int = 0i32;
 /* default output file name */
-static mut Output: [libc::c_char; 9] = unsafe { [108, 117, 97, 99, 46, 111, 117, 116, 0] };
+static mut Output: [libc::c_char; 9] = [108, 117, 97, 99, 46, 111, 117, 116, 0];
 /* actual output file name */
 static mut output: *const libc::c_char = unsafe { Output.as_ptr() as *mut _ };
 /* actual program name */
-static mut progname: *const libc::c_char =
-    unsafe { b"luac\x00" as *const u8 as *const libc::c_char };
+static mut progname: *const libc::c_char = b"luac\x00" as *const u8 as *const libc::c_char;
 unsafe extern "C" fn fatal(mut message: *const libc::c_char) -> () {
     fprintf(
         stderr,
@@ -1532,7 +1537,8 @@ unsafe extern "C" fn doargs(
             {
                 i += 1;
                 output = *argv.offset(i as isize);
-                if output.is_null() || *output as libc::c_int == 0i32
+                if output.is_null()
+                    || *output as libc::c_int == 0i32
                     || *output as libc::c_int == '-' as i32
                         && *output.offset(1isize) as libc::c_int != 0i32
                 {
@@ -1589,7 +1595,7 @@ unsafe extern "C" fn doargs(
     return i;
 }
 unsafe extern "C" fn reader(
-    mut L: *mut lua_State,
+    mut _L: *mut lua_State,
     mut ud: *mut libc::c_void,
     mut size: *mut size_t,
 ) -> *const libc::c_char {
@@ -1645,7 +1651,7 @@ unsafe extern "C" fn combine(mut L: *mut lua_State, mut n: libc::c_int) -> *cons
     };
 }
 unsafe extern "C" fn writer(
-    mut L: *mut lua_State,
+    mut _L: *mut lua_State,
     mut p: *const libc::c_void,
     mut size: size_t,
     mut u: *mut libc::c_void,

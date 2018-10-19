@@ -4,18 +4,18 @@ extern "C" {
     pub type _IO_codecvt;
     pub type _IO_marker;
     /*
-    ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
-    ** Lua - A Scripting Language
-    ** Lua.org, PUC-Rio, Brazil (http://www.lua.org)
-    ** See Copyright Notice at the end of this file
-    */
+     ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
+     ** Lua - A Scripting Language
+     ** Lua.org, PUC-Rio, Brazil (http://www.lua.org)
+     ** See Copyright Notice at the end of this file
+     */
     /* mark for precompiled code ('<esc>Lua') */
     /* option for multiple returns in 'lua_pcall' and 'lua_call' */
     /*
-    ** Pseudo-indices
-    ** (-LUAI_MAXSTACK is the minimum valid index; we keep some free empty
-    ** space after that to help overflow detection)
-    */
+     ** Pseudo-indices
+     ** (-LUAI_MAXSTACK is the minimum valid index; we keep some free empty
+     ** space after that to help overflow detection)
+     */
     /* thread status */
     pub type lua_State;
     /* private part */
@@ -55,8 +55,8 @@ extern "C" {
     #[no_mangle]
     fn lua_tothread(L: *mut lua_State, idx: libc::c_int) -> *mut lua_State;
     /*
-    ** push functions (C -> stack)
-    */
+     ** push functions (C -> stack)
+     */
     #[no_mangle]
     fn lua_pushnil(L: *mut lua_State) -> ();
     #[no_mangle]
@@ -92,8 +92,8 @@ extern "C" {
     #[no_mangle]
     fn lua_setuservalue(L: *mut lua_State, idx: libc::c_int) -> ();
     /*
-    ** 'load' and 'call' functions (load and run Lua code)
-    */
+     ** 'load' and 'call' functions (load and run Lua code)
+     */
     #[no_mangle]
     fn lua_callk(
         L: *mut lua_State,
@@ -336,78 +336,76 @@ pub unsafe extern "C" fn luaopen_debug(mut L: *mut lua_State) -> libc::c_int {
     luaL_setfuncs(L, dblib.as_ptr(), 0i32);
     return 1i32;
 }
-static mut dblib: [luaL_Reg; 17] = unsafe {
-    [
-        luaL_Reg {
-            name: b"debug\x00" as *const u8 as *const libc::c_char,
-            func: Some(db_debug),
-        },
-        luaL_Reg {
-            name: b"getuservalue\x00" as *const u8 as *const libc::c_char,
-            func: Some(db_getuservalue),
-        },
-        luaL_Reg {
-            name: b"gethook\x00" as *const u8 as *const libc::c_char,
-            func: Some(db_gethook),
-        },
-        luaL_Reg {
-            name: b"getinfo\x00" as *const u8 as *const libc::c_char,
-            func: Some(db_getinfo),
-        },
-        luaL_Reg {
-            name: b"getlocal\x00" as *const u8 as *const libc::c_char,
-            func: Some(db_getlocal),
-        },
-        luaL_Reg {
-            name: b"getregistry\x00" as *const u8 as *const libc::c_char,
-            func: Some(db_getregistry),
-        },
-        luaL_Reg {
-            name: b"getmetatable\x00" as *const u8 as *const libc::c_char,
-            func: Some(db_getmetatable),
-        },
-        luaL_Reg {
-            name: b"getupvalue\x00" as *const u8 as *const libc::c_char,
-            func: Some(db_getupvalue),
-        },
-        luaL_Reg {
-            name: b"upvaluejoin\x00" as *const u8 as *const libc::c_char,
-            func: Some(db_upvaluejoin),
-        },
-        luaL_Reg {
-            name: b"upvalueid\x00" as *const u8 as *const libc::c_char,
-            func: Some(db_upvalueid),
-        },
-        luaL_Reg {
-            name: b"setuservalue\x00" as *const u8 as *const libc::c_char,
-            func: Some(db_setuservalue),
-        },
-        luaL_Reg {
-            name: b"sethook\x00" as *const u8 as *const libc::c_char,
-            func: Some(db_sethook),
-        },
-        luaL_Reg {
-            name: b"setlocal\x00" as *const u8 as *const libc::c_char,
-            func: Some(db_setlocal),
-        },
-        luaL_Reg {
-            name: b"setmetatable\x00" as *const u8 as *const libc::c_char,
-            func: Some(db_setmetatable),
-        },
-        luaL_Reg {
-            name: b"setupvalue\x00" as *const u8 as *const libc::c_char,
-            func: Some(db_setupvalue),
-        },
-        luaL_Reg {
-            name: b"traceback\x00" as *const u8 as *const libc::c_char,
-            func: Some(db_traceback),
-        },
-        luaL_Reg {
-            name: 0 as *const libc::c_char,
-            func: None,
-        },
-    ]
-};
+static mut dblib: [luaL_Reg; 17] = [
+    luaL_Reg {
+        name: b"debug\x00" as *const u8 as *const libc::c_char,
+        func: Some(db_debug),
+    },
+    luaL_Reg {
+        name: b"getuservalue\x00" as *const u8 as *const libc::c_char,
+        func: Some(db_getuservalue),
+    },
+    luaL_Reg {
+        name: b"gethook\x00" as *const u8 as *const libc::c_char,
+        func: Some(db_gethook),
+    },
+    luaL_Reg {
+        name: b"getinfo\x00" as *const u8 as *const libc::c_char,
+        func: Some(db_getinfo),
+    },
+    luaL_Reg {
+        name: b"getlocal\x00" as *const u8 as *const libc::c_char,
+        func: Some(db_getlocal),
+    },
+    luaL_Reg {
+        name: b"getregistry\x00" as *const u8 as *const libc::c_char,
+        func: Some(db_getregistry),
+    },
+    luaL_Reg {
+        name: b"getmetatable\x00" as *const u8 as *const libc::c_char,
+        func: Some(db_getmetatable),
+    },
+    luaL_Reg {
+        name: b"getupvalue\x00" as *const u8 as *const libc::c_char,
+        func: Some(db_getupvalue),
+    },
+    luaL_Reg {
+        name: b"upvaluejoin\x00" as *const u8 as *const libc::c_char,
+        func: Some(db_upvaluejoin),
+    },
+    luaL_Reg {
+        name: b"upvalueid\x00" as *const u8 as *const libc::c_char,
+        func: Some(db_upvalueid),
+    },
+    luaL_Reg {
+        name: b"setuservalue\x00" as *const u8 as *const libc::c_char,
+        func: Some(db_setuservalue),
+    },
+    luaL_Reg {
+        name: b"sethook\x00" as *const u8 as *const libc::c_char,
+        func: Some(db_sethook),
+    },
+    luaL_Reg {
+        name: b"setlocal\x00" as *const u8 as *const libc::c_char,
+        func: Some(db_setlocal),
+    },
+    luaL_Reg {
+        name: b"setmetatable\x00" as *const u8 as *const libc::c_char,
+        func: Some(db_setmetatable),
+    },
+    luaL_Reg {
+        name: b"setupvalue\x00" as *const u8 as *const libc::c_char,
+        func: Some(db_setupvalue),
+    },
+    luaL_Reg {
+        name: b"traceback\x00" as *const u8 as *const libc::c_char,
+        func: Some(db_traceback),
+    },
+    luaL_Reg {
+        name: 0 as *const libc::c_char,
+        func: None,
+    },
+];
 unsafe extern "C" fn db_traceback(mut L: *mut lua_State) -> libc::c_int {
     let mut level: libc::c_int = 0;
     let mut arg: libc::c_int = 0;
@@ -472,12 +470,11 @@ unsafe extern "C" fn auxupvalue(mut L: *mut lua_State, mut get: libc::c_int) -> 
 }
 unsafe extern "C" fn db_setmetatable(mut L: *mut lua_State) -> libc::c_int {
     let mut t: libc::c_int = lua_type(L, 2i32);
-    (t == 0i32 || t == 5i32
-        || 0 != luaL_argerror(
-            L,
-            2i32,
-            b"nil or table expected\x00" as *const u8 as *const libc::c_char,
-        )) as libc::c_int;
+    (t == 0i32 || t == 5i32 || 0 != luaL_argerror(
+        L,
+        2i32,
+        b"nil or table expected\x00" as *const u8 as *const libc::c_char,
+    )) as libc::c_int;
     lua_settop(L, 2i32);
     lua_setmetatable(L, 1i32);
     /* return 1st argument */
@@ -603,7 +600,7 @@ unsafe extern "C" fn db_sethook(mut L: *mut lua_State) -> libc::c_int {
 ** The hook table at registry[&HOOKKEY] maps threads to their current
 ** hook function. (We only need the unique address of 'HOOKKEY'.)
 */
-static mut HOOKKEY: libc::c_int = unsafe { 0i32 };
+static mut HOOKKEY: libc::c_int = 0i32;
 /*
 ** Convert a string mask (for 'sethook') into a bit mask
 */
@@ -631,15 +628,13 @@ unsafe extern "C" fn makemask(
 ** thread (if there is one)
 */
 unsafe extern "C" fn hookf(mut L: *mut lua_State, mut ar: *mut lua_Debug) -> () {
-    static mut hooknames: [*const libc::c_char; 5] = unsafe {
-        [
-            b"call\x00" as *const u8 as *const libc::c_char,
-            b"return\x00" as *const u8 as *const libc::c_char,
-            b"line\x00" as *const u8 as *const libc::c_char,
-            b"count\x00" as *const u8 as *const libc::c_char,
-            b"tail call\x00" as *const u8 as *const libc::c_char,
-        ]
-    };
+    static mut hooknames: [*const libc::c_char; 5] = [
+        b"call\x00" as *const u8 as *const libc::c_char,
+        b"return\x00" as *const u8 as *const libc::c_char,
+        b"line\x00" as *const u8 as *const libc::c_char,
+        b"count\x00" as *const u8 as *const libc::c_char,
+        b"tail call\x00" as *const u8 as *const libc::c_char,
+    ];
     lua_rawgetp(
         L,
         -1000000i32 - 1000i32,
@@ -685,29 +680,26 @@ unsafe extern "C" fn checkupval(
     let mut nup: libc::c_int = luaL_checkinteger(L, argnup) as libc::c_int;
     /* closure */
     luaL_checktype(L, argf, 6i32);
-    (!lua_getupvalue(L, argf, nup).is_null()
-        || 0 != luaL_argerror(
-            L,
-            argnup,
-            b"invalid upvalue index\x00" as *const u8 as *const libc::c_char,
-        )) as libc::c_int;
+    (!lua_getupvalue(L, argf, nup).is_null() || 0 != luaL_argerror(
+        L,
+        argnup,
+        b"invalid upvalue index\x00" as *const u8 as *const libc::c_char,
+    )) as libc::c_int;
     return nup;
 }
 unsafe extern "C" fn db_upvaluejoin(mut L: *mut lua_State) -> libc::c_int {
     let mut n1: libc::c_int = checkupval(L, 1i32, 2i32);
     let mut n2: libc::c_int = checkupval(L, 3i32, 4i32);
-    (0 == lua_iscfunction(L, 1i32)
-        || 0 != luaL_argerror(
-            L,
-            1i32,
-            b"Lua function expected\x00" as *const u8 as *const libc::c_char,
-        )) as libc::c_int;
-    (0 == lua_iscfunction(L, 3i32)
-        || 0 != luaL_argerror(
-            L,
-            3i32,
-            b"Lua function expected\x00" as *const u8 as *const libc::c_char,
-        )) as libc::c_int;
+    (0 == lua_iscfunction(L, 1i32) || 0 != luaL_argerror(
+        L,
+        1i32,
+        b"Lua function expected\x00" as *const u8 as *const libc::c_char,
+    )) as libc::c_int;
+    (0 == lua_iscfunction(L, 3i32) || 0 != luaL_argerror(
+        L,
+        3i32,
+        b"Lua function expected\x00" as *const u8 as *const libc::c_char,
+    )) as libc::c_int;
     lua_upvaluejoin(L, 1i32, n1, 3i32, n2);
     return 0i32;
 }
@@ -1045,7 +1037,8 @@ unsafe extern "C" fn db_debug(mut L: *mut lua_State) -> libc::c_int {
             buffer.as_mut_ptr(),
             ::std::mem::size_of::<[libc::c_char; 250]>() as libc::c_ulong as libc::c_int,
             stdin,
-        ).is_null()
+        )
+        .is_null()
             || strcmp(
                 buffer.as_mut_ptr(),
                 b"cont\n\x00" as *const u8 as *const libc::c_char,

@@ -4,18 +4,18 @@ extern "C" {
     pub type _IO_codecvt;
     pub type _IO_marker;
     /*
-    ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
-    ** Lua - A Scripting Language
-    ** Lua.org, PUC-Rio, Brazil (http://www.lua.org)
-    ** See Copyright Notice at the end of this file
-    */
+     ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
+     ** Lua - A Scripting Language
+     ** Lua.org, PUC-Rio, Brazil (http://www.lua.org)
+     ** See Copyright Notice at the end of this file
+     */
     /* mark for precompiled code ('<esc>Lua') */
     /* option for multiple returns in 'lua_pcall' and 'lua_call' */
     /*
-    ** Pseudo-indices
-    ** (-LUAI_MAXSTACK is the minimum valid index; we keep some free empty
-    ** space after that to help overflow detection)
-    */
+     ** Pseudo-indices
+     ** (-LUAI_MAXSTACK is the minimum valid index; we keep some free empty
+     ** space after that to help overflow detection)
+     */
     /* thread status */
     pub type lua_State;
     /* private part */
@@ -65,8 +65,8 @@ extern "C" {
     #[no_mangle]
     fn strerror(_: libc::c_int) -> *mut libc::c_char;
     /*
-    ** state manipulation
-    */
+     ** state manipulation
+     */
     #[no_mangle]
     fn lua_newstate(f: lua_Alloc, ud: *mut libc::c_void) -> *mut lua_State;
     #[no_mangle]
@@ -74,8 +74,8 @@ extern "C" {
     #[no_mangle]
     fn lua_version(L: *mut lua_State) -> *const lua_Number;
     /*
-    ** basic stack manipulation
-    */
+     ** basic stack manipulation
+     */
     #[no_mangle]
     fn lua_absindex(L: *mut lua_State, idx: libc::c_int) -> libc::c_int;
     #[no_mangle]
@@ -91,8 +91,8 @@ extern "C" {
     #[no_mangle]
     fn lua_checkstack(L: *mut lua_State, n: libc::c_int) -> libc::c_int;
     /*
-    ** access functions (stack -> C)
-    */
+     ** access functions (stack -> C)
+     */
     #[no_mangle]
     fn lua_isnumber(L: *mut lua_State, idx: libc::c_int) -> libc::c_int;
     #[no_mangle]
@@ -120,8 +120,8 @@ extern "C" {
     #[no_mangle]
     fn lua_rawequal(L: *mut lua_State, idx1: libc::c_int, idx2: libc::c_int) -> libc::c_int;
     /*
-    ** push functions (C -> stack)
-    */
+     ** push functions (C -> stack)
+     */
     #[no_mangle]
     fn lua_pushnil(L: *mut lua_State) -> ();
     #[no_mangle]
@@ -159,8 +159,8 @@ extern "C" {
     #[no_mangle]
     fn lua_getmetatable(L: *mut lua_State, objindex: libc::c_int) -> libc::c_int;
     /*
-    ** set functions (stack -> Lua)
-    */
+     ** set functions (stack -> Lua)
+     */
     #[no_mangle]
     fn lua_setglobal(L: *mut lua_State, name: *const libc::c_char) -> ();
     #[no_mangle]
@@ -170,8 +170,8 @@ extern "C" {
     #[no_mangle]
     fn lua_setmetatable(L: *mut lua_State, objindex: libc::c_int) -> libc::c_int;
     /*
-    ** 'load' and 'call' functions (load and run Lua code)
-    */
+     ** 'load' and 'call' functions (load and run Lua code)
+     */
     #[no_mangle]
     fn lua_callk(
         L: *mut lua_State,
@@ -189,8 +189,8 @@ extern "C" {
         mode: *const libc::c_char,
     ) -> libc::c_int;
     /*
-    ** miscellaneous functions
-    */
+     ** miscellaneous functions
+     */
     #[no_mangle]
     fn lua_error(L: *mut lua_State) -> libc::c_int;
     #[no_mangle]
@@ -310,7 +310,9 @@ pub type lua_Alloc = Option<
 // TODO: implement!
 #[macro_export]
 macro_rules! luaL_error {
-    ($lua_State:expr, $fmt:expr, $($args:tt)*) => ({ 0 });
+    ($lua_State:expr, $fmt:expr, $($args:tt)*) => {{
+        0
+    }};
 }
 /*
 ** Event codes
@@ -409,9 +411,10 @@ pub unsafe extern "C" fn luaL_checkversion_(
 ) -> () {
     let mut v: *const lua_Number = lua_version(L);
     /* check numeric types */
-    if sz != (::std::mem::size_of::<lua_Integer>() as libc::c_ulong)
-        .wrapping_mul(16i32 as libc::c_ulong)
-        .wrapping_add(::std::mem::size_of::<lua_Number>() as libc::c_ulong)
+    if sz
+        != (::std::mem::size_of::<lua_Integer>() as libc::c_ulong)
+            .wrapping_mul(16i32 as libc::c_ulong)
+            .wrapping_add(::std::mem::size_of::<lua_Number>() as libc::c_ulong)
     {
         luaL_error!(
             L,
@@ -592,7 +595,7 @@ pub unsafe extern "C" fn luaL_tolstring(
 pub unsafe extern "C" fn luaL_argerror(
     mut L: *mut lua_State,
     mut arg: libc::c_int,
-    mut extramsg: *const libc::c_char,
+    mut _extramsg: *const libc::c_char,
 ) -> libc::c_int {
     let mut ar: lua_Debug = lua_Debug {
         event: 0,
@@ -1154,7 +1157,8 @@ pub unsafe extern "C" fn luaL_loadfilex(
         lf.buff[fresh0 as usize] = '\n' as i32 as libc::c_char
     }
     if c == (*::std::mem::transmute::<&[u8; 5], &[libc::c_char; 5]>(b"\x1bLua\x00"))[0usize]
-        as libc::c_int && !filename.is_null()
+        as libc::c_int
+        && !filename.is_null()
     {
         /* binary file? */
         /* reopen in binary mode */
@@ -1226,7 +1230,7 @@ unsafe extern "C" fn errfile(
     return 6i32 + 1i32;
 }
 unsafe extern "C" fn getF(
-    mut L: *mut lua_State,
+    mut _L: *mut lua_State,
     mut ud: *mut libc::c_void,
     mut size: *mut size_t,
 ) -> *const libc::c_char {
@@ -1328,7 +1332,7 @@ pub unsafe extern "C" fn luaL_loadbufferx(
     );
 }
 unsafe extern "C" fn getS(
-    mut L: *mut lua_State,
+    mut _L: *mut lua_State,
     mut ud: *mut libc::c_void,
     mut size: *mut size_t,
 ) -> *const libc::c_char {
@@ -1358,9 +1362,9 @@ pub unsafe extern "C" fn luaL_newstate() -> *mut lua_State {
     return L;
 }
 unsafe extern "C" fn l_alloc(
-    mut ud: *mut libc::c_void,
+    mut _ud: *mut libc::c_void,
     mut ptr: *mut libc::c_void,
-    mut osize: size_t,
+    mut _osize: size_t,
     mut nsize: size_t,
 ) -> *mut libc::c_void {
     /* not used */

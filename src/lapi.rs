@@ -1,50 +1,50 @@
 use libc;
 extern "C" {
     /*
-    ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
-    ** Global State
-    ** See Copyright Notice in lua.h
-    */
+     ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
+     ** Global State
+     ** See Copyright Notice in lua.h
+     */
     /*
-
-** Some notes about garbage-collected objects: All objects in Lua must
-** be kept somehow accessible until being freed, so all objects always
-** belong to one (and only one) of these lists, using field 'next' of
-** the 'CommonHeader' for the link:
-**
-** 'allgc': all objects not marked for finalization;
-** 'finobj': all objects marked for finalization;
-** 'tobefnz': all objects ready to be finalized;
-** 'fixedgc': all objects that are not to be collected (currently
-** only small strings, such as reserved words).
-**
-** Moreover, there is another set of lists that control gray objects.
-** These lists are linked by fields 'gclist'. (All objects that
-** can become gray have such a field. The field is not the same
-** in all objects, but it always has this name.)  Any gray object
-** must belong to one of these lists, and all objects in these lists
-** must be gray:
-**
-** 'gray': regular gray objects, still waiting to be visited.
-** 'grayagain': objects that must be revisited at the atomic phase.
-**   That includes
-**   - black objects got in a write barrier;
-**   - all kinds of weak tables during propagation phase;
-**   - all threads.
-** 'weak': tables with weak values to be cleared;
-** 'ephemeron': ephemeron tables with white->white entries;
-** 'allweak': tables with weak keys and/or weak values to be cleared.
-** The last three lists are used only during the atomic phase.
-
-*/
+    
+    ** Some notes about garbage-collected objects: All objects in Lua must
+    ** be kept somehow accessible until being freed, so all objects always
+    ** belong to one (and only one) of these lists, using field 'next' of
+    ** the 'CommonHeader' for the link:
+    **
+    ** 'allgc': all objects not marked for finalization;
+    ** 'finobj': all objects marked for finalization;
+    ** 'tobefnz': all objects ready to be finalized;
+    ** 'fixedgc': all objects that are not to be collected (currently
+    ** only small strings, such as reserved words).
+    **
+    ** Moreover, there is another set of lists that control gray objects.
+    ** These lists are linked by fields 'gclist'. (All objects that
+    ** can become gray have such a field. The field is not the same
+    ** in all objects, but it always has this name.)  Any gray object
+    ** must belong to one of these lists, and all objects in these lists
+    ** must be gray:
+    **
+    ** 'gray': regular gray objects, still waiting to be visited.
+    ** 'grayagain': objects that must be revisited at the atomic phase.
+    **   That includes
+    **   - black objects got in a write barrier;
+    **   - all kinds of weak tables during propagation phase;
+    **   - all threads.
+    ** 'weak': tables with weak values to be cleared;
+    ** 'ephemeron': ephemeron tables with white->white entries;
+    ** 'allweak': tables with weak keys and/or weak values to be cleared.
+    ** The last three lists are used only during the atomic phase.
+    
+    */
     /* defined in ldo.c */
     pub type lua_longjmp;
     /*
-    ** 'module' operation for hashing (size is always a power of 2)
-    */
+     ** 'module' operation for hashing (size is always a power of 2)
+     */
     /*
-    ** (address of) a fixed nil value
-    */
+     ** (address of) a fixed nil value
+     */
     #[no_mangle]
     static luaO_nilobject_: TValue;
     #[no_mangle]
@@ -74,36 +74,36 @@ extern "C" {
         res: *mut TValue,
     ) -> ();
     /*
-    ** $Id: lvm.h,v 2.41.1.1 2017/04/19 17:20:42 roberto Exp $
-    ** Lua virtual machine
-    ** See Copyright Notice in lua.h
-    */
+     ** $Id: lvm.h,v 2.41.1.1 2017/04/19 17:20:42 roberto Exp $
+     ** Lua virtual machine
+     ** See Copyright Notice in lua.h
+     */
     /*
-    ** You can define LUA_FLOORN2I if you want to convert floats to integers
-    ** by flooring them (instead of raising an error if they are not
-    ** integral values)
-    */
+     ** You can define LUA_FLOORN2I if you want to convert floats to integers
+     ** by flooring them (instead of raising an error if they are not
+     ** integral values)
+     */
     /*
-    ** fast track for 'gettable': if 't' is a table and 't[k]' is not nil,
-    ** return 1 with 'slot' pointing to 't[k]' (final result).  Otherwise,
-    ** return 0 (meaning it will have to check metamethod) with 'slot'
-    ** pointing to a nil 't[k]' (if 't' is a table) or NULL (otherwise).
-    ** 'f' is the raw get function to use.
-    */
+     ** fast track for 'gettable': if 't' is a table and 't[k]' is not nil,
+     ** return 1 with 'slot' pointing to 't[k]' (final result).  Otherwise,
+     ** return 0 (meaning it will have to check metamethod) with 'slot'
+     ** pointing to a nil 't[k]' (if 't' is a table) or NULL (otherwise).
+     ** 'f' is the raw get function to use.
+     */
     /* not a table; 'slot' is NULL and result is 0 */
     /* else, do raw access */
     /* result not nil? */
     /*
-    ** standard implementation for 'gettable'
-    */
+     ** standard implementation for 'gettable'
+     */
     /*
-    ** Fast track for set table. If 't' is a table and 't[k]' is not nil,
-    ** call GC barrier, do a raw 't[k]=v', and return true; otherwise,
-    ** return false with 'slot' equal to NULL (if 't' is not a table) or
-    ** 'nil'. (This is needed by 'luaV_finishget'.) Note that, if the macro
-    ** returns true, there is no need to 'invalidateTMcache', because the
-    ** call is not creating a new entry.
-    */
+     ** Fast track for set table. If 't' is a table and 't[k]' is not nil,
+     ** call GC barrier, do a raw 't[k]=v', and return true; otherwise,
+     ** return false with 'slot' equal to NULL (if 't' is not a table) or
+     ** 'nil'. (This is needed by 'luaV_finishget'.) Note that, if the macro
+     ** returns true, there is no need to 'invalidateTMcache', because the
+     ** call is not creating a new entry.
+     */
     #[no_mangle]
     fn luaV_equalobj(L: *mut lua_State, t1: *const TValue, t2: *const TValue) -> libc::c_int;
     #[no_mangle]
@@ -123,15 +123,15 @@ extern "C" {
     #[no_mangle]
     fn luaF_newCclosure(L: *mut lua_State, nelems: libc::c_int) -> *mut CClosure;
     /*
-    ** $Id: ltable.h,v 2.23.1.2 2018/05/24 19:39:05 roberto Exp $
-    ** Lua tables (hash)
-    ** See Copyright Notice in lua.h
-    */
+     ** $Id: ltable.h,v 2.23.1.2 2018/05/24 19:39:05 roberto Exp $
+     ** Lua tables (hash)
+     ** See Copyright Notice in lua.h
+     */
     /* 'const' to avoid wrong writings that can mess up field 'next' */
     /*
-    ** writable version of 'gkey'; allows updates to individual fields,
-    ** but not to the whole (which has incompatible type)
-    */
+     ** writable version of 'gkey'; allows updates to individual fields,
+     ** but not to the whole (which has incompatible type)
+     */
     /* true when 't' is using 'dummynode' as its hash part */
     /* allocated size for hash nodes */
     /* returns the key, given the value of a table entry */
@@ -287,7 +287,7 @@ pub struct lua_State {
     pub allowhook: lu_byte,
 }
 /* 16-bit ints */
- /* }{ */
+/* }{ */
 /* } */
 /* chars used as small naturals (so that 'char' is reserved for characters) */
 pub type lu_byte = libc::c_uchar;
@@ -552,7 +552,7 @@ pub type lu_mem = size_t;
 /* call is running a Lua function */
 /* call is running a debug hook */
 /* call is running on a fresh invocation
-                                   of luaV_execute */
+of luaV_execute */
 /* call is a yieldable protected call */
 /* call was tail called */
 /* last hook called yielded */
@@ -904,17 +904,14 @@ pub struct Zio {
 ** RCS ident string
 */
 #[no_mangle]
-pub static mut lua_ident: [libc::c_char; 129] = unsafe {
-    [
-        36, 76, 117, 97, 86, 101, 114, 115, 105, 111, 110, 58, 32, 76, 117, 97, 32, 53, 46, 51, 46,
-        53, 32, 32, 67, 111, 112, 121, 114, 105, 103, 104, 116, 32, 40, 67, 41, 32, 49, 57, 57, 52,
-        45, 50, 48, 49, 56, 32, 76, 117, 97, 46, 111, 114, 103, 44, 32, 80, 85, 67, 45, 82, 105,
-        111, 32, 36, 36, 76, 117, 97, 65, 117, 116, 104, 111, 114, 115, 58, 32, 82, 46, 32, 73,
-        101, 114, 117, 115, 97, 108, 105, 109, 115, 99, 104, 121, 44, 32, 76, 46, 32, 72, 46, 32,
-        100, 101, 32, 70, 105, 103, 117, 101, 105, 114, 101, 100, 111, 44, 32, 87, 46, 32, 67, 101,
-        108, 101, 115, 32, 36, 0,
-    ]
-};
+pub static mut lua_ident: [libc::c_char; 129] = [
+    36, 76, 117, 97, 86, 101, 114, 115, 105, 111, 110, 58, 32, 76, 117, 97, 32, 53, 46, 51, 46, 53,
+    32, 32, 67, 111, 112, 121, 114, 105, 103, 104, 116, 32, 40, 67, 41, 32, 49, 57, 57, 52, 45, 50,
+    48, 49, 56, 32, 76, 117, 97, 46, 111, 114, 103, 44, 32, 80, 85, 67, 45, 82, 105, 111, 32, 36,
+    36, 76, 117, 97, 65, 117, 116, 104, 111, 114, 115, 58, 32, 82, 46, 32, 73, 101, 114, 117, 115,
+    97, 108, 105, 109, 115, 99, 104, 121, 44, 32, 76, 46, 32, 72, 46, 32, 100, 101, 32, 70, 105,
+    103, 117, 101, 105, 114, 101, 100, 111, 44, 32, 87, 46, 32, 67, 101, 108, 101, 115, 32, 36, 0,
+];
 #[no_mangle]
 pub unsafe extern "C" fn lua_atpanic(
     mut L: *mut lua_State,
@@ -927,7 +924,7 @@ pub unsafe extern "C" fn lua_atpanic(
 }
 #[no_mangle]
 pub unsafe extern "C" fn lua_version(mut L: *mut lua_State) -> *const lua_Number {
-    static mut version: lua_Number = unsafe { 503i32 as lua_Number };
+    static mut version: lua_Number = { 503i32 as lua_Number };
     if L.is_null() {
         return &version;
     } else {
@@ -1043,7 +1040,7 @@ pub unsafe extern "C" fn lua_rotate(
 ** Reverse the stack segment from 'from' to 'to'
 ** (auxiliary to 'lua_rotate')
 */
-unsafe extern "C" fn reverse(mut L: *mut lua_State, mut from: StkId, mut to: StkId) -> () {
+unsafe extern "C" fn reverse(mut _L: *mut lua_State, mut from: StkId, mut to: StkId) -> () {
     while from < to {
         let mut temp: TValue = lua_TValue {
             value_: Value {
@@ -1079,7 +1076,8 @@ pub unsafe extern "C" fn lua_copy(
             && 0 != (*((*(*(*L).ci).func).value_.gc as *mut GCUnion))
                 .cl
                 .c
-                .marked as libc::c_int & 1i32 << 2i32
+                .marked as libc::c_int
+                & 1i32 << 2i32
             && 0 != (*(*fr).value_.gc).marked as libc::c_int & (1i32 << 0i32 | 1i32 << 1i32)
         {
             luaC_barrier_(
@@ -1205,7 +1203,7 @@ pub unsafe extern "C" fn lua_type(mut L: *mut lua_State, mut idx: libc::c_int) -
 }
 #[no_mangle]
 pub unsafe extern "C" fn lua_typename(
-    mut L: *mut lua_State,
+    mut _L: *mut lua_State,
     mut t: libc::c_int,
 ) -> *const libc::c_char {
     return luaT_typenames_[(t + 1i32) as usize];
@@ -1365,7 +1363,7 @@ pub unsafe extern "C" fn lua_topointer(
                 as *const libc::c_void
         }
         22 => {
-            return ((*o).value_.f.unwrap() as size_t) as *mut libc::c_void
+            return ((*o).value_.f.unwrap() as size_t) as *mut libc::c_void;
             // return ::std::mem::transmute::<lua_CFunction, size_t>((*o).value_.f)
             //     as *mut libc::c_void
         }

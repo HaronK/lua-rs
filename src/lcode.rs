@@ -1,47 +1,47 @@
 use libc;
 extern "C" {
     /*
-    ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
-    ** Global State
-    ** See Copyright Notice in lua.h
-    */
+     ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
+     ** Global State
+     ** See Copyright Notice in lua.h
+     */
     /*
-
-** Some notes about garbage-collected objects: All objects in Lua must
-** be kept somehow accessible until being freed, so all objects always
-** belong to one (and only one) of these lists, using field 'next' of
-** the 'CommonHeader' for the link:
-**
-** 'allgc': all objects not marked for finalization;
-** 'finobj': all objects marked for finalization;
-** 'tobefnz': all objects ready to be finalized;
-** 'fixedgc': all objects that are not to be collected (currently
-** only small strings, such as reserved words).
-**
-** Moreover, there is another set of lists that control gray objects.
-** These lists are linked by fields 'gclist'. (All objects that
-** can become gray have such a field. The field is not the same
-** in all objects, but it always has this name.)  Any gray object
-** must belong to one of these lists, and all objects in these lists
-** must be gray:
-**
-** 'gray': regular gray objects, still waiting to be visited.
-** 'grayagain': objects that must be revisited at the atomic phase.
-**   That includes
-**   - black objects got in a write barrier;
-**   - all kinds of weak tables during propagation phase;
-**   - all threads.
-** 'weak': tables with weak values to be cleared;
-** 'ephemeron': ephemeron tables with white->white entries;
-** 'allweak': tables with weak keys and/or weak values to be cleared.
-** The last three lists are used only during the atomic phase.
-
-*/
+    
+    ** Some notes about garbage-collected objects: All objects in Lua must
+    ** be kept somehow accessible until being freed, so all objects always
+    ** belong to one (and only one) of these lists, using field 'next' of
+    ** the 'CommonHeader' for the link:
+    **
+    ** 'allgc': all objects not marked for finalization;
+    ** 'finobj': all objects marked for finalization;
+    ** 'tobefnz': all objects ready to be finalized;
+    ** 'fixedgc': all objects that are not to be collected (currently
+    ** only small strings, such as reserved words).
+    **
+    ** Moreover, there is another set of lists that control gray objects.
+    ** These lists are linked by fields 'gclist'. (All objects that
+    ** can become gray have such a field. The field is not the same
+    ** in all objects, but it always has this name.)  Any gray object
+    ** must belong to one of these lists, and all objects in these lists
+    ** must be gray:
+    **
+    ** 'gray': regular gray objects, still waiting to be visited.
+    ** 'grayagain': objects that must be revisited at the atomic phase.
+    **   That includes
+    **   - black objects got in a write barrier;
+    **   - all kinds of weak tables during propagation phase;
+    **   - all threads.
+    ** 'weak': tables with weak values to be cleared;
+    ** 'ephemeron': ephemeron tables with white->white entries;
+    ** 'allweak': tables with weak keys and/or weak values to be cleared.
+    ** The last three lists are used only during the atomic phase.
+    
+    */
     /* defined in ldo.c */
     pub type lua_longjmp;
     /*
-    ** Lua Upvalues
-    */
+     ** Lua Upvalues
+     */
     pub type UpVal;
     /* control of blocks */
     /* defined in lparser.c */
@@ -74,36 +74,36 @@ extern "C" {
     #[no_mangle]
     fn luaH_set(L: *mut lua_State, t: *mut Table, key: *const TValue) -> *mut TValue;
     /*
-    ** $Id: lvm.h,v 2.41.1.1 2017/04/19 17:20:42 roberto Exp $
-    ** Lua virtual machine
-    ** See Copyright Notice in lua.h
-    */
+     ** $Id: lvm.h,v 2.41.1.1 2017/04/19 17:20:42 roberto Exp $
+     ** Lua virtual machine
+     ** See Copyright Notice in lua.h
+     */
     /*
-    ** You can define LUA_FLOORN2I if you want to convert floats to integers
-    ** by flooring them (instead of raising an error if they are not
-    ** integral values)
-    */
+     ** You can define LUA_FLOORN2I if you want to convert floats to integers
+     ** by flooring them (instead of raising an error if they are not
+     ** integral values)
+     */
     /*
-    ** fast track for 'gettable': if 't' is a table and 't[k]' is not nil,
-    ** return 1 with 'slot' pointing to 't[k]' (final result).  Otherwise,
-    ** return 0 (meaning it will have to check metamethod) with 'slot'
-    ** pointing to a nil 't[k]' (if 't' is a table) or NULL (otherwise).
-    ** 'f' is the raw get function to use.
-    */
+     ** fast track for 'gettable': if 't' is a table and 't[k]' is not nil,
+     ** return 1 with 'slot' pointing to 't[k]' (final result).  Otherwise,
+     ** return 0 (meaning it will have to check metamethod) with 'slot'
+     ** pointing to a nil 't[k]' (if 't' is a table) or NULL (otherwise).
+     ** 'f' is the raw get function to use.
+     */
     /* not a table; 'slot' is NULL and result is 0 */
     /* else, do raw access */
     /* result not nil? */
     /*
-    ** standard implementation for 'gettable'
-    */
+     ** standard implementation for 'gettable'
+     */
     /*
-    ** Fast track for set table. If 't' is a table and 't[k]' is not nil,
-    ** call GC barrier, do a raw 't[k]=v', and return true; otherwise,
-    ** return false with 'slot' equal to NULL (if 't' is not a table) or
-    ** 'nil'. (This is needed by 'luaV_finishget'.) Note that, if the macro
-    ** returns true, there is no need to 'invalidateTMcache', because the
-    ** call is not creating a new entry.
-    */
+     ** Fast track for set table. If 't' is a table and 't[k]' is not nil,
+     ** call GC barrier, do a raw 't[k]=v', and return true; otherwise,
+     ** return false with 'slot' equal to NULL (if 't' is not a table) or
+     ** 'nil'. (This is needed by 'luaV_finishget'.) Note that, if the macro
+     ** returns true, there is no need to 'invalidateTMcache', because the
+     ** call is not creating a new entry.
+     */
     #[no_mangle]
     fn luaV_equalobj(L: *mut lua_State, t1: *const TValue, t2: *const TValue) -> libc::c_int;
     #[no_mangle]
@@ -157,7 +157,7 @@ pub struct lua_State {
     pub allowhook: lu_byte,
 }
 /* 16-bit ints */
- /* }{ */
+/* }{ */
 /* } */
 /* chars used as small naturals (so that 'char' is reserved for characters) */
 pub type lu_byte = libc::c_uchar;
@@ -386,7 +386,7 @@ pub struct GCObject {
 /* call is running a Lua function */
 /* call is running a debug hook */
 /* call is running on a fresh invocation
-                                   of luaV_execute */
+of luaV_execute */
 /* call is a yieldable protected call */
 /* call was tail called */
 /* last hook called yielded */
@@ -681,7 +681,7 @@ pub struct Token {
     pub seminfo: SemInfo,
 }
 /* state of the lexer plus state of the parser when shared by all
-   functions */
+functions */
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct LexState {
@@ -805,7 +805,7 @@ pub const OP_TFORCALL: OpCode = 41;
 /*	A sBx	R(A)-=R(A+2); pc+=sBx				*/
 pub const OP_FORPREP: OpCode = 40;
 /*	A sBx	R(A)+=R(A+2);
-			if R(A) <?= R(A+1) then { pc+=sBx; R(A+3)=R(A) }*/
+?= R(A+1) then { pc+=sBx; R(A+3)=R(A) }*/
 pub const OP_FORLOOP: OpCode = 39;
 /*	A B	return R(A), ... ,R(A+B-2)	(see note)	*/
 pub const OP_RETURN: OpCode = 38;
@@ -908,22 +908,22 @@ pub const VVARARG: expkind = 14;
 /* expression is a function call; info = instruction pc */
 pub const VCALL: expkind = 13;
 /* expression can put result in any register;
-                  info = instruction pc */
+info = instruction pc */
 pub const VRELOCABLE: expkind = 12;
 /* expression is a test/comparison;
-            info = pc of corresponding jump instruction */
+info = pc of corresponding jump instruction */
 pub const VJMP: expkind = 11;
 /* indexed variable;
-                ind.vt = whether 't' is register or upvalue;
-                ind.t = table register or upvalue;
-                ind.idx = key's R/K index */
+ind.vt = whether 't' is register or upvalue;
+ind.t = table register or upvalue;
+ind.idx = key's R/K index */
 pub const VINDEXED: expkind = 10;
 /* upvalue variable; info = index of upvalue in 'upvalues' */
 pub const VUPVAL: expkind = 9;
 /* local variable; info = local register */
 pub const VLOCAL: expkind = 8;
 /* expression has its value in a fixed register;
-                 info = result register */
+info = result register */
 pub const VNONRELOC: expkind = 7;
 /* integer constant; nval = numerical integer value */
 pub const VKINT: expkind = 6;
@@ -938,7 +938,7 @@ pub const VTRUE: expkind = 2;
 /* constant nil */
 pub const VNIL: expkind = 1;
 /* when 'expdesc' describes the last expression a list,
-             this kind means an empty list (so, no expression) */
+this kind means an empty list (so, no expression) */
 pub const VVOID: expkind = 0;
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -1107,7 +1107,8 @@ unsafe extern "C" fn patchlistaux(
 unsafe extern "C" fn getjump(mut fs: *mut FuncState, mut pc: libc::c_int) -> libc::c_int {
     let mut offset: libc::c_int = (*(*(*fs).f).code.offset(pc as isize) >> 0i32 + 6i32 + 8i32
         & !((!(0i32 as Instruction)) << 9i32 + 9i32) << 0i32)
-        as libc::c_int - ((1i32 << 9i32 + 9i32) - 1i32 >> 1i32);
+        as libc::c_int
+        - ((1i32 << 9i32 + 9i32) - 1i32 >> 1i32);
     /* point to itself represents end of list */
     if offset == -1i32 {
         /* end of list */
@@ -1160,8 +1161,9 @@ unsafe extern "C" fn patchtestreg(
         return 0i32;
     } else {
         if reg != (1i32 << 8i32) - 1i32
-            && reg != (*i >> 0i32 + 6i32 + 8i32 + 9i32
-                & !((!(0i32 as Instruction)) << 9i32) << 0i32) as libc::c_int
+            && reg
+                != (*i >> 0i32 + 6i32 + 8i32 + 9i32 & !((!(0i32 as Instruction)) << 9i32) << 0i32)
+                    as libc::c_int
         {
             *i = *i & !(!((!(0i32 as Instruction)) << 8i32) << 0i32 + 6i32)
                 | (reg as Instruction) << 0i32 + 6i32
@@ -1169,10 +1171,12 @@ unsafe extern "C" fn patchtestreg(
         } else {
             *i = (OP_TEST as libc::c_int as Instruction) << 0i32
                 | ((*i >> 0i32 + 6i32 + 8i32 + 9i32 & !((!(0i32 as Instruction)) << 9i32) << 0i32)
-                    as libc::c_int as Instruction) << 0i32 + 6i32
+                    as libc::c_int as Instruction)
+                    << 0i32 + 6i32
                 | (0i32 as Instruction) << 0i32 + 6i32 + 8i32 + 9i32
                 | ((*i >> 0i32 + 6i32 + 8i32 & !((!(0i32 as Instruction)) << 9i32) << 0i32)
-                    as libc::c_int as Instruction) << 0i32 + 6i32 + 8i32
+                    as libc::c_int as Instruction)
+                    << 0i32 + 6i32 + 8i32
         }
         return 1i32;
     };
@@ -1189,8 +1193,9 @@ unsafe extern "C" fn getjumpcontrol(
     let mut pi: *mut Instruction = &mut *(*(*fs).f).code.offset(pc as isize) as *mut Instruction;
     if pc >= 1i32
         && 0 != luaP_opmodes[(*pi.offset(-1isize) >> 0i32
-                                 & !((!(0i32 as Instruction)) << 6i32) << 0i32)
-                                 as OpCode as usize] as libc::c_int & 1i32 << 7i32
+            & !((!(0i32 as Instruction)) << 6i32) << 0i32) as OpCode
+            as usize] as libc::c_int
+            & 1i32 << 7i32
     {
         return pi.offset(-1isize);
     } else {
@@ -1253,7 +1258,8 @@ pub unsafe extern "C" fn luaK_nil(
         /* no jumps to current position? */
         previous = &mut *(*(*fs).f).code.offset(((*fs).pc - 1i32) as isize) as *mut Instruction;
         if (*previous >> 0i32 & !((!(0i32 as Instruction)) << 6i32) << 0i32) as OpCode
-            as libc::c_uint == OP_LOADNIL as libc::c_int as libc::c_uint
+            as libc::c_uint
+            == OP_LOADNIL as libc::c_int as libc::c_uint
         {
             /* previous is LOADNIL? */
             /* get previous range */
@@ -1357,7 +1363,7 @@ unsafe extern "C" fn addk(
     oldsize = (*f).sizek;
     k = (*fs).nk;
     /* numerical value does not need GC barrier;
-     table has no metatable, so it does not need to invalidate cache */
+    table has no metatable, so it does not need to invalidate cache */
     let mut io: *mut TValue = idx;
     (*io).value_.i = k as lua_Integer;
     (*io).tt_ = 3i32 | 1i32 << 4i32;
@@ -1946,7 +1952,8 @@ unsafe extern "C" fn negatecondition(mut fs: *mut FuncState, mut e: *mut expdesc
     let mut pc: *mut Instruction = getjumpcontrol(fs, (*e).u.info);
     *pc = *pc & !(!((!(0i32 as Instruction)) << 8i32) << 0i32 + 6i32)
         | ((0 == (*pc >> 0i32 + 6i32 & !((!(0i32 as Instruction)) << 8i32) << 0i32) as libc::c_int)
-            as libc::c_int as Instruction) << 0i32 + 6i32
+            as libc::c_int as Instruction)
+            << 0i32 + 6i32
             & !((!(0i32 as Instruction)) << 8i32) << 0i32 + 6i32;
 }
 #[no_mangle]
@@ -2082,15 +2089,13 @@ pub unsafe extern "C" fn luaK_prefix(
     mut line: libc::c_int,
 ) -> () {
     let mut current_block: u64;
-    static mut ef: expdesc = unsafe {
-        expdesc {
-            k: VKINT,
-            u: unnamed_5 {
-                ival: 0i32 as lua_Integer,
-            },
-            t: -1i32,
-            f: -1i32,
-        }
+    static mut ef: expdesc = expdesc {
+        k: VKINT,
+        u: unnamed_5 {
+            ival: 0i32 as lua_Integer,
+        },
+        t: -1i32,
+        f: -1i32,
     };
     match op as libc::c_uint {
         0 => {
@@ -2389,7 +2394,8 @@ pub unsafe extern "C" fn luaK_posfix(
             if (*e2).k as libc::c_uint == VRELOCABLE as libc::c_int as libc::c_uint
                 && (*(*(*fs).f).code.offset((*e2).u.info as isize) >> 0i32
                     & !((!(0i32 as Instruction)) << 6i32) << 0i32) as OpCode
-                    as libc::c_uint == OP_CONCAT as libc::c_int as libc::c_uint
+                    as libc::c_uint
+                    == OP_CONCAT as libc::c_int as libc::c_uint
             {
                 freeexp(fs, e1);
                 *(*(*fs).f).code.offset((*e2).u.info as isize) =

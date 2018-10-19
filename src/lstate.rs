@@ -1,42 +1,42 @@
 use libc;
 extern "C" {
     /*
-    ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
-    ** Global State
-    ** See Copyright Notice in lua.h
-    */
+     ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
+     ** Global State
+     ** See Copyright Notice in lua.h
+     */
     /*
-
-** Some notes about garbage-collected objects: All objects in Lua must
-** be kept somehow accessible until being freed, so all objects always
-** belong to one (and only one) of these lists, using field 'next' of
-** the 'CommonHeader' for the link:
-**
-** 'allgc': all objects not marked for finalization;
-** 'finobj': all objects marked for finalization;
-** 'tobefnz': all objects ready to be finalized;
-** 'fixedgc': all objects that are not to be collected (currently
-** only small strings, such as reserved words).
-**
-** Moreover, there is another set of lists that control gray objects.
-** These lists are linked by fields 'gclist'. (All objects that
-** can become gray have such a field. The field is not the same
-** in all objects, but it always has this name.)  Any gray object
-** must belong to one of these lists, and all objects in these lists
-** must be gray:
-**
-** 'gray': regular gray objects, still waiting to be visited.
-** 'grayagain': objects that must be revisited at the atomic phase.
-**   That includes
-**   - black objects got in a write barrier;
-**   - all kinds of weak tables during propagation phase;
-**   - all threads.
-** 'weak': tables with weak values to be cleared;
-** 'ephemeron': ephemeron tables with white->white entries;
-** 'allweak': tables with weak keys and/or weak values to be cleared.
-** The last three lists are used only during the atomic phase.
-
-*/
+    
+    ** Some notes about garbage-collected objects: All objects in Lua must
+    ** be kept somehow accessible until being freed, so all objects always
+    ** belong to one (and only one) of these lists, using field 'next' of
+    ** the 'CommonHeader' for the link:
+    **
+    ** 'allgc': all objects not marked for finalization;
+    ** 'finobj': all objects marked for finalization;
+    ** 'tobefnz': all objects ready to be finalized;
+    ** 'fixedgc': all objects that are not to be collected (currently
+    ** only small strings, such as reserved words).
+    **
+    ** Moreover, there is another set of lists that control gray objects.
+    ** These lists are linked by fields 'gclist'. (All objects that
+    ** can become gray have such a field. The field is not the same
+    ** in all objects, but it always has this name.)  Any gray object
+    ** must belong to one of these lists, and all objects in these lists
+    ** must be gray:
+    **
+    ** 'gray': regular gray objects, still waiting to be visited.
+    ** 'grayagain': objects that must be revisited at the atomic phase.
+    **   That includes
+    **   - black objects got in a write barrier;
+    **   - all kinds of weak tables during propagation phase;
+    **   - all threads.
+    ** 'weak': tables with weak values to be cleared;
+    ** 'ephemeron': ephemeron tables with white->white entries;
+    ** 'allweak': tables with weak keys and/or weak values to be cleared.
+    ** The last three lists are used only during the atomic phase.
+    
+    */
     /* defined in ldo.c */
     pub type lua_longjmp;
     #[no_mangle]
@@ -73,26 +73,26 @@ extern "C" {
         nhsize: libc::c_uint,
     ) -> ();
     /*
-    ** $Id: lmem.h,v 1.43.1.1 2017/04/19 17:20:42 roberto Exp $
-    ** Interface to Memory Manager
-    ** See Copyright Notice in lua.h
-    */
+     ** $Id: lmem.h,v 1.43.1.1 2017/04/19 17:20:42 roberto Exp $
+     ** Interface to Memory Manager
+     ** See Copyright Notice in lua.h
+     */
     /*
-    ** This macro reallocs a vector 'b' from 'on' to 'n' elements, where
-    ** each element has size 'e'. In case of arithmetic overflow of the
-    ** product 'n'*'e', it raises an error (calling 'luaM_toobig'). Because
-    ** 'e' is always constant, it avoids the runtime division MAX_SIZET/(e).
-    **
-    ** (The macro is somewhat complex to avoid warnings:  The 'sizeof'
-    ** comparison avoids a runtime comparison when overflow cannot occur.
-    ** The compiler should be able to optimize the real test by itself, but
-    ** when it does it, it may give a warning about "comparison is always
-    ** false due to limited range of data type"; the +1 tricks the compiler,
-    ** avoiding this warning but also this optimization.)
-    */
+     ** This macro reallocs a vector 'b' from 'on' to 'n' elements, where
+     ** each element has size 'e'. In case of arithmetic overflow of the
+     ** product 'n'*'e', it raises an error (calling 'luaM_toobig'). Because
+     ** 'e' is always constant, it avoids the runtime division MAX_SIZET/(e).
+     **
+     ** (The macro is somewhat complex to avoid warnings:  The 'sizeof'
+     ** comparison avoids a runtime comparison when overflow cannot occur.
+     ** The compiler should be able to optimize the real test by itself, but
+     ** when it does it, it may give a warning about "comparison is always
+     ** false due to limited range of data type"; the +1 tricks the compiler,
+     ** avoiding this warning but also this optimization.)
+     */
     /*
-    ** Arrays of chars do not need any test
-    */
+     ** Arrays of chars do not need any test
+     */
     #[no_mangle]
     fn luaM_toobig(L: *mut lua_State) -> !;
     #[no_mangle]
@@ -100,24 +100,24 @@ extern "C" {
     #[no_mangle]
     fn time(__timer: *mut time_t) -> time_t;
     /*
-    ** $Id: lstring.h,v 1.61.1.1 2017/04/19 17:20:42 roberto Exp $
-    ** String table (keep all strings handled by Lua)
-    ** See Copyright Notice in lua.h
-    */
+     ** $Id: lstring.h,v 1.61.1.1 2017/04/19 17:20:42 roberto Exp $
+     ** String table (keep all strings handled by Lua)
+     ** See Copyright Notice in lua.h
+     */
     /*
-    ** test whether a string is a reserved word
-    */
+     ** test whether a string is a reserved word
+     */
     /*
-    ** equality for short strings, which are always internalized
-    */
+     ** equality for short strings, which are always internalized
+     */
     #[no_mangle]
     fn luaS_hash(str: *const libc::c_char, l: size_t, seed: libc::c_uint) -> libc::c_uint;
     /*
-    ** 'module' operation for hashing (size is always a power of 2)
-    */
+     ** 'module' operation for hashing (size is always a power of 2)
+     */
     /*
-    ** (address of) a fixed nil value
-    */
+     ** (address of) a fixed nil value
+     */
     #[no_mangle]
     static luaO_nilobject_: TValue;
     #[no_mangle]
@@ -172,7 +172,7 @@ pub struct lua_State {
     pub allowhook: lu_byte,
 }
 /* 16-bit ints */
- /* }{ */
+/* }{ */
 /* } */
 /* chars used as small naturals (so that 'char' is reserved for characters) */
 pub type lu_byte = libc::c_uchar;
@@ -437,7 +437,7 @@ pub type lu_mem = size_t;
 /* call is running a Lua function */
 /* call is running a debug hook */
 /* call is running on a fresh invocation
-                                   of luaV_execute */
+of luaV_execute */
 /* call is a yieldable protected call */
 /* call was tail called */
 /* last hook called yielded */
@@ -871,7 +871,7 @@ pub unsafe extern "C" fn luaE_freeCI(mut L: *mut lua_State) -> () {
 ** open parts of the state that may cause memory-allocation errors.
 ** ('g->version' != NULL flags that the state was completely build)
 */
-unsafe extern "C" fn f_luaopen(mut L: *mut lua_State, mut ud: *mut libc::c_void) -> () {
+unsafe extern "C" fn f_luaopen(mut L: *mut lua_State, mut _ud: *mut libc::c_void) -> () {
     let mut g: *mut global_State = (*L).l_G;
     /* init stack */
     stack_init(L, L);

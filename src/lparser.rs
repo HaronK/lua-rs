@@ -1,42 +1,42 @@
 use libc;
 extern "C" {
     /*
-    ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
-    ** Global State
-    ** See Copyright Notice in lua.h
-    */
+     ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
+     ** Global State
+     ** See Copyright Notice in lua.h
+     */
     /*
-
-** Some notes about garbage-collected objects: All objects in Lua must
-** be kept somehow accessible until being freed, so all objects always
-** belong to one (and only one) of these lists, using field 'next' of
-** the 'CommonHeader' for the link:
-**
-** 'allgc': all objects not marked for finalization;
-** 'finobj': all objects marked for finalization;
-** 'tobefnz': all objects ready to be finalized;
-** 'fixedgc': all objects that are not to be collected (currently
-** only small strings, such as reserved words).
-**
-** Moreover, there is another set of lists that control gray objects.
-** These lists are linked by fields 'gclist'. (All objects that
-** can become gray have such a field. The field is not the same
-** in all objects, but it always has this name.)  Any gray object
-** must belong to one of these lists, and all objects in these lists
-** must be gray:
-**
-** 'gray': regular gray objects, still waiting to be visited.
-** 'grayagain': objects that must be revisited at the atomic phase.
-**   That includes
-**   - black objects got in a write barrier;
-**   - all kinds of weak tables during propagation phase;
-**   - all threads.
-** 'weak': tables with weak values to be cleared;
-** 'ephemeron': ephemeron tables with white->white entries;
-** 'allweak': tables with weak keys and/or weak values to be cleared.
-** The last three lists are used only during the atomic phase.
-
-*/
+    
+    ** Some notes about garbage-collected objects: All objects in Lua must
+    ** be kept somehow accessible until being freed, so all objects always
+    ** belong to one (and only one) of these lists, using field 'next' of
+    ** the 'CommonHeader' for the link:
+    **
+    ** 'allgc': all objects not marked for finalization;
+    ** 'finobj': all objects marked for finalization;
+    ** 'tobefnz': all objects ready to be finalized;
+    ** 'fixedgc': all objects that are not to be collected (currently
+    ** only small strings, such as reserved words).
+    **
+    ** Moreover, there is another set of lists that control gray objects.
+    ** These lists are linked by fields 'gclist'. (All objects that
+    ** can become gray have such a field. The field is not the same
+    ** in all objects, but it always has this name.)  Any gray object
+    ** must belong to one of these lists, and all objects in these lists
+    ** must be gray:
+    **
+    ** 'gray': regular gray objects, still waiting to be visited.
+    ** 'grayagain': objects that must be revisited at the atomic phase.
+    **   That includes
+    **   - black objects got in a write barrier;
+    **   - all kinds of weak tables during propagation phase;
+    **   - all threads.
+    ** 'weak': tables with weak values to be cleared;
+    ** 'ephemeron': ephemeron tables with white->white entries;
+    ** 'allweak': tables with weak keys and/or weak values to be cleared.
+    ** The last three lists are used only during the atomic phase.
+    
+    */
     /* defined in ldo.c */
     pub type lua_longjmp;
     /* size of buffer for 'luaO_utf8esc' function */
@@ -45,26 +45,26 @@ extern "C" {
     #[no_mangle]
     fn luaO_pushfstring(L: *mut lua_State, fmt: *const libc::c_char, ...) -> *const libc::c_char;
     /*
-    ** $Id: lmem.h,v 1.43.1.1 2017/04/19 17:20:42 roberto Exp $
-    ** Interface to Memory Manager
-    ** See Copyright Notice in lua.h
-    */
+     ** $Id: lmem.h,v 1.43.1.1 2017/04/19 17:20:42 roberto Exp $
+     ** Interface to Memory Manager
+     ** See Copyright Notice in lua.h
+     */
     /*
-    ** This macro reallocs a vector 'b' from 'on' to 'n' elements, where
-    ** each element has size 'e'. In case of arithmetic overflow of the
-    ** product 'n'*'e', it raises an error (calling 'luaM_toobig'). Because
-    ** 'e' is always constant, it avoids the runtime division MAX_SIZET/(e).
-    **
-    ** (The macro is somewhat complex to avoid warnings:  The 'sizeof'
-    ** comparison avoids a runtime comparison when overflow cannot occur.
-    ** The compiler should be able to optimize the real test by itself, but
-    ** when it does it, it may give a warning about "comparison is always
-    ** false due to limited range of data type"; the +1 tricks the compiler,
-    ** avoiding this warning but also this optimization.)
-    */
+     ** This macro reallocs a vector 'b' from 'on' to 'n' elements, where
+     ** each element has size 'e'. In case of arithmetic overflow of the
+     ** product 'n'*'e', it raises an error (calling 'luaM_toobig'). Because
+     ** 'e' is always constant, it avoids the runtime division MAX_SIZET/(e).
+     **
+     ** (The macro is somewhat complex to avoid warnings:  The 'sizeof'
+     ** comparison avoids a runtime comparison when overflow cannot occur.
+     ** The compiler should be able to optimize the real test by itself, but
+     ** when it does it, it may give a warning about "comparison is always
+     ** false due to limited range of data type"; the +1 tricks the compiler,
+     ** avoiding this warning but also this optimization.)
+     */
     /*
-    ** Arrays of chars do not need any test
-    */
+     ** Arrays of chars do not need any test
+     */
     #[no_mangle]
     fn luaM_toobig(L: *mut lua_State) -> !;
     /* not to be called directly */
@@ -250,7 +250,7 @@ pub struct lua_State {
     pub allowhook: lu_byte,
 }
 /* 16-bit ints */
- /* }{ */
+/* }{ */
 /* } */
 /* chars used as small naturals (so that 'char' is reserved for characters) */
 pub type lu_byte = libc::c_uchar;
@@ -515,7 +515,7 @@ pub type lu_mem = size_t;
 /* call is running a Lua function */
 /* call is running a debug hook */
 /* call is running on a fresh invocation
-                                   of luaV_execute */
+of luaV_execute */
 /* call is a yieldable protected call */
 /* call was tail called */
 /* last hook called yielded */
@@ -873,7 +873,7 @@ pub struct Token {
     pub seminfo: SemInfo,
 }
 /* state of the lexer plus state of the parser when shared by all
-   functions */
+functions */
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct LexState {
@@ -1009,7 +1009,7 @@ pub const OP_TFORCALL: OpCode = 41;
 /*	A sBx	R(A)-=R(A+2); pc+=sBx				*/
 pub const OP_FORPREP: OpCode = 40;
 /*	A sBx	R(A)+=R(A+2);
-			if R(A) <?= R(A+1) then { pc+=sBx; R(A+3)=R(A) }*/
+?= R(A+1) then { pc+=sBx; R(A+3)=R(A) }*/
 pub const OP_FORLOOP: OpCode = 39;
 /*	A B	return R(A), ... ,R(A+B-2)	(see note)	*/
 pub const OP_RETURN: OpCode = 38;
@@ -1112,22 +1112,22 @@ pub const VVARARG: expkind = 14;
 /* expression is a function call; info = instruction pc */
 pub const VCALL: expkind = 13;
 /* expression can put result in any register;
-                  info = instruction pc */
+info = instruction pc */
 pub const VRELOCABLE: expkind = 12;
 /* expression is a test/comparison;
-            info = pc of corresponding jump instruction */
+info = pc of corresponding jump instruction */
 pub const VJMP: expkind = 11;
 /* indexed variable;
-                ind.vt = whether 't' is register or upvalue;
-                ind.t = table register or upvalue;
-                ind.idx = key's R/K index */
+ind.vt = whether 't' is register or upvalue;
+ind.t = table register or upvalue;
+ind.idx = key's R/K index */
 pub const VINDEXED: expkind = 10;
 /* upvalue variable; info = index of upvalue in 'upvalues' */
 pub const VUPVAL: expkind = 9;
 /* local variable; info = local register */
 pub const VLOCAL: expkind = 8;
 /* expression has its value in a fixed register;
-                 info = result register */
+info = result register */
 pub const VNONRELOC: expkind = 7;
 /* integer constant; nval = numerical integer value */
 pub const VKINT: expkind = 6;
@@ -1142,7 +1142,7 @@ pub const VTRUE: expkind = 2;
 /* constant nil */
 pub const VNIL: expkind = 1;
 /* when 'expdesc' describes the last expression a list,
-             this kind means an empty list (so, no expression) */
+this kind means an empty list (so, no expression) */
 pub const VVOID: expkind = 0;
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -1551,7 +1551,7 @@ unsafe extern "C" fn movegotosout(mut fs: *mut FuncState, mut bl: *mut BlockCnt)
     let mut i: libc::c_int = (*bl).firstgoto;
     let mut gl: *mut Labellist = &mut (*(*(*fs).ls).dyd).gt;
     /* correct pending gotos to current block and try to close it
-     with visible labels */
+    with visible labels */
     while i < (*gl).n {
         let mut gt: *mut Labeldesc = &mut *(*gl).arr.offset(i as isize) as *mut Labeldesc;
         if (*gt).nactvar as libc::c_int > (*bl).nactvar as libc::c_int {
@@ -1635,7 +1635,7 @@ unsafe extern "C" fn getlocvar(mut fs: *mut FuncState, mut i: libc::c_int) -> *m
         .actvar
         .arr
         .offset(((*fs).firstlocal + i) as isize))
-        .idx as libc::c_int;
+    .idx as libc::c_int;
     return &mut *(*(*fs).f).locvars.offset(idx as isize) as *mut LocVar;
 }
 unsafe extern "C" fn removevars(mut fs: *mut FuncState, mut tolevel: libc::c_int) -> () {
@@ -2009,94 +2009,92 @@ unsafe extern "C" fn subexpr(
     return op;
 }
 /* ORDER OPR */
-static mut priority: [unnamed_9; 21] = unsafe {
-    [
-        unnamed_9 {
-            left: 10i32 as lu_byte,
-            right: 10i32 as lu_byte,
-        },
-        unnamed_9 {
-            left: 10i32 as lu_byte,
-            right: 10i32 as lu_byte,
-        },
-        unnamed_9 {
-            left: 11i32 as lu_byte,
-            right: 11i32 as lu_byte,
-        },
-        unnamed_9 {
-            left: 11i32 as lu_byte,
-            right: 11i32 as lu_byte,
-        },
-        unnamed_9 {
-            left: 14i32 as lu_byte,
-            right: 13i32 as lu_byte,
-        },
-        unnamed_9 {
-            left: 11i32 as lu_byte,
-            right: 11i32 as lu_byte,
-        },
-        unnamed_9 {
-            left: 11i32 as lu_byte,
-            right: 11i32 as lu_byte,
-        },
-        unnamed_9 {
-            left: 6i32 as lu_byte,
-            right: 6i32 as lu_byte,
-        },
-        unnamed_9 {
-            left: 4i32 as lu_byte,
-            right: 4i32 as lu_byte,
-        },
-        unnamed_9 {
-            left: 5i32 as lu_byte,
-            right: 5i32 as lu_byte,
-        },
-        unnamed_9 {
-            left: 7i32 as lu_byte,
-            right: 7i32 as lu_byte,
-        },
-        unnamed_9 {
-            left: 7i32 as lu_byte,
-            right: 7i32 as lu_byte,
-        },
-        unnamed_9 {
-            left: 9i32 as lu_byte,
-            right: 8i32 as lu_byte,
-        },
-        unnamed_9 {
-            left: 3i32 as lu_byte,
-            right: 3i32 as lu_byte,
-        },
-        unnamed_9 {
-            left: 3i32 as lu_byte,
-            right: 3i32 as lu_byte,
-        },
-        unnamed_9 {
-            left: 3i32 as lu_byte,
-            right: 3i32 as lu_byte,
-        },
-        unnamed_9 {
-            left: 3i32 as lu_byte,
-            right: 3i32 as lu_byte,
-        },
-        unnamed_9 {
-            left: 3i32 as lu_byte,
-            right: 3i32 as lu_byte,
-        },
-        unnamed_9 {
-            left: 3i32 as lu_byte,
-            right: 3i32 as lu_byte,
-        },
-        unnamed_9 {
-            left: 2i32 as lu_byte,
-            right: 2i32 as lu_byte,
-        },
-        unnamed_9 {
-            left: 1i32 as lu_byte,
-            right: 1i32 as lu_byte,
-        },
-    ]
-};
+static mut priority: [unnamed_9; 21] = [
+    unnamed_9 {
+        left: 10i32 as lu_byte,
+        right: 10i32 as lu_byte,
+    },
+    unnamed_9 {
+        left: 10i32 as lu_byte,
+        right: 10i32 as lu_byte,
+    },
+    unnamed_9 {
+        left: 11i32 as lu_byte,
+        right: 11i32 as lu_byte,
+    },
+    unnamed_9 {
+        left: 11i32 as lu_byte,
+        right: 11i32 as lu_byte,
+    },
+    unnamed_9 {
+        left: 14i32 as lu_byte,
+        right: 13i32 as lu_byte,
+    },
+    unnamed_9 {
+        left: 11i32 as lu_byte,
+        right: 11i32 as lu_byte,
+    },
+    unnamed_9 {
+        left: 11i32 as lu_byte,
+        right: 11i32 as lu_byte,
+    },
+    unnamed_9 {
+        left: 6i32 as lu_byte,
+        right: 6i32 as lu_byte,
+    },
+    unnamed_9 {
+        left: 4i32 as lu_byte,
+        right: 4i32 as lu_byte,
+    },
+    unnamed_9 {
+        left: 5i32 as lu_byte,
+        right: 5i32 as lu_byte,
+    },
+    unnamed_9 {
+        left: 7i32 as lu_byte,
+        right: 7i32 as lu_byte,
+    },
+    unnamed_9 {
+        left: 7i32 as lu_byte,
+        right: 7i32 as lu_byte,
+    },
+    unnamed_9 {
+        left: 9i32 as lu_byte,
+        right: 8i32 as lu_byte,
+    },
+    unnamed_9 {
+        left: 3i32 as lu_byte,
+        right: 3i32 as lu_byte,
+    },
+    unnamed_9 {
+        left: 3i32 as lu_byte,
+        right: 3i32 as lu_byte,
+    },
+    unnamed_9 {
+        left: 3i32 as lu_byte,
+        right: 3i32 as lu_byte,
+    },
+    unnamed_9 {
+        left: 3i32 as lu_byte,
+        right: 3i32 as lu_byte,
+    },
+    unnamed_9 {
+        left: 3i32 as lu_byte,
+        right: 3i32 as lu_byte,
+    },
+    unnamed_9 {
+        left: 3i32 as lu_byte,
+        right: 3i32 as lu_byte,
+    },
+    unnamed_9 {
+        left: 2i32 as lu_byte,
+        right: 2i32 as lu_byte,
+    },
+    unnamed_9 {
+        left: 1i32 as lu_byte,
+        right: 1i32 as lu_byte,
+    },
+];
 unsafe extern "C" fn getbinopr(mut op: libc::c_int) -> BinOpr {
     match op {
         43 => return OPR_ADD,
@@ -2125,7 +2123,7 @@ unsafe extern "C" fn getbinopr(mut op: libc::c_int) -> BinOpr {
 }
 unsafe extern "C" fn simpleexp(mut ls: *mut LexState, mut v: *mut expdesc) -> () {
     /* simpleexp -> FLT | INT | STRING | NIL | TRUE | FALSE | ... |
-                  constructor | FUNCTION body | suffixedexp */
+    constructor | FUNCTION body | suffixedexp */
     match (*ls).t.token {
         290 => {
             init_exp(v, VKFLT, 0i32);
@@ -2179,7 +2177,7 @@ unsafe extern "C" fn simpleexp(mut ls: *mut LexState, mut v: *mut expdesc) -> ()
 }
 unsafe extern "C" fn suffixedexp(mut ls: *mut LexState, mut v: *mut expdesc) -> () {
     /* suffixedexp ->
-       primaryexp { '.' NAME | '[' exp ']' | ':' NAME funcargs | funcargs } */
+    primaryexp { '.' NAME | '[' exp ']' | ':' NAME funcargs | funcargs } */
     let mut fs: *mut FuncState = (*ls).fs;
     let mut line: libc::c_int = (*ls).linenumber;
     primaryexp(ls, v);
@@ -2288,7 +2286,7 @@ unsafe extern "C" fn funcargs(
     );
     luaK_fixline(fs, line);
     /* call remove function and arguments and leaves
-                            (unless changed) one result */
+    (unless changed) one result */
     (*fs).freereg = (base + 1i32) as lu_byte;
 }
 unsafe extern "C" fn codestring(
@@ -2300,7 +2298,7 @@ unsafe extern "C" fn codestring(
 }
 unsafe extern "C" fn constructor(mut ls: *mut LexState, mut t: *mut expdesc) -> () {
     /* constructor -> '{' [ field { sep field } [sep] ] '}'
-     sep -> ',' | ';' */
+    sep -> ',' | ';' */
     let mut fs: *mut FuncState = (*ls).fs;
     let mut line: libc::c_int = (*ls).linenumber;
     let mut pc: libc::c_int = luaK_codeABC(fs, OP_NEWTABLE, 0i32, 0i32, 0i32);
@@ -2336,15 +2334,17 @@ unsafe extern "C" fn constructor(mut ls: *mut LexState, mut t: *mut expdesc) -> 
     check_match(ls, '}' as i32, '{' as i32, line);
     lastlistfield(fs, &mut cc);
     /* set initial array size */
-    *(*(*fs).f).code.offset(pc as isize) = *(*(*fs).f).code.offset(pc as isize)
-        & !(!((!(0i32 as Instruction)) << 9i32) << 0i32 + 6i32 + 8i32 + 9i32)
-        | (luaO_int2fb(cc.na as libc::c_uint) as Instruction) << 0i32 + 6i32 + 8i32 + 9i32
-            & !((!(0i32 as Instruction)) << 9i32) << 0i32 + 6i32 + 8i32 + 9i32;
+    *(*(*fs).f).code.offset(pc as isize) =
+        *(*(*fs).f).code.offset(pc as isize)
+            & !(!((!(0i32 as Instruction)) << 9i32) << 0i32 + 6i32 + 8i32 + 9i32)
+            | (luaO_int2fb(cc.na as libc::c_uint) as Instruction) << 0i32 + 6i32 + 8i32 + 9i32
+                & !((!(0i32 as Instruction)) << 9i32) << 0i32 + 6i32 + 8i32 + 9i32;
     /* set initial table size */
-    *(*(*fs).f).code.offset(pc as isize) = *(*(*fs).f).code.offset(pc as isize)
-        & !(!((!(0i32 as Instruction)) << 9i32) << 0i32 + 6i32 + 8i32)
-        | (luaO_int2fb(cc.nh as libc::c_uint) as Instruction) << 0i32 + 6i32 + 8i32
-            & !((!(0i32 as Instruction)) << 9i32) << 0i32 + 6i32 + 8i32;
+    *(*(*fs).f).code.offset(pc as isize) =
+        *(*(*fs).f).code.offset(pc as isize)
+            & !(!((!(0i32 as Instruction)) << 9i32) << 0i32 + 6i32 + 8i32)
+            | (luaO_int2fb(cc.nh as libc::c_uint) as Instruction) << 0i32 + 6i32 + 8i32
+                & !((!(0i32 as Instruction)) << 9i32) << 0i32 + 6i32 + 8i32;
 }
 unsafe extern "C" fn lastlistfield(mut fs: *mut FuncState, mut cc: *mut ConsControl) -> () {
     if (*cc).tostore == 0i32 {

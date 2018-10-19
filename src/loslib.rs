@@ -1,18 +1,18 @@
 use libc;
 extern "C" {
     /*
-    ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
-    ** Lua - A Scripting Language
-    ** Lua.org, PUC-Rio, Brazil (http://www.lua.org)
-    ** See Copyright Notice at the end of this file
-    */
+     ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
+     ** Lua - A Scripting Language
+     ** Lua.org, PUC-Rio, Brazil (http://www.lua.org)
+     ** See Copyright Notice at the end of this file
+     */
     /* mark for precompiled code ('<esc>Lua') */
     /* option for multiple returns in 'lua_pcall' and 'lua_call' */
     /*
-    ** Pseudo-indices
-    ** (-LUAI_MAXSTACK is the minimum valid index; we keep some free empty
-    ** space after that to help overflow detection)
-    */
+     ** Pseudo-indices
+     ** (-LUAI_MAXSTACK is the minimum valid index; we keep some free empty
+     ** space after that to help overflow detection)
+     */
     /* thread status */
     pub type lua_State;
     #[no_mangle]
@@ -223,58 +223,56 @@ pub unsafe extern "C" fn luaopen_os(mut L: *mut lua_State) -> libc::c_int {
     luaL_setfuncs(L, syslib.as_ptr(), 0i32);
     return 1i32;
 }
-static mut syslib: [luaL_Reg; 12] = unsafe {
-    [
-        luaL_Reg {
-            name: b"clock\x00" as *const u8 as *const libc::c_char,
-            func: Some(os_clock),
-        },
-        luaL_Reg {
-            name: b"date\x00" as *const u8 as *const libc::c_char,
-            func: Some(os_date),
-        },
-        luaL_Reg {
-            name: b"difftime\x00" as *const u8 as *const libc::c_char,
-            func: Some(os_difftime),
-        },
-        luaL_Reg {
-            name: b"execute\x00" as *const u8 as *const libc::c_char,
-            func: Some(os_execute),
-        },
-        luaL_Reg {
-            name: b"exit\x00" as *const u8 as *const libc::c_char,
-            func: Some(os_exit),
-        },
-        luaL_Reg {
-            name: b"getenv\x00" as *const u8 as *const libc::c_char,
-            func: Some(os_getenv),
-        },
-        luaL_Reg {
-            name: b"remove\x00" as *const u8 as *const libc::c_char,
-            func: Some(os_remove),
-        },
-        luaL_Reg {
-            name: b"rename\x00" as *const u8 as *const libc::c_char,
-            func: Some(os_rename),
-        },
-        luaL_Reg {
-            name: b"setlocale\x00" as *const u8 as *const libc::c_char,
-            func: Some(os_setlocale),
-        },
-        luaL_Reg {
-            name: b"time\x00" as *const u8 as *const libc::c_char,
-            func: Some(os_time),
-        },
-        luaL_Reg {
-            name: b"tmpname\x00" as *const u8 as *const libc::c_char,
-            func: Some(os_tmpname),
-        },
-        luaL_Reg {
-            name: 0 as *const libc::c_char,
-            func: None,
-        },
-    ]
-};
+static mut syslib: [luaL_Reg; 12] = [
+    luaL_Reg {
+        name: b"clock\x00" as *const u8 as *const libc::c_char,
+        func: Some(os_clock),
+    },
+    luaL_Reg {
+        name: b"date\x00" as *const u8 as *const libc::c_char,
+        func: Some(os_date),
+    },
+    luaL_Reg {
+        name: b"difftime\x00" as *const u8 as *const libc::c_char,
+        func: Some(os_difftime),
+    },
+    luaL_Reg {
+        name: b"execute\x00" as *const u8 as *const libc::c_char,
+        func: Some(os_execute),
+    },
+    luaL_Reg {
+        name: b"exit\x00" as *const u8 as *const libc::c_char,
+        func: Some(os_exit),
+    },
+    luaL_Reg {
+        name: b"getenv\x00" as *const u8 as *const libc::c_char,
+        func: Some(os_getenv),
+    },
+    luaL_Reg {
+        name: b"remove\x00" as *const u8 as *const libc::c_char,
+        func: Some(os_remove),
+    },
+    luaL_Reg {
+        name: b"rename\x00" as *const u8 as *const libc::c_char,
+        func: Some(os_rename),
+    },
+    luaL_Reg {
+        name: b"setlocale\x00" as *const u8 as *const libc::c_char,
+        func: Some(os_setlocale),
+    },
+    luaL_Reg {
+        name: b"time\x00" as *const u8 as *const libc::c_char,
+        func: Some(os_time),
+    },
+    luaL_Reg {
+        name: b"tmpname\x00" as *const u8 as *const libc::c_char,
+        func: Some(os_tmpname),
+    },
+    luaL_Reg {
+        name: 0 as *const libc::c_char,
+        func: None,
+    },
+];
 unsafe extern "C" fn os_tmpname(mut L: *mut lua_State) -> libc::c_int {
     let mut buff: [libc::c_char; 32] = [0; 32];
     let mut err: libc::c_int = 0;
@@ -523,18 +521,16 @@ unsafe extern "C" fn getfield(
 }
 /* }====================================================== */
 unsafe extern "C" fn os_setlocale(mut L: *mut lua_State) -> libc::c_int {
-    static mut cat: [libc::c_int; 6] = unsafe { [6i32, 3i32, 0i32, 4i32, 1i32, 2i32] };
-    static mut catnames: [*const libc::c_char; 7] = unsafe {
-        [
-            b"all\x00" as *const u8 as *const libc::c_char,
-            b"collate\x00" as *const u8 as *const libc::c_char,
-            b"ctype\x00" as *const u8 as *const libc::c_char,
-            b"monetary\x00" as *const u8 as *const libc::c_char,
-            b"numeric\x00" as *const u8 as *const libc::c_char,
-            b"time\x00" as *const u8 as *const libc::c_char,
-            0 as *const libc::c_char,
-        ]
-    };
+    static mut cat: [libc::c_int; 6] = [6i32, 3i32, 0i32, 4i32, 1i32, 2i32];
+    static mut catnames: [*const libc::c_char; 7] = [
+        b"all\x00" as *const u8 as *const libc::c_char,
+        b"collate\x00" as *const u8 as *const libc::c_char,
+        b"ctype\x00" as *const u8 as *const libc::c_char,
+        b"monetary\x00" as *const u8 as *const libc::c_char,
+        b"numeric\x00" as *const u8 as *const libc::c_char,
+        b"time\x00" as *const u8 as *const libc::c_char,
+        0 as *const libc::c_char,
+    ];
     let mut l: *const libc::c_char =
         luaL_optlstring(L, 1i32, 0 as *const libc::c_char, 0 as *mut size_t);
     let mut op: libc::c_int = luaL_checkoption(
@@ -658,12 +654,11 @@ unsafe extern "C" fn os_difftime(mut L: *mut lua_State) -> libc::c_int {
 */
 unsafe extern "C" fn l_checktime(mut L: *mut lua_State, mut arg: libc::c_int) -> time_t {
     let mut t: lua_Integer = luaL_checkinteger(L, arg);
-    (t as time_t as libc::c_longlong == t
-        || 0 != luaL_argerror(
-            L,
-            arg,
-            b"time out-of-bounds\x00" as *const u8 as *const libc::c_char,
-        )) as libc::c_int;
+    (t as time_t as libc::c_longlong == t || 0 != luaL_argerror(
+        L,
+        arg,
+        b"time out-of-bounds\x00" as *const u8 as *const libc::c_char,
+    )) as libc::c_int;
     return t as time_t;
 }
 /* maximum size for an individual 'strftime' item */

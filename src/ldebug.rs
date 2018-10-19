@@ -1,42 +1,42 @@
 use libc;
 extern "C" {
     /*
-    ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
-    ** Global State
-    ** See Copyright Notice in lua.h
-    */
+     ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
+     ** Global State
+     ** See Copyright Notice in lua.h
+     */
     /*
-
-** Some notes about garbage-collected objects: All objects in Lua must
-** be kept somehow accessible until being freed, so all objects always
-** belong to one (and only one) of these lists, using field 'next' of
-** the 'CommonHeader' for the link:
-**
-** 'allgc': all objects not marked for finalization;
-** 'finobj': all objects marked for finalization;
-** 'tobefnz': all objects ready to be finalized;
-** 'fixedgc': all objects that are not to be collected (currently
-** only small strings, such as reserved words).
-**
-** Moreover, there is another set of lists that control gray objects.
-** These lists are linked by fields 'gclist'. (All objects that
-** can become gray have such a field. The field is not the same
-** in all objects, but it always has this name.)  Any gray object
-** must belong to one of these lists, and all objects in these lists
-** must be gray:
-**
-** 'gray': regular gray objects, still waiting to be visited.
-** 'grayagain': objects that must be revisited at the atomic phase.
-**   That includes
-**   - black objects got in a write barrier;
-**   - all kinds of weak tables during propagation phase;
-**   - all threads.
-** 'weak': tables with weak values to be cleared;
-** 'ephemeron': ephemeron tables with white->white entries;
-** 'allweak': tables with weak keys and/or weak values to be cleared.
-** The last three lists are used only during the atomic phase.
-
-*/
+    
+    ** Some notes about garbage-collected objects: All objects in Lua must
+    ** be kept somehow accessible until being freed, so all objects always
+    ** belong to one (and only one) of these lists, using field 'next' of
+    ** the 'CommonHeader' for the link:
+    **
+    ** 'allgc': all objects not marked for finalization;
+    ** 'finobj': all objects marked for finalization;
+    ** 'tobefnz': all objects ready to be finalized;
+    ** 'fixedgc': all objects that are not to be collected (currently
+    ** only small strings, such as reserved words).
+    **
+    ** Moreover, there is another set of lists that control gray objects.
+    ** These lists are linked by fields 'gclist'. (All objects that
+    ** can become gray have such a field. The field is not the same
+    ** in all objects, but it always has this name.)  Any gray object
+    ** must belong to one of these lists, and all objects in these lists
+    ** must be gray:
+    **
+    ** 'gray': regular gray objects, still waiting to be visited.
+    ** 'grayagain': objects that must be revisited at the atomic phase.
+    **   That includes
+    **   - black objects got in a write barrier;
+    **   - all kinds of weak tables during propagation phase;
+    **   - all threads.
+    ** 'weak': tables with weak values to be cleared;
+    ** 'ephemeron': ephemeron tables with white->white entries;
+    ** 'allweak': tables with weak keys and/or weak values to be cleared.
+    ** The last three lists are used only during the atomic phase.
+    
+    */
     /* defined in ldo.c */
     pub type lua_longjmp;
     #[no_mangle]
@@ -138,7 +138,7 @@ pub struct lua_State {
     pub allowhook: lu_byte,
 }
 /* 16-bit ints */
- /* }{ */
+/* }{ */
 /* } */
 /* chars used as small naturals (so that 'char' is reserved for characters) */
 pub type lu_byte = libc::c_uchar;
@@ -403,7 +403,7 @@ pub type lu_mem = size_t;
 /* call is running a Lua function */
 /* call is running a debug hook */
 /* call is running on a fresh invocation
-                                   of luaV_execute */
+of luaV_execute */
 /* call is a yieldable protected call */
 /* call was tail called */
 /* last hook called yielded */
@@ -783,7 +783,7 @@ pub const OP_TFORCALL: OpCode = 41;
 /*	A sBx	R(A)-=R(A+2); pc+=sBx				*/
 pub const OP_FORPREP: OpCode = 40;
 /*	A sBx	R(A)+=R(A+2);
-			if R(A) <?= R(A+1) then { pc+=sBx; R(A+3)=R(A) }*/
+?= R(A+1) then { pc+=sBx; R(A+3)=R(A) }*/
 pub const OP_FORLOOP: OpCode = 39;
 /*	A B	return R(A), ... ,R(A+B-2)	(see note)	*/
 pub const OP_RETURN: OpCode = 38;
@@ -1096,9 +1096,10 @@ unsafe extern "C" fn funcnamefromcode(
             8 | 10 => tm = TM_NEWINDEX,
             13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 => {
                 /* ORDER OP */
-                let mut offset: libc::c_int =
-                    (i >> 0i32 & !((!(0i32 as Instruction)) << 6i32) << 0i32) as OpCode
-                        as libc::c_int - OP_ADD as libc::c_int;
+                let mut offset: libc::c_int = (i >> 0i32
+                    & !((!(0i32 as Instruction)) << 6i32) << 0i32)
+                    as OpCode as libc::c_int
+                    - OP_ADD as libc::c_int;
                 /* ORDER TM */
                 tm = (offset + TM_ADD as libc::c_int) as TMS
             }
@@ -1125,7 +1126,8 @@ unsafe extern "C" fn currentpc(mut ci: *mut CallInfo) -> libc::c_int {
         .l
         .savedpc
         .wrapping_offset_from((*(*((*(*ci).func).value_.gc as *mut GCUnion)).cl.l.p).code)
-        as libc::c_long as libc::c_int - 1i32;
+        as libc::c_long as libc::c_int
+        - 1i32;
 }
 /*
 ** {======================================================
@@ -1320,9 +1322,10 @@ unsafe extern "C" fn findsetreg(
                 }
             }
             30 => {
-                let mut b_0: libc::c_int =
-                    (i >> 0i32 + 6i32 + 8i32 & !((!(0i32 as Instruction)) << 9i32 + 9i32) << 0i32)
-                        as libc::c_int - ((1i32 << 9i32 + 9i32) - 1i32 >> 1i32);
+                let mut b_0: libc::c_int = (i >> 0i32 + 6i32 + 8i32
+                    & !((!(0i32 as Instruction)) << 9i32 + 9i32) << 0i32)
+                    as libc::c_int
+                    - ((1i32 << 9i32 + 9i32) - 1i32 >> 1i32);
                 let mut dest: libc::c_int = pc + 1i32 + b_0;
                 /* jump is forward and do not skip 'lastpc'? */
                 if pc < dest && dest <= lastpc {
@@ -1539,7 +1542,9 @@ pub unsafe extern "C" fn lua_gethookcount(mut L: *mut lua_State) -> libc::c_int 
 // TODO: implement!
 #[macro_export]
 macro_rules! luaG_runerror {
-    ($lua_State:expr, $fmt:expr, $($args:tt)*) => ({ ::std::process::exit(1); });
+    ($lua_State:expr, $fmt:expr, $($args:tt)*) => {{
+        ::std::process::exit(1);
+    }};
 }
 /*
 ** $Id: ldebug.h,v 2.14.1.1 2017/04/19 17:20:42 roberto Exp $
@@ -1550,9 +1555,9 @@ macro_rules! luaG_runerror {
 pub unsafe extern "C" fn luaG_typeerror(
     mut L: *mut lua_State,
     mut o: *const TValue,
-    mut op: *const libc::c_char,
+    mut _op: *const libc::c_char,
 ) -> ! {
-    let mut t: *const libc::c_char = luaT_objtypename(L, o);
+    let mut _t: *const libc::c_char = luaT_objtypename(L, o);
     luaG_runerror!(
         L,
         b"attempt to %s a %s value%s\x00" as *const u8 as *const libc::c_char,
@@ -1709,7 +1714,7 @@ pub unsafe extern "C" fn luaG_opinterror(
 }
 #[no_mangle]
 pub unsafe extern "C" fn luaG_tointerror(
-    mut L: *mut lua_State,
+    mut _L: *mut lua_State,
     mut p1: *const TValue,
     mut p2: *const TValue,
 ) -> ! {
@@ -1779,22 +1784,25 @@ pub unsafe extern "C" fn luaG_traceexec(mut L: *mut lua_State) -> () {
         if 0 != mask as libc::c_int & 1i32 << 2i32 {
             let mut p: *mut Proto = (*((*(*ci).func).value_.gc as *mut GCUnion)).cl.l.p;
             let mut npc: libc::c_int = (*ci).u.l.savedpc.wrapping_offset_from((*p).code)
-                as libc::c_long as libc::c_int - 1i32;
+                as libc::c_long as libc::c_int
+                - 1i32;
             let mut newline: libc::c_int = if !(*p).lineinfo.is_null() {
                 *(*p).lineinfo.offset(npc as isize)
             } else {
                 -1i32
             };
             /* call linehook when enter a new function, */
-            if npc == 0i32 || (*ci).u.l.savedpc <= (*L).oldpc
-                || newline != if !(*p).lineinfo.is_null() {
-                    *(*p).lineinfo.offset(
-                        ((*L).oldpc.wrapping_offset_from((*p).code) as libc::c_long as libc::c_int
-                            - 1i32) as isize,
-                    )
-                } else {
-                    -1i32
-                } {
+            if npc == 0i32 || (*ci).u.l.savedpc <= (*L).oldpc || newline != if !(*p)
+                .lineinfo
+                .is_null()
+            {
+                *(*p).lineinfo.offset(
+                    ((*L).oldpc.wrapping_offset_from((*p).code) as libc::c_long as libc::c_int
+                        - 1i32) as isize,
+                )
+            } else {
+                -1i32
+            } {
                 /* when jump back (loop), or when */
                 /* enter a new line */
                 /* call line hook */

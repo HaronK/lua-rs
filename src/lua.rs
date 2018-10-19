@@ -4,18 +4,18 @@ extern "C" {
     pub type _IO_codecvt;
     pub type _IO_marker;
     /*
-    ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
-    ** Lua - A Scripting Language
-    ** Lua.org, PUC-Rio, Brazil (http://www.lua.org)
-    ** See Copyright Notice at the end of this file
-    */
+     ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
+     ** Lua - A Scripting Language
+     ** Lua.org, PUC-Rio, Brazil (http://www.lua.org)
+     ** See Copyright Notice at the end of this file
+     */
     /* mark for precompiled code ('<esc>Lua') */
     /* option for multiple returns in 'lua_pcall' and 'lua_call' */
     /*
-    ** Pseudo-indices
-    ** (-LUAI_MAXSTACK is the minimum valid index; we keep some free empty
-    ** space after that to help overflow detection)
-    */
+     ** Pseudo-indices
+     ** (-LUAI_MAXSTACK is the minimum valid index; we keep some free empty
+     ** space after that to help overflow detection)
+     */
     /* thread status */
     pub type lua_State;
     /* private part */
@@ -79,8 +79,8 @@ extern "C" {
     #[no_mangle]
     fn lua_pushlightuserdata(L: *mut lua_State, p: *mut libc::c_void) -> ();
     /*
-    ** get functions (Lua -> stack)
-    */
+     ** get functions (Lua -> stack)
+     */
     #[no_mangle]
     fn lua_getglobal(L: *mut lua_State, name: *const libc::c_char) -> libc::c_int;
     #[no_mangle]
@@ -88,8 +88,8 @@ extern "C" {
     #[no_mangle]
     fn lua_createtable(L: *mut lua_State, narr: libc::c_int, nrec: libc::c_int) -> ();
     /*
-    ** set functions (stack -> Lua)
-    */
+     ** set functions (stack -> Lua)
+     */
     #[no_mangle]
     fn lua_setglobal(L: *mut lua_State, name: *const libc::c_char) -> ();
     #[no_mangle]
@@ -280,13 +280,12 @@ pub type lua_Hook = Option<unsafe extern "C" fn(_: *mut lua_State, _: *mut lua_D
 /* }{ */
 /* } */
 /* } */
-static mut globalL: *mut lua_State = unsafe { 0 as *const lua_State as *mut lua_State };
-static mut progname: *const libc::c_char =
-    unsafe { b"lua\x00" as *const u8 as *const libc::c_char };
+static mut globalL: *mut lua_State = 0 as *const lua_State as *mut lua_State;
+static mut progname: *const libc::c_char = b"lua\x00" as *const u8 as *const libc::c_char;
 /*
 ** Hook set by signal function to stop the interpreter.
 */
-unsafe extern "C" fn lstop(mut L: *mut lua_State, mut ar: *mut lua_Debug) -> () {
+unsafe extern "C" fn lstop(mut L: *mut lua_State, mut _ar: *mut lua_Debug) -> () {
     /* unused arg. */
     /* reset hook */
     lua_sethook(L, None, 0i32, 0i32);
@@ -550,9 +549,10 @@ unsafe extern "C" fn incomplete(mut L: *mut lua_State, mut status: libc::c_int) 
     if status == 3i32 {
         let mut lmsg: size_t = 0;
         let mut msg: *const libc::c_char = lua_tolstring(L, -1i32, &mut lmsg);
-        if lmsg >= (::std::mem::size_of::<[libc::c_char; 6]>() as libc::c_ulong)
-            .wrapping_div(::std::mem::size_of::<libc::c_char>() as libc::c_ulong)
-            .wrapping_sub(1i32 as libc::c_ulong)
+        if lmsg
+            >= (::std::mem::size_of::<[libc::c_char; 6]>() as libc::c_ulong)
+                .wrapping_div(::std::mem::size_of::<libc::c_char>() as libc::c_ulong)
+                .wrapping_sub(1i32 as libc::c_ulong)
             && strcmp(
                 msg.offset(lmsg as isize).offset(
                     -((::std::mem::size_of::<[libc::c_char; 6]>() as libc::c_ulong)

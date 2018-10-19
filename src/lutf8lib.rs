@@ -1,18 +1,18 @@
 use libc;
 extern "C" {
     /*
-    ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
-    ** Lua - A Scripting Language
-    ** Lua.org, PUC-Rio, Brazil (http://www.lua.org)
-    ** See Copyright Notice at the end of this file
-    */
+     ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
+     ** Lua - A Scripting Language
+     ** Lua.org, PUC-Rio, Brazil (http://www.lua.org)
+     ** See Copyright Notice at the end of this file
+     */
     /* mark for precompiled code ('<esc>Lua') */
     /* option for multiple returns in 'lua_pcall' and 'lua_call' */
     /*
-    ** Pseudo-indices
-    ** (-LUAI_MAXSTACK is the minimum valid index; we keep some free empty
-    ** space after that to help overflow detection)
-    */
+     ** Pseudo-indices
+     ** (-LUAI_MAXSTACK is the minimum valid index; we keep some free empty
+     ** space after that to help overflow detection)
+     */
     /* thread status */
     pub type lua_State;
     #[no_mangle]
@@ -22,8 +22,8 @@ extern "C" {
     #[no_mangle]
     fn lua_tointegerx(L: *mut lua_State, idx: libc::c_int, isnum: *mut libc::c_int) -> lua_Integer;
     /*
-    ** push functions (C -> stack)
-    */
+     ** push functions (C -> stack)
+     */
     #[no_mangle]
     fn lua_pushnil(L: *mut lua_State) -> ();
     #[no_mangle]
@@ -152,38 +152,36 @@ pub unsafe extern "C" fn luaopen_utf8(mut L: *mut lua_State) -> libc::c_int {
     return 1i32;
 }
 /* pattern to match a single UTF-8 character */
-static mut funcs: [luaL_Reg; 7] = unsafe {
-    [
-        luaL_Reg {
-            name: b"offset\x00" as *const u8 as *const libc::c_char,
-            func: Some(byteoffset),
-        },
-        luaL_Reg {
-            name: b"codepoint\x00" as *const u8 as *const libc::c_char,
-            func: Some(codepoint),
-        },
-        luaL_Reg {
-            name: b"char\x00" as *const u8 as *const libc::c_char,
-            func: Some(utfchar),
-        },
-        luaL_Reg {
-            name: b"len\x00" as *const u8 as *const libc::c_char,
-            func: Some(utflen),
-        },
-        luaL_Reg {
-            name: b"codes\x00" as *const u8 as *const libc::c_char,
-            func: Some(iter_codes),
-        },
-        luaL_Reg {
-            name: b"charpattern\x00" as *const u8 as *const libc::c_char,
-            func: None,
-        },
-        luaL_Reg {
-            name: 0 as *const libc::c_char,
-            func: None,
-        },
-    ]
-};
+static mut funcs: [luaL_Reg; 7] = [
+    luaL_Reg {
+        name: b"offset\x00" as *const u8 as *const libc::c_char,
+        func: Some(byteoffset),
+    },
+    luaL_Reg {
+        name: b"codepoint\x00" as *const u8 as *const libc::c_char,
+        func: Some(codepoint),
+    },
+    luaL_Reg {
+        name: b"char\x00" as *const u8 as *const libc::c_char,
+        func: Some(utfchar),
+    },
+    luaL_Reg {
+        name: b"len\x00" as *const u8 as *const libc::c_char,
+        func: Some(utflen),
+    },
+    luaL_Reg {
+        name: b"codes\x00" as *const u8 as *const libc::c_char,
+        func: Some(iter_codes),
+    },
+    luaL_Reg {
+        name: b"charpattern\x00" as *const u8 as *const libc::c_char,
+        func: None,
+    },
+    luaL_Reg {
+        name: 0 as *const libc::c_char,
+        func: None,
+    },
+];
 unsafe extern "C" fn iter_codes(mut L: *mut lua_State) -> libc::c_int {
     luaL_checklstring(L, 1i32, 0 as *mut size_t);
     lua_pushcclosure(L, Some(iter_aux), 0i32);
@@ -233,14 +231,12 @@ unsafe extern "C" fn utf8_decode(
     mut o: *const libc::c_char,
     mut val: *mut libc::c_int,
 ) -> *const libc::c_char {
-    static mut limits: [libc::c_uint; 4] = unsafe {
-        [
-            0xffi32 as libc::c_uint,
-            0x7fi32 as libc::c_uint,
-            0x7ffi32 as libc::c_uint,
-            0xffffi32 as libc::c_uint,
-        ]
-    };
+    static mut limits: [libc::c_uint; 4] = [
+        0xffi32 as libc::c_uint,
+        0x7fi32 as libc::c_uint,
+        0x7ffi32 as libc::c_uint,
+        0xffffi32 as libc::c_uint,
+    ];
     let mut s: *const libc::c_uchar = o as *const libc::c_uchar;
     let mut c: libc::c_uint = *s.offset(0isize) as libc::c_uint;
     /* final result */
@@ -296,19 +292,17 @@ unsafe extern "C" fn utflen(mut L: *mut lua_State) -> libc::c_int {
     (1i32 as libc::c_longlong <= posi && {
         posi -= 1;
         posi <= len as lua_Integer
-    }
-        || 0 != luaL_argerror(
-            L,
-            2i32,
-            b"initial position out of string\x00" as *const u8 as *const libc::c_char,
-        )) as libc::c_int;
+    } || 0 != luaL_argerror(
+        L,
+        2i32,
+        b"initial position out of string\x00" as *const u8 as *const libc::c_char,
+    )) as libc::c_int;
     posj -= 1;
-    (posj < len as lua_Integer
-        || 0 != luaL_argerror(
-            L,
-            3i32,
-            b"final position out of string\x00" as *const u8 as *const libc::c_char,
-        )) as libc::c_int;
+    (posj < len as lua_Integer || 0 != luaL_argerror(
+        L,
+        3i32,
+        b"final position out of string\x00" as *const u8 as *const libc::c_char,
+    )) as libc::c_int;
     while posi <= posj {
         let mut s1: *const libc::c_char =
             utf8_decode(s.offset(posi as isize), 0 as *mut libc::c_int);
@@ -397,18 +391,16 @@ unsafe extern "C" fn codepoint(mut L: *mut lua_State) -> libc::c_int {
     let mut pose: lua_Integer = u_posrelat(luaL_optinteger(L, 3i32, posi), len);
     let mut n: libc::c_int = 0;
     let mut se: *const libc::c_char = 0 as *const libc::c_char;
-    (posi >= 1i32 as libc::c_longlong
-        || 0 != luaL_argerror(
-            L,
-            2i32,
-            b"out of range\x00" as *const u8 as *const libc::c_char,
-        )) as libc::c_int;
-    (pose <= len as lua_Integer
-        || 0 != luaL_argerror(
-            L,
-            3i32,
-            b"out of range\x00" as *const u8 as *const libc::c_char,
-        )) as libc::c_int;
+    (posi >= 1i32 as libc::c_longlong || 0 != luaL_argerror(
+        L,
+        2i32,
+        b"out of range\x00" as *const u8 as *const libc::c_char,
+    )) as libc::c_int;
+    (pose <= len as lua_Integer || 0 != luaL_argerror(
+        L,
+        3i32,
+        b"out of range\x00" as *const u8 as *const libc::c_char,
+    )) as libc::c_int;
     if posi > pose {
         /* empty interval; return no values */
         return 0i32;
@@ -460,12 +452,11 @@ unsafe extern "C" fn byteoffset(mut L: *mut lua_State) -> libc::c_int {
     (1i32 as libc::c_longlong <= posi && {
         posi -= 1;
         posi <= len as lua_Integer
-    }
-        || 0 != luaL_argerror(
-            L,
-            3i32,
-            b"position out of range\x00" as *const u8 as *const libc::c_char,
-        )) as libc::c_int;
+    } || 0 != luaL_argerror(
+        L,
+        3i32,
+        b"position out of range\x00" as *const u8 as *const libc::c_char,
+    )) as libc::c_int;
     if n == 0i32 as libc::c_longlong {
         /* find beginning of current byte sequence */
         while posi > 0i32 as libc::c_longlong

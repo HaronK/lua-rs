@@ -1,18 +1,18 @@
 use libc;
 extern "C" {
     /*
-    ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
-    ** Lua - A Scripting Language
-    ** Lua.org, PUC-Rio, Brazil (http://www.lua.org)
-    ** See Copyright Notice at the end of this file
-    */
+     ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
+     ** Lua - A Scripting Language
+     ** Lua.org, PUC-Rio, Brazil (http://www.lua.org)
+     ** See Copyright Notice at the end of this file
+     */
     /* mark for precompiled code ('<esc>Lua') */
     /* option for multiple returns in 'lua_pcall' and 'lua_call' */
     /*
-    ** Pseudo-indices
-    ** (-LUAI_MAXSTACK is the minimum valid index; we keep some free empty
-    ** space after that to help overflow detection)
-    */
+     ** Pseudo-indices
+     ** (-LUAI_MAXSTACK is the minimum valid index; we keep some free empty
+     ** space after that to help overflow detection)
+     */
     /* thread status */
     pub type lua_State;
     /* private part */
@@ -46,8 +46,8 @@ extern "C" {
     #[no_mangle]
     fn lua_createtable(L: *mut lua_State, narr: libc::c_int, nrec: libc::c_int) -> ();
     /*
-    ** coroutine functions
-    */
+     ** coroutine functions
+     */
     #[no_mangle]
     fn lua_yieldk(
         L: *mut lua_State,
@@ -62,8 +62,8 @@ extern "C" {
     #[no_mangle]
     fn lua_isyieldable(L: *mut lua_State) -> libc::c_int;
     /*
-    ** miscellaneous functions
-    */
+     ** miscellaneous functions
+     */
     #[no_mangle]
     fn lua_error(L: *mut lua_State) -> libc::c_int;
     #[no_mangle]
@@ -181,42 +181,40 @@ pub unsafe extern "C" fn luaopen_coroutine(mut L: *mut lua_State) -> libc::c_int
     luaL_setfuncs(L, co_funcs.as_ptr(), 0i32);
     return 1i32;
 }
-static mut co_funcs: [luaL_Reg; 8] = unsafe {
-    [
-        luaL_Reg {
-            name: b"create\x00" as *const u8 as *const libc::c_char,
-            func: Some(luaB_cocreate),
-        },
-        luaL_Reg {
-            name: b"resume\x00" as *const u8 as *const libc::c_char,
-            func: Some(luaB_coresume),
-        },
-        luaL_Reg {
-            name: b"running\x00" as *const u8 as *const libc::c_char,
-            func: Some(luaB_corunning),
-        },
-        luaL_Reg {
-            name: b"status\x00" as *const u8 as *const libc::c_char,
-            func: Some(luaB_costatus),
-        },
-        luaL_Reg {
-            name: b"wrap\x00" as *const u8 as *const libc::c_char,
-            func: Some(luaB_cowrap),
-        },
-        luaL_Reg {
-            name: b"yield\x00" as *const u8 as *const libc::c_char,
-            func: Some(luaB_yield),
-        },
-        luaL_Reg {
-            name: b"isyieldable\x00" as *const u8 as *const libc::c_char,
-            func: Some(luaB_yieldable),
-        },
-        luaL_Reg {
-            name: 0 as *const libc::c_char,
-            func: None,
-        },
-    ]
-};
+static mut co_funcs: [luaL_Reg; 8] = [
+    luaL_Reg {
+        name: b"create\x00" as *const u8 as *const libc::c_char,
+        func: Some(luaB_cocreate),
+    },
+    luaL_Reg {
+        name: b"resume\x00" as *const u8 as *const libc::c_char,
+        func: Some(luaB_coresume),
+    },
+    luaL_Reg {
+        name: b"running\x00" as *const u8 as *const libc::c_char,
+        func: Some(luaB_corunning),
+    },
+    luaL_Reg {
+        name: b"status\x00" as *const u8 as *const libc::c_char,
+        func: Some(luaB_costatus),
+    },
+    luaL_Reg {
+        name: b"wrap\x00" as *const u8 as *const libc::c_char,
+        func: Some(luaB_cowrap),
+    },
+    luaL_Reg {
+        name: b"yield\x00" as *const u8 as *const libc::c_char,
+        func: Some(luaB_yield),
+    },
+    luaL_Reg {
+        name: b"isyieldable\x00" as *const u8 as *const libc::c_char,
+        func: Some(luaB_yieldable),
+    },
+    luaL_Reg {
+        name: 0 as *const libc::c_char,
+        func: None,
+    },
+];
 unsafe extern "C" fn luaB_yieldable(mut L: *mut lua_State) -> libc::c_int {
     lua_pushboolean(L, lua_isyieldable(L));
     return 1i32;
@@ -354,12 +352,11 @@ unsafe extern "C" fn luaB_costatus(mut L: *mut lua_State) -> libc::c_int {
 */
 unsafe extern "C" fn getco(mut L: *mut lua_State) -> *mut lua_State {
     let mut co: *mut lua_State = lua_tothread(L, 1i32);
-    (!co.is_null()
-        || 0 != luaL_argerror(
-            L,
-            1i32,
-            b"thread expected\x00" as *const u8 as *const libc::c_char,
-        )) as libc::c_int;
+    (!co.is_null() || 0 != luaL_argerror(
+        L,
+        1i32,
+        b"thread expected\x00" as *const u8 as *const libc::c_char,
+    )) as libc::c_int;
     return co;
 }
 unsafe extern "C" fn luaB_corunning(mut L: *mut lua_State) -> libc::c_int {

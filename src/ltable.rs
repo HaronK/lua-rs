@@ -1,81 +1,81 @@
 use libc;
 extern "C" {
     /*
-    ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
-    ** Global State
-    ** See Copyright Notice in lua.h
-    */
+     ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
+     ** Global State
+     ** See Copyright Notice in lua.h
+     */
     /*
-
-** Some notes about garbage-collected objects: All objects in Lua must
-** be kept somehow accessible until being freed, so all objects always
-** belong to one (and only one) of these lists, using field 'next' of
-** the 'CommonHeader' for the link:
-**
-** 'allgc': all objects not marked for finalization;
-** 'finobj': all objects marked for finalization;
-** 'tobefnz': all objects ready to be finalized;
-** 'fixedgc': all objects that are not to be collected (currently
-** only small strings, such as reserved words).
-**
-** Moreover, there is another set of lists that control gray objects.
-** These lists are linked by fields 'gclist'. (All objects that
-** can become gray have such a field. The field is not the same
-** in all objects, but it always has this name.)  Any gray object
-** must belong to one of these lists, and all objects in these lists
-** must be gray:
-**
-** 'gray': regular gray objects, still waiting to be visited.
-** 'grayagain': objects that must be revisited at the atomic phase.
-**   That includes
-**   - black objects got in a write barrier;
-**   - all kinds of weak tables during propagation phase;
-**   - all threads.
-** 'weak': tables with weak values to be cleared;
-** 'ephemeron': ephemeron tables with white->white entries;
-** 'allweak': tables with weak keys and/or weak values to be cleared.
-** The last three lists are used only during the atomic phase.
-
-*/
+    
+    ** Some notes about garbage-collected objects: All objects in Lua must
+    ** be kept somehow accessible until being freed, so all objects always
+    ** belong to one (and only one) of these lists, using field 'next' of
+    ** the 'CommonHeader' for the link:
+    **
+    ** 'allgc': all objects not marked for finalization;
+    ** 'finobj': all objects marked for finalization;
+    ** 'tobefnz': all objects ready to be finalized;
+    ** 'fixedgc': all objects that are not to be collected (currently
+    ** only small strings, such as reserved words).
+    **
+    ** Moreover, there is another set of lists that control gray objects.
+    ** These lists are linked by fields 'gclist'. (All objects that
+    ** can become gray have such a field. The field is not the same
+    ** in all objects, but it always has this name.)  Any gray object
+    ** must belong to one of these lists, and all objects in these lists
+    ** must be gray:
+    **
+    ** 'gray': regular gray objects, still waiting to be visited.
+    ** 'grayagain': objects that must be revisited at the atomic phase.
+    **   That includes
+    **   - black objects got in a write barrier;
+    **   - all kinds of weak tables during propagation phase;
+    **   - all threads.
+    ** 'weak': tables with weak values to be cleared;
+    ** 'ephemeron': ephemeron tables with white->white entries;
+    ** 'allweak': tables with weak keys and/or weak values to be cleared.
+    ** The last three lists are used only during the atomic phase.
+    
+    */
     /* defined in ldo.c */
     pub type lua_longjmp;
     /*
-    ** Lua Upvalues
-    */
+     ** Lua Upvalues
+     */
     pub type UpVal;
     #[no_mangle]
     fn frexp(_: libc::c_double, _: *mut libc::c_int) -> libc::c_double;
     /*
-    ** 'module' operation for hashing (size is always a power of 2)
-    */
+     ** 'module' operation for hashing (size is always a power of 2)
+     */
     /*
-    ** (address of) a fixed nil value
-    */
+     ** (address of) a fixed nil value
+     */
     #[no_mangle]
     static luaO_nilobject_: TValue;
     #[no_mangle]
     fn luaO_ceillog2(x: libc::c_uint) -> libc::c_int;
     /*
-    ** $Id: lmem.h,v 1.43.1.1 2017/04/19 17:20:42 roberto Exp $
-    ** Interface to Memory Manager
-    ** See Copyright Notice in lua.h
-    */
+     ** $Id: lmem.h,v 1.43.1.1 2017/04/19 17:20:42 roberto Exp $
+     ** Interface to Memory Manager
+     ** See Copyright Notice in lua.h
+     */
     /*
-    ** This macro reallocs a vector 'b' from 'on' to 'n' elements, where
-    ** each element has size 'e'. In case of arithmetic overflow of the
-    ** product 'n'*'e', it raises an error (calling 'luaM_toobig'). Because
-    ** 'e' is always constant, it avoids the runtime division MAX_SIZET/(e).
-    **
-    ** (The macro is somewhat complex to avoid warnings:  The 'sizeof'
-    ** comparison avoids a runtime comparison when overflow cannot occur.
-    ** The compiler should be able to optimize the real test by itself, but
-    ** when it does it, it may give a warning about "comparison is always
-    ** false due to limited range of data type"; the +1 tricks the compiler,
-    ** avoiding this warning but also this optimization.)
-    */
+     ** This macro reallocs a vector 'b' from 'on' to 'n' elements, where
+     ** each element has size 'e'. In case of arithmetic overflow of the
+     ** product 'n'*'e', it raises an error (calling 'luaM_toobig'). Because
+     ** 'e' is always constant, it avoids the runtime division MAX_SIZET/(e).
+     **
+     ** (The macro is somewhat complex to avoid warnings:  The 'sizeof'
+     ** comparison avoids a runtime comparison when overflow cannot occur.
+     ** The compiler should be able to optimize the real test by itself, but
+     ** when it does it, it may give a warning about "comparison is always
+     ** false due to limited range of data type"; the +1 tricks the compiler,
+     ** avoiding this warning but also this optimization.)
+     */
     /*
-    ** Arrays of chars do not need any test
-    */
+     ** Arrays of chars do not need any test
+     */
     #[no_mangle]
     fn luaM_toobig(L: *mut lua_State) -> !;
     /* not to be called directly */
@@ -99,36 +99,36 @@ extern "C" {
     #[no_mangle]
     fn luaS_hashlongstr(ts: *mut TString) -> libc::c_uint;
     /*
-    ** $Id: lvm.h,v 2.41.1.1 2017/04/19 17:20:42 roberto Exp $
-    ** Lua virtual machine
-    ** See Copyright Notice in lua.h
-    */
+     ** $Id: lvm.h,v 2.41.1.1 2017/04/19 17:20:42 roberto Exp $
+     ** Lua virtual machine
+     ** See Copyright Notice in lua.h
+     */
     /*
-    ** You can define LUA_FLOORN2I if you want to convert floats to integers
-    ** by flooring them (instead of raising an error if they are not
-    ** integral values)
-    */
+     ** You can define LUA_FLOORN2I if you want to convert floats to integers
+     ** by flooring them (instead of raising an error if they are not
+     ** integral values)
+     */
     /*
-    ** fast track for 'gettable': if 't' is a table and 't[k]' is not nil,
-    ** return 1 with 'slot' pointing to 't[k]' (final result).  Otherwise,
-    ** return 0 (meaning it will have to check metamethod) with 'slot'
-    ** pointing to a nil 't[k]' (if 't' is a table) or NULL (otherwise).
-    ** 'f' is the raw get function to use.
-    */
+     ** fast track for 'gettable': if 't' is a table and 't[k]' is not nil,
+     ** return 1 with 'slot' pointing to 't[k]' (final result).  Otherwise,
+     ** return 0 (meaning it will have to check metamethod) with 'slot'
+     ** pointing to a nil 't[k]' (if 't' is a table) or NULL (otherwise).
+     ** 'f' is the raw get function to use.
+     */
     /* not a table; 'slot' is NULL and result is 0 */
     /* else, do raw access */
     /* result not nil? */
     /*
-    ** standard implementation for 'gettable'
-    */
+     ** standard implementation for 'gettable'
+     */
     /*
-    ** Fast track for set table. If 't' is a table and 't[k]' is not nil,
-    ** call GC barrier, do a raw 't[k]=v', and return true; otherwise,
-    ** return false with 'slot' equal to NULL (if 't' is not a table) or
-    ** 'nil'. (This is needed by 'luaV_finishget'.) Note that, if the macro
-    ** returns true, there is no need to 'invalidateTMcache', because the
-    ** call is not creating a new entry.
-    */
+     ** Fast track for set table. If 't' is a table and 't[k]' is not nil,
+     ** call GC barrier, do a raw 't[k]=v', and return true; otherwise,
+     ** return false with 'slot' equal to NULL (if 't' is not a table) or
+     ** 'nil'. (This is needed by 'luaV_finishget'.) Note that, if the macro
+     ** returns true, there is no need to 'invalidateTMcache', because the
+     ** call is not creating a new entry.
+     */
     #[no_mangle]
     fn luaV_equalobj(L: *mut lua_State, t1: *const TValue, t2: *const TValue) -> libc::c_int;
     #[no_mangle]
@@ -182,7 +182,7 @@ pub struct lua_State {
     pub allowhook: lu_byte,
 }
 /* 16-bit ints */
- /* }{ */
+/* }{ */
 /* } */
 /* chars used as small naturals (so that 'char' is reserved for characters) */
 pub type lu_byte = libc::c_uchar;
@@ -411,7 +411,7 @@ pub struct GCObject {
 /* call is running a Lua function */
 /* call is running a debug hook */
 /* call is running on a fresh invocation
-                                   of luaV_execute */
+of luaV_execute */
 /* call is a yieldable protected call */
 /* call was tail called */
 /* last hook called yielded */
@@ -728,7 +728,8 @@ pub unsafe extern "C" fn luaH_getint(mut t: *mut Table, mut key: lua_Integer) ->
             if (*(&mut (*n).i_key.tvk as *mut TValue as *const TValue)).tt_ == 3i32 | 1i32 << 4i32
                 && (*(&mut (*n).i_key.tvk as *mut TValue as *const TValue))
                     .value_
-                    .i == key
+                    .i
+                    == key
             {
                 /* that's it */
                 return &mut (*n).i_val;
@@ -941,7 +942,7 @@ unsafe extern "C" fn mainposition(mut t: *const Table, mut key: *const TValue) -
                     .wrapping_rem(
                         ((1i32 << (*t).lsizenode as libc::c_int) - 1i32 | 1i32) as libc::c_uint,
                     ) as isize,
-            ) as *mut Node
+            ) as *mut Node;
         }
         _ => {
             return &mut *(*t).node.offset(
@@ -976,10 +977,11 @@ unsafe extern "C" fn l_hashfloat(mut n: lua_Number) -> libc::c_int {
     let mut ni: lua_Integer = 0;
     n = frexp(n, &mut i) * -((-2147483647i32 - 1i32) as lua_Number);
     if !(n >= (-9223372036854775807i64 - 1i64) as libc::c_double
-        && n < -((-9223372036854775807i64 - 1i64) as libc::c_double) && {
-        ni = n as libc::c_longlong;
-        0 != 1i32
-    }) {
+        && n < -((-9223372036854775807i64 - 1i64) as libc::c_double)
+        && {
+            ni = n as libc::c_longlong;
+            0 != 1i32
+        }) {
         /* is 'n' inf/-inf/NaN? */
         return 0i32;
     } else {
@@ -1091,9 +1093,10 @@ unsafe extern "C" fn rehash(mut L: *mut lua_State, mut t: *mut Table, mut ek: *c
     let mut i: libc::c_int = 0;
     let mut totaluse: libc::c_int = 0;
     i = 0i32;
-    while i <= (::std::mem::size_of::<libc::c_int>() as libc::c_ulong)
-        .wrapping_mul(8i32 as libc::c_ulong)
-        .wrapping_sub(1i32 as libc::c_ulong) as libc::c_int
+    while i
+        <= (::std::mem::size_of::<libc::c_int>() as libc::c_ulong)
+            .wrapping_mul(8i32 as libc::c_ulong)
+            .wrapping_sub(1i32 as libc::c_ulong) as libc::c_int
     {
         /* reset counts */
         nums[i as usize] = 0i32 as libc::c_uint;
@@ -1194,7 +1197,7 @@ pub unsafe extern "C" fn luaH_resize(
             let mut old: *mut Node = nold.offset(j as isize);
             if !((*old).i_val.tt_ == 0i32) {
                 /* doesn't need barrier/invalidate cache, as entry was
-         already present in the table */
+                already present in the table */
                 let mut io1: *mut TValue =
                     luaH_set(L, t, &mut (*old).i_key.tvk as *mut TValue as *const TValue);
                 *io1 = (*old).i_val
@@ -1264,7 +1267,8 @@ unsafe extern "C" fn setnodevector(
         if lsize
             > (::std::mem::size_of::<libc::c_int>() as libc::c_ulong)
                 .wrapping_mul(8i32 as libc::c_ulong)
-                .wrapping_sub(1i32 as libc::c_ulong) as libc::c_int - 1i32
+                .wrapping_sub(1i32 as libc::c_ulong) as libc::c_int
+                - 1i32
         {
             luaG_runerror(L, b"table overflow\x00" as *const u8 as *const libc::c_char);
         } else {
@@ -1331,24 +1335,22 @@ unsafe extern "C" fn setnodevector(
 ** for some types, it is better to avoid modulus by power of 2, as
 ** they tend to have many 2 factors.
 */
-static mut dummynode_: Node = unsafe {
-    Node {
-        i_val: lua_TValue {
+static mut dummynode_: Node = Node {
+    i_val: lua_TValue {
+        value_: Value {
+            gc: 0 as *const GCObject as *mut GCObject,
+        },
+        tt_: 0i32,
+    },
+    i_key: TKey {
+        nk: unnamed_3 {
             value_: Value {
                 gc: 0 as *const GCObject as *mut GCObject,
             },
             tt_: 0i32,
+            next: 0i32,
         },
-        i_key: TKey {
-            nk: unnamed_3 {
-                value_: Value {
-                    gc: 0 as *const GCObject as *mut GCObject,
-                },
-                tt_: 0i32,
-                next: 0i32,
-            },
-        },
-    }
+    },
 };
 /*
 ** {=============================================================
@@ -1416,9 +1418,10 @@ unsafe extern "C" fn arrayindex(mut key: *const TValue) -> libc::c_uint {
         let mut k: lua_Integer = (*key).value_.i;
         if (0i32 as libc::c_longlong) < k
             && k as lua_Unsigned
-                <= (1u32 << (::std::mem::size_of::<libc::c_int>() as libc::c_ulong)
-                    .wrapping_mul(8i32 as libc::c_ulong)
-                    .wrapping_sub(1i32 as libc::c_ulong) as libc::c_int)
+                <= (1u32
+                    << (::std::mem::size_of::<libc::c_int>() as libc::c_ulong)
+                        .wrapping_mul(8i32 as libc::c_ulong)
+                        .wrapping_sub(1i32 as libc::c_ulong) as libc::c_int)
                     as libc::c_ulonglong
         {
             /* 'key' is an appropriate array index */
@@ -1470,9 +1473,10 @@ unsafe extern "C" fn numusearray(mut t: *const Table, mut nums: *mut libc::c_uin
     /* traverse each slice */
     lg = 0i32;
     ttlg = 1i32 as libc::c_uint;
-    while lg <= (::std::mem::size_of::<libc::c_int>() as libc::c_ulong)
-        .wrapping_mul(8i32 as libc::c_ulong)
-        .wrapping_sub(1i32 as libc::c_ulong) as libc::c_int
+    while lg
+        <= (::std::mem::size_of::<libc::c_int>() as libc::c_ulong)
+            .wrapping_mul(8i32 as libc::c_ulong)
+            .wrapping_sub(1i32 as libc::c_ulong) as libc::c_int
     {
         /* counter */
         let mut lc: libc::c_uint = 0i32 as libc::c_uint;
@@ -1490,7 +1494,7 @@ unsafe extern "C" fn numusearray(mut t: *const Table, mut nums: *mut libc::c_uin
             if !((*(*t)
                 .array
                 .offset(i.wrapping_sub(1i32 as libc::c_uint) as isize))
-                .tt_ == 0i32)
+            .tt_ == 0i32)
             {
                 lc = lc.wrapping_add(1)
             }
@@ -1643,13 +1647,12 @@ unsafe extern "C" fn findindex(
                     0 as *mut lua_State,
                     &mut (*n).i_key.tvk as *mut TValue as *const TValue,
                     key as *const TValue,
-                )
-                    || (*(&mut (*n).i_key.tvk as *mut TValue as *const TValue)).tt_ == 9i32 + 1i32
-                        && 0 != (*key).tt_ & 1i32 << 6i32
-                        && (*(&mut (*n).i_key.tvk as *mut TValue as *const TValue))
-                            .value_
-                            .gc as *mut libc::c_void
-                            == (*key).value_.gc as *mut libc::c_void
+                ) || (*(&mut (*n).i_key.tvk as *mut TValue as *const TValue)).tt_ == 9i32 + 1i32
+                    && 0 != (*key).tt_ & 1i32 << 6i32
+                    && (*(&mut (*n).i_key.tvk as *mut TValue as *const TValue))
+                        .value_
+                        .gc as *mut libc::c_void
+                        == (*key).value_.gc as *mut libc::c_void
                 {
                     /* key index in hash table */
                     i = n.wrapping_offset_from(&mut *(*t).node.offset(0isize) as *mut Node)
@@ -1681,7 +1684,7 @@ pub unsafe extern "C" fn luaH_getn(mut t: *mut Table) -> lua_Unsigned {
         && (*(*t)
             .array
             .offset(j.wrapping_sub(1i32 as libc::c_uint) as isize))
-            .tt_ == 0i32
+        .tt_ == 0i32
     {
         /* there is a boundary in the array part: (binary) search for it */
         let mut i: libc::c_uint = 0i32 as libc::c_uint;
@@ -1690,7 +1693,7 @@ pub unsafe extern "C" fn luaH_getn(mut t: *mut Table) -> lua_Unsigned {
             if (*(*t)
                 .array
                 .offset(m.wrapping_sub(1i32 as libc::c_uint) as isize))
-                .tt_ == 0i32
+            .tt_ == 0i32
             {
                 j = m
             } else {

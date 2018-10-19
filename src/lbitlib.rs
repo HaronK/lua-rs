@@ -1,18 +1,18 @@
 use libc;
 extern "C" {
     /*
-    ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
-    ** Lua - A Scripting Language
-    ** Lua.org, PUC-Rio, Brazil (http://www.lua.org)
-    ** See Copyright Notice at the end of this file
-    */
+     ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
+     ** Lua - A Scripting Language
+     ** Lua.org, PUC-Rio, Brazil (http://www.lua.org)
+     ** See Copyright Notice at the end of this file
+     */
     /* mark for precompiled code ('<esc>Lua') */
     /* option for multiple returns in 'lua_pcall' and 'lua_call' */
     /*
-    ** Pseudo-indices
-    ** (-LUAI_MAXSTACK is the minimum valid index; we keep some free empty
-    ** space after that to help overflow detection)
-    */
+     ** Pseudo-indices
+     ** (-LUAI_MAXSTACK is the minimum valid index; we keep some free empty
+     ** space after that to help overflow detection)
+     */
     /* thread status */
     pub type lua_State;
     #[no_mangle]
@@ -89,62 +89,60 @@ pub unsafe extern "C" fn luaopen_bit32(mut L: *mut lua_State) -> libc::c_int {
     luaL_setfuncs(L, bitlib.as_ptr(), 0i32);
     return 1i32;
 }
-static mut bitlib: [luaL_Reg; 13] = unsafe {
-    [
-        luaL_Reg {
-            name: b"arshift\x00" as *const u8 as *const libc::c_char,
-            func: Some(b_arshift),
-        },
-        luaL_Reg {
-            name: b"band\x00" as *const u8 as *const libc::c_char,
-            func: Some(b_and),
-        },
-        luaL_Reg {
-            name: b"bnot\x00" as *const u8 as *const libc::c_char,
-            func: Some(b_not),
-        },
-        luaL_Reg {
-            name: b"bor\x00" as *const u8 as *const libc::c_char,
-            func: Some(b_or),
-        },
-        luaL_Reg {
-            name: b"bxor\x00" as *const u8 as *const libc::c_char,
-            func: Some(b_xor),
-        },
-        luaL_Reg {
-            name: b"btest\x00" as *const u8 as *const libc::c_char,
-            func: Some(b_test),
-        },
-        luaL_Reg {
-            name: b"extract\x00" as *const u8 as *const libc::c_char,
-            func: Some(b_extract),
-        },
-        luaL_Reg {
-            name: b"lrotate\x00" as *const u8 as *const libc::c_char,
-            func: Some(b_lrot),
-        },
-        luaL_Reg {
-            name: b"lshift\x00" as *const u8 as *const libc::c_char,
-            func: Some(b_lshift),
-        },
-        luaL_Reg {
-            name: b"replace\x00" as *const u8 as *const libc::c_char,
-            func: Some(b_replace),
-        },
-        luaL_Reg {
-            name: b"rrotate\x00" as *const u8 as *const libc::c_char,
-            func: Some(b_rrot),
-        },
-        luaL_Reg {
-            name: b"rshift\x00" as *const u8 as *const libc::c_char,
-            func: Some(b_rshift),
-        },
-        luaL_Reg {
-            name: 0 as *const libc::c_char,
-            func: None,
-        },
-    ]
-};
+static mut bitlib: [luaL_Reg; 13] = [
+    luaL_Reg {
+        name: b"arshift\x00" as *const u8 as *const libc::c_char,
+        func: Some(b_arshift),
+    },
+    luaL_Reg {
+        name: b"band\x00" as *const u8 as *const libc::c_char,
+        func: Some(b_and),
+    },
+    luaL_Reg {
+        name: b"bnot\x00" as *const u8 as *const libc::c_char,
+        func: Some(b_not),
+    },
+    luaL_Reg {
+        name: b"bor\x00" as *const u8 as *const libc::c_char,
+        func: Some(b_or),
+    },
+    luaL_Reg {
+        name: b"bxor\x00" as *const u8 as *const libc::c_char,
+        func: Some(b_xor),
+    },
+    luaL_Reg {
+        name: b"btest\x00" as *const u8 as *const libc::c_char,
+        func: Some(b_test),
+    },
+    luaL_Reg {
+        name: b"extract\x00" as *const u8 as *const libc::c_char,
+        func: Some(b_extract),
+    },
+    luaL_Reg {
+        name: b"lrotate\x00" as *const u8 as *const libc::c_char,
+        func: Some(b_lrot),
+    },
+    luaL_Reg {
+        name: b"lshift\x00" as *const u8 as *const libc::c_char,
+        func: Some(b_lshift),
+    },
+    luaL_Reg {
+        name: b"replace\x00" as *const u8 as *const libc::c_char,
+        func: Some(b_replace),
+    },
+    luaL_Reg {
+        name: b"rrotate\x00" as *const u8 as *const libc::c_char,
+        func: Some(b_rrot),
+    },
+    luaL_Reg {
+        name: b"rshift\x00" as *const u8 as *const libc::c_char,
+        func: Some(b_rshift),
+    },
+    luaL_Reg {
+        name: 0 as *const libc::c_char,
+        func: None,
+    },
+];
 unsafe extern "C" fn b_rshift(mut L: *mut lua_State) -> libc::c_int {
     return b_shift(
         L,
@@ -222,18 +220,16 @@ unsafe extern "C" fn fieldargs(
 ) -> libc::c_int {
     let mut f: lua_Integer = luaL_checkinteger(L, farg);
     let mut w: lua_Integer = luaL_optinteger(L, farg + 1i32, 1i32 as lua_Integer);
-    (0i32 as libc::c_longlong <= f
-        || 0 != luaL_argerror(
-            L,
-            farg,
-            b"field cannot be negative\x00" as *const u8 as *const libc::c_char,
-        )) as libc::c_int;
-    ((0i32 as libc::c_longlong) < w
-        || 0 != luaL_argerror(
-            L,
-            farg + 1i32,
-            b"width must be positive\x00" as *const u8 as *const libc::c_char,
-        )) as libc::c_int;
+    (0i32 as libc::c_longlong <= f || 0 != luaL_argerror(
+        L,
+        farg,
+        b"field cannot be negative\x00" as *const u8 as *const libc::c_char,
+    )) as libc::c_int;
+    ((0i32 as libc::c_longlong) < w || 0 != luaL_argerror(
+        L,
+        farg + 1i32,
+        b"width must be positive\x00" as *const u8 as *const libc::c_char,
+    )) as libc::c_int;
     if f + w > 32i32 as libc::c_longlong {
         luaL_error(
             L,
@@ -345,9 +341,10 @@ unsafe extern "C" fn b_arshift(mut L: *mut lua_State) -> libc::c_int {
         if i >= 32i32 as libc::c_longlong {
             r = !((!(0i32 as lua_Unsigned)) << 32i32 - 1i32 << 1i32)
         } else {
-            r = (r >> i
-                | !((!(0i32 as lua_Unsigned) & !((!(0i32 as lua_Unsigned)) << 32i32 - 1i32 << 1i32))
-                    >> i)) & !((!(0i32 as lua_Unsigned)) << 32i32 - 1i32 << 1i32)
+            r = (r >> i | !((!(0i32 as lua_Unsigned)
+                & !((!(0i32 as lua_Unsigned)) << 32i32 - 1i32 << 1i32))
+                >> i))
+                & !((!(0i32 as lua_Unsigned)) << 32i32 - 1i32 << 1i32)
         }
         lua_pushinteger(L, r as lua_Integer);
         return 1i32;

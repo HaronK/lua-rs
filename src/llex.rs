@@ -1,72 +1,72 @@
 use libc;
 extern "C" {
     /*
-    ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
-    ** Global State
-    ** See Copyright Notice in lua.h
-    */
+     ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
+     ** Global State
+     ** See Copyright Notice in lua.h
+     */
     /*
-
-** Some notes about garbage-collected objects: All objects in Lua must
-** be kept somehow accessible until being freed, so all objects always
-** belong to one (and only one) of these lists, using field 'next' of
-** the 'CommonHeader' for the link:
-**
-** 'allgc': all objects not marked for finalization;
-** 'finobj': all objects marked for finalization;
-** 'tobefnz': all objects ready to be finalized;
-** 'fixedgc': all objects that are not to be collected (currently
-** only small strings, such as reserved words).
-**
-** Moreover, there is another set of lists that control gray objects.
-** These lists are linked by fields 'gclist'. (All objects that
-** can become gray have such a field. The field is not the same
-** in all objects, but it always has this name.)  Any gray object
-** must belong to one of these lists, and all objects in these lists
-** must be gray:
-**
-** 'gray': regular gray objects, still waiting to be visited.
-** 'grayagain': objects that must be revisited at the atomic phase.
-**   That includes
-**   - black objects got in a write barrier;
-**   - all kinds of weak tables during propagation phase;
-**   - all threads.
-** 'weak': tables with weak values to be cleared;
-** 'ephemeron': ephemeron tables with white->white entries;
-** 'allweak': tables with weak keys and/or weak values to be cleared.
-** The last three lists are used only during the atomic phase.
-
-*/
+    
+    ** Some notes about garbage-collected objects: All objects in Lua must
+    ** be kept somehow accessible until being freed, so all objects always
+    ** belong to one (and only one) of these lists, using field 'next' of
+    ** the 'CommonHeader' for the link:
+    **
+    ** 'allgc': all objects not marked for finalization;
+    ** 'finobj': all objects marked for finalization;
+    ** 'tobefnz': all objects ready to be finalized;
+    ** 'fixedgc': all objects that are not to be collected (currently
+    ** only small strings, such as reserved words).
+    **
+    ** Moreover, there is another set of lists that control gray objects.
+    ** These lists are linked by fields 'gclist'. (All objects that
+    ** can become gray have such a field. The field is not the same
+    ** in all objects, but it always has this name.)  Any gray object
+    ** must belong to one of these lists, and all objects in these lists
+    ** must be gray:
+    **
+    ** 'gray': regular gray objects, still waiting to be visited.
+    ** 'grayagain': objects that must be revisited at the atomic phase.
+    **   That includes
+    **   - black objects got in a write barrier;
+    **   - all kinds of weak tables during propagation phase;
+    **   - all threads.
+    ** 'weak': tables with weak values to be cleared;
+    ** 'ephemeron': ephemeron tables with white->white entries;
+    ** 'allweak': tables with weak keys and/or weak values to be cleared.
+    ** The last three lists are used only during the atomic phase.
+    
+    */
     /* defined in ldo.c */
     pub type lua_longjmp;
     /*
-    ** Lua Upvalues
-    */
+     ** Lua Upvalues
+     */
     pub type UpVal;
     /* control of blocks */
     /* defined in lparser.c */
     pub type BlockCnt;
     /*
-    ** $Id: lctype.h,v 1.12.1.1 2013/04/12 18:48:47 roberto Exp $
-    ** 'ctype' functions for Lua
-    ** See Copyright Notice in lua.h
-    */
+     ** $Id: lctype.h,v 1.12.1.1 2013/04/12 18:48:47 roberto Exp $
+     ** 'ctype' functions for Lua
+     ** See Copyright Notice in lua.h
+     */
     /*
-    ** WARNING: the functions defined here do not necessarily correspond
-    ** to the similar functions in the standard C ctype.h. They are
-    ** optimized for the specific needs of Lua
-    */
+     ** WARNING: the functions defined here do not necessarily correspond
+     ** to the similar functions in the standard C ctype.h. They are
+     ** optimized for the specific needs of Lua
+     */
     /* ASCII case: can use its own tables; faster and fixed */
     /* { */
     /*
-    ** add 1 to char to allow index -1 (EOZ)
-    */
+     ** add 1 to char to allow index -1 (EOZ)
+     */
     /*
-    ** 'lalpha' (Lua alphabetic) and 'lalnum' (Lua alphanumeric) both include '_'
-    */
+     ** 'lalpha' (Lua alphabetic) and 'lalnum' (Lua alphanumeric) both include '_'
+     */
     /*
-    ** this 'ltolower' only works for alphabetic characters
-    */
+     ** this 'ltolower' only works for alphabetic characters
+     */
     /* two more entries for 0 and -1 (EOZ) */
     #[no_mangle]
     static luai_ctype_: [lu_byte; 257];
@@ -98,37 +98,37 @@ extern "C" {
     #[no_mangle]
     fn luaD_throw(L: *mut lua_State, errcode: libc::c_int) -> !;
     /*
-    ** $Id: lgc.h,v 2.91.1.1 2017/04/19 17:39:34 roberto Exp $
-    ** Garbage Collector
-    ** See Copyright Notice in lua.h
-    */
+     ** $Id: lgc.h,v 2.91.1.1 2017/04/19 17:39:34 roberto Exp $
+     ** Garbage Collector
+     ** See Copyright Notice in lua.h
+     */
     /*
-    ** Collectable objects may have one of three colors: white, which
-    ** means the object is not marked; gray, which means the
-    ** object is marked, but its references may be not marked; and
-    ** black, which means that the object and all its references are marked.
-    ** The main invariant of the garbage collector, while marking objects,
-    ** is that a black object can never point to a white one. Moreover,
-    ** any gray object must be in a "gray list" (gray, grayagain, weak,
-    ** allweak, ephemeron) so that it can be visited again before finishing
-    ** the collection cycle. These lists have no meaning when the invariant
-    ** is not being enforced (e.g., sweep phase).
-    */
+     ** Collectable objects may have one of three colors: white, which
+     ** means the object is not marked; gray, which means the
+     ** object is marked, but its references may be not marked; and
+     ** black, which means that the object and all its references are marked.
+     ** The main invariant of the garbage collector, while marking objects,
+     ** is that a black object can never point to a white one. Moreover,
+     ** any gray object must be in a "gray list" (gray, grayagain, weak,
+     ** allweak, ephemeron) so that it can be visited again before finishing
+     ** the collection cycle. These lists have no meaning when the invariant
+     ** is not being enforced (e.g., sweep phase).
+     */
     /* how much to allocate before next GC step */
     /* ~100 small strings */
     /*
-    ** Possible states of the Garbage Collector
-    */
+     ** Possible states of the Garbage Collector
+     */
     /*
-    ** macro to tell when main invariant (white objects cannot point to black
-    ** ones) must be kept. During a collection, the sweep
-    ** phase may break the invariant, as objects turned white may point to
-    ** still-black objects. The invariant is restored when sweep ends and
-    ** all objects are white again.
-    */
+     ** macro to tell when main invariant (white objects cannot point to black
+     ** ones) must be kept. During a collection, the sweep
+     ** phase may break the invariant, as objects turned white may point to
+     ** still-black objects. The invariant is restored when sweep ends and
+     ** all objects are white again.
+     */
     /*
-    ** some useful bit tricks
-    */
+     ** some useful bit tricks
+     */
     /* Layout for bit use in 'marked' field: */
     /* object is white (type 0) */
     /* object is white (type 1) */
@@ -137,11 +137,11 @@ extern "C" {
     /* bit 7 is currently used by tests (luaL_checkmemory) */
     /* neither white nor black */
     /*
-    ** Does one step of collection when debt becomes positive. 'pre'/'pos'
-    ** allows some adjustments to be done only when needed. macro
-    ** 'condchangemem' is used only for heavy tests (forcing a full
-    ** GC cycle on every opportunity)
-    */
+     ** Does one step of collection when debt becomes positive. 'pre'/'pos'
+     ** allows some adjustments to be done only when needed. macro
+     ** 'condchangemem' is used only for heavy tests (forcing a full
+     ** GC cycle on every opportunity)
+     */
     /* more often than not, 'pre'/'pos' are empty */
     #[no_mangle]
     fn luaC_fix(L: *mut lua_State, o: *mut GCObject) -> ();
@@ -202,7 +202,7 @@ pub struct lua_State {
     pub allowhook: lu_byte,
 }
 /* 16-bit ints */
- /* }{ */
+/* }{ */
 /* } */
 /* chars used as small naturals (so that 'char' is reserved for characters) */
 pub type lu_byte = libc::c_uchar;
@@ -431,7 +431,7 @@ pub struct GCObject {
 /* call is running a Lua function */
 /* call is running a debug hook */
 /* call is running on a fresh invocation
-                                   of luaV_execute */
+of luaV_execute */
 /* call is a yieldable protected call */
 /* call was tail called */
 /* last hook called yielded */
@@ -789,7 +789,7 @@ pub struct Token {
     pub seminfo: SemInfo,
 }
 /* state of the lexer plus state of the parser when shared by all
-   functions */
+functions */
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct LexState {
@@ -893,47 +893,45 @@ pub unsafe extern "C" fn luaX_init(mut L: *mut lua_State) -> () {
 ** See Copyright Notice in lua.h
 */
 /* ORDER RESERVED */
-static mut luaX_tokens: [*const libc::c_char; 37] = unsafe {
-    [
-        b"and\x00" as *const u8 as *const libc::c_char,
-        b"break\x00" as *const u8 as *const libc::c_char,
-        b"do\x00" as *const u8 as *const libc::c_char,
-        b"else\x00" as *const u8 as *const libc::c_char,
-        b"elseif\x00" as *const u8 as *const libc::c_char,
-        b"end\x00" as *const u8 as *const libc::c_char,
-        b"false\x00" as *const u8 as *const libc::c_char,
-        b"for\x00" as *const u8 as *const libc::c_char,
-        b"function\x00" as *const u8 as *const libc::c_char,
-        b"goto\x00" as *const u8 as *const libc::c_char,
-        b"if\x00" as *const u8 as *const libc::c_char,
-        b"in\x00" as *const u8 as *const libc::c_char,
-        b"local\x00" as *const u8 as *const libc::c_char,
-        b"nil\x00" as *const u8 as *const libc::c_char,
-        b"not\x00" as *const u8 as *const libc::c_char,
-        b"or\x00" as *const u8 as *const libc::c_char,
-        b"repeat\x00" as *const u8 as *const libc::c_char,
-        b"return\x00" as *const u8 as *const libc::c_char,
-        b"then\x00" as *const u8 as *const libc::c_char,
-        b"true\x00" as *const u8 as *const libc::c_char,
-        b"until\x00" as *const u8 as *const libc::c_char,
-        b"while\x00" as *const u8 as *const libc::c_char,
-        b"//\x00" as *const u8 as *const libc::c_char,
-        b"..\x00" as *const u8 as *const libc::c_char,
-        b"...\x00" as *const u8 as *const libc::c_char,
-        b"==\x00" as *const u8 as *const libc::c_char,
-        b">=\x00" as *const u8 as *const libc::c_char,
-        b"<=\x00" as *const u8 as *const libc::c_char,
-        b"~=\x00" as *const u8 as *const libc::c_char,
-        b"<<\x00" as *const u8 as *const libc::c_char,
-        b">>\x00" as *const u8 as *const libc::c_char,
-        b"::\x00" as *const u8 as *const libc::c_char,
-        b"<eof>\x00" as *const u8 as *const libc::c_char,
-        b"<number>\x00" as *const u8 as *const libc::c_char,
-        b"<integer>\x00" as *const u8 as *const libc::c_char,
-        b"<name>\x00" as *const u8 as *const libc::c_char,
-        b"<string>\x00" as *const u8 as *const libc::c_char,
-    ]
-};
+static mut luaX_tokens: [*const libc::c_char; 37] = [
+    b"and\x00" as *const u8 as *const libc::c_char,
+    b"break\x00" as *const u8 as *const libc::c_char,
+    b"do\x00" as *const u8 as *const libc::c_char,
+    b"else\x00" as *const u8 as *const libc::c_char,
+    b"elseif\x00" as *const u8 as *const libc::c_char,
+    b"end\x00" as *const u8 as *const libc::c_char,
+    b"false\x00" as *const u8 as *const libc::c_char,
+    b"for\x00" as *const u8 as *const libc::c_char,
+    b"function\x00" as *const u8 as *const libc::c_char,
+    b"goto\x00" as *const u8 as *const libc::c_char,
+    b"if\x00" as *const u8 as *const libc::c_char,
+    b"in\x00" as *const u8 as *const libc::c_char,
+    b"local\x00" as *const u8 as *const libc::c_char,
+    b"nil\x00" as *const u8 as *const libc::c_char,
+    b"not\x00" as *const u8 as *const libc::c_char,
+    b"or\x00" as *const u8 as *const libc::c_char,
+    b"repeat\x00" as *const u8 as *const libc::c_char,
+    b"return\x00" as *const u8 as *const libc::c_char,
+    b"then\x00" as *const u8 as *const libc::c_char,
+    b"true\x00" as *const u8 as *const libc::c_char,
+    b"until\x00" as *const u8 as *const libc::c_char,
+    b"while\x00" as *const u8 as *const libc::c_char,
+    b"//\x00" as *const u8 as *const libc::c_char,
+    b"..\x00" as *const u8 as *const libc::c_char,
+    b"...\x00" as *const u8 as *const libc::c_char,
+    b"==\x00" as *const u8 as *const libc::c_char,
+    b">=\x00" as *const u8 as *const libc::c_char,
+    b"<=\x00" as *const u8 as *const libc::c_char,
+    b"~=\x00" as *const u8 as *const libc::c_char,
+    b"<<\x00" as *const u8 as *const libc::c_char,
+    b">>\x00" as *const u8 as *const libc::c_char,
+    b"::\x00" as *const u8 as *const libc::c_char,
+    b"<eof>\x00" as *const u8 as *const libc::c_char,
+    b"<number>\x00" as *const u8 as *const libc::c_char,
+    b"<integer>\x00" as *const u8 as *const libc::c_char,
+    b"<name>\x00" as *const u8 as *const libc::c_char,
+    b"<string>\x00" as *const u8 as *const libc::c_char,
+];
 #[no_mangle]
 pub unsafe extern "C" fn luaX_setinput(
     mut L: *mut lua_State,
@@ -994,7 +992,7 @@ pub unsafe extern "C" fn luaX_newstring(
     if (*o).tt_ == 0i32 {
         /* not in use yet? */
         /* boolean value does not need GC barrier;
-       table has no metatable, so it does not need to invalidate cache */
+        table has no metatable, so it does not need to invalidate cache */
         /* t[string] = true */
         let mut io_0: *mut TValue = o;
         (*io_0).value_.b = 1i32;
@@ -1266,8 +1264,9 @@ unsafe extern "C" fn llex(mut ls: *mut LexState, mut seminfo: *mut SemInfo) -> l
                         } else {
                             luaZ_fill((*ls).z)
                         };
-                        if !(0 != luai_ctype_[((*ls).current + 1i32) as usize] as libc::c_int
-                            & (1i32 << 0i32 | 1i32 << 1i32))
+                        if !(0
+                            != luai_ctype_[((*ls).current + 1i32) as usize] as libc::c_int
+                                & (1i32 << 0i32 | 1i32 << 1i32))
                         {
                             break;
                         }
@@ -1304,14 +1303,14 @@ unsafe extern "C" fn save(mut ls: *mut LexState, mut c: libc::c_int) -> () {
     let mut b: *mut Mbuffer = (*ls).buff;
     if (*b).n.wrapping_add(1i32 as libc::c_ulong) > (*b).buffsize {
         let mut newsize: size_t = 0;
-        if (*b).buffsize
-            >= if (::std::mem::size_of::<size_t>() as libc::c_ulong)
-                < ::std::mem::size_of::<lua_Integer>() as libc::c_ulong
-            {
-                !(0i32 as size_t)
-            } else {
-                9223372036854775807i64 as size_t
-            }.wrapping_div(2i32 as libc::c_ulong)
+        if (*b).buffsize >= if (::std::mem::size_of::<size_t>() as libc::c_ulong)
+            < ::std::mem::size_of::<lua_Integer>() as libc::c_ulong
+        {
+            !(0i32 as size_t)
+        } else {
+            9223372036854775807i64 as size_t
+        }
+        .wrapping_div(2i32 as libc::c_ulong)
         {
             lexerror(
                 ls,
@@ -1631,8 +1630,9 @@ unsafe extern "C" fn read_string(
                             luaZ_fill((*ls).z)
                         };
                         loop {
-                            if !(0 != luai_ctype_[((*ls).current + 1i32) as usize] as libc::c_int
-                                & 1i32 << 3i32)
+                            if !(0
+                                != luai_ctype_[((*ls).current + 1i32) as usize] as libc::c_int
+                                    & 1i32 << 3i32)
                             {
                                 continue 's_4;
                             }

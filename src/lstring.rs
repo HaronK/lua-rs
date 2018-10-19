@@ -1,47 +1,47 @@
 use libc;
 extern "C" {
     /*
-    ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
-    ** Global State
-    ** See Copyright Notice in lua.h
-    */
+     ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
+     ** Global State
+     ** See Copyright Notice in lua.h
+     */
     /*
-
-** Some notes about garbage-collected objects: All objects in Lua must
-** be kept somehow accessible until being freed, so all objects always
-** belong to one (and only one) of these lists, using field 'next' of
-** the 'CommonHeader' for the link:
-**
-** 'allgc': all objects not marked for finalization;
-** 'finobj': all objects marked for finalization;
-** 'tobefnz': all objects ready to be finalized;
-** 'fixedgc': all objects that are not to be collected (currently
-** only small strings, such as reserved words).
-**
-** Moreover, there is another set of lists that control gray objects.
-** These lists are linked by fields 'gclist'. (All objects that
-** can become gray have such a field. The field is not the same
-** in all objects, but it always has this name.)  Any gray object
-** must belong to one of these lists, and all objects in these lists
-** must be gray:
-**
-** 'gray': regular gray objects, still waiting to be visited.
-** 'grayagain': objects that must be revisited at the atomic phase.
-**   That includes
-**   - black objects got in a write barrier;
-**   - all kinds of weak tables during propagation phase;
-**   - all threads.
-** 'weak': tables with weak values to be cleared;
-** 'ephemeron': ephemeron tables with white->white entries;
-** 'allweak': tables with weak keys and/or weak values to be cleared.
-** The last three lists are used only during the atomic phase.
-
-*/
+    
+    ** Some notes about garbage-collected objects: All objects in Lua must
+    ** be kept somehow accessible until being freed, so all objects always
+    ** belong to one (and only one) of these lists, using field 'next' of
+    ** the 'CommonHeader' for the link:
+    **
+    ** 'allgc': all objects not marked for finalization;
+    ** 'finobj': all objects marked for finalization;
+    ** 'tobefnz': all objects ready to be finalized;
+    ** 'fixedgc': all objects that are not to be collected (currently
+    ** only small strings, such as reserved words).
+    **
+    ** Moreover, there is another set of lists that control gray objects.
+    ** These lists are linked by fields 'gclist'. (All objects that
+    ** can become gray have such a field. The field is not the same
+    ** in all objects, but it always has this name.)  Any gray object
+    ** must belong to one of these lists, and all objects in these lists
+    ** must be gray:
+    **
+    ** 'gray': regular gray objects, still waiting to be visited.
+    ** 'grayagain': objects that must be revisited at the atomic phase.
+    **   That includes
+    **   - black objects got in a write barrier;
+    **   - all kinds of weak tables during propagation phase;
+    **   - all threads.
+    ** 'weak': tables with weak values to be cleared;
+    ** 'ephemeron': ephemeron tables with white->white entries;
+    ** 'allweak': tables with weak keys and/or weak values to be cleared.
+    ** The last three lists are used only during the atomic phase.
+    
+    */
     /* defined in ldo.c */
     pub type lua_longjmp;
     /*
-    ** Lua Upvalues
-    */
+     ** Lua Upvalues
+     */
     pub type UpVal;
     #[no_mangle]
     fn memcpy(_: *mut libc::c_void, _: *const libc::c_void, _: libc::c_ulong) -> *mut libc::c_void;
@@ -52,34 +52,34 @@ extern "C" {
     #[no_mangle]
     fn strlen(_: *const libc::c_char) -> libc::c_ulong;
     /*
-    ** 'module' operation for hashing (size is always a power of 2)
-    */
+     ** 'module' operation for hashing (size is always a power of 2)
+     */
     /*
-    ** (address of) a fixed nil value
-    */
+     ** (address of) a fixed nil value
+     */
     #[no_mangle]
     static luaO_nilobject_: TValue;
     /*
-    ** $Id: lmem.h,v 1.43.1.1 2017/04/19 17:20:42 roberto Exp $
-    ** Interface to Memory Manager
-    ** See Copyright Notice in lua.h
-    */
+     ** $Id: lmem.h,v 1.43.1.1 2017/04/19 17:20:42 roberto Exp $
+     ** Interface to Memory Manager
+     ** See Copyright Notice in lua.h
+     */
     /*
-    ** This macro reallocs a vector 'b' from 'on' to 'n' elements, where
-    ** each element has size 'e'. In case of arithmetic overflow of the
-    ** product 'n'*'e', it raises an error (calling 'luaM_toobig'). Because
-    ** 'e' is always constant, it avoids the runtime division MAX_SIZET/(e).
-    **
-    ** (The macro is somewhat complex to avoid warnings:  The 'sizeof'
-    ** comparison avoids a runtime comparison when overflow cannot occur.
-    ** The compiler should be able to optimize the real test by itself, but
-    ** when it does it, it may give a warning about "comparison is always
-    ** false due to limited range of data type"; the +1 tricks the compiler,
-    ** avoiding this warning but also this optimization.)
-    */
+     ** This macro reallocs a vector 'b' from 'on' to 'n' elements, where
+     ** each element has size 'e'. In case of arithmetic overflow of the
+     ** product 'n'*'e', it raises an error (calling 'luaM_toobig'). Because
+     ** 'e' is always constant, it avoids the runtime division MAX_SIZET/(e).
+     **
+     ** (The macro is somewhat complex to avoid warnings:  The 'sizeof'
+     ** comparison avoids a runtime comparison when overflow cannot occur.
+     ** The compiler should be able to optimize the real test by itself, but
+     ** when it does it, it may give a warning about "comparison is always
+     ** false due to limited range of data type"; the +1 tricks the compiler,
+     ** avoiding this warning but also this optimization.)
+     */
     /*
-    ** Arrays of chars do not need any test
-    */
+     ** Arrays of chars do not need any test
+     */
     #[no_mangle]
     fn luaM_toobig(L: *mut lua_State) -> !;
     /* not to be called directly */
@@ -91,37 +91,37 @@ extern "C" {
         size: size_t,
     ) -> *mut libc::c_void;
     /*
-    ** $Id: lgc.h,v 2.91.1.1 2017/04/19 17:39:34 roberto Exp $
-    ** Garbage Collector
-    ** See Copyright Notice in lua.h
-    */
+     ** $Id: lgc.h,v 2.91.1.1 2017/04/19 17:39:34 roberto Exp $
+     ** Garbage Collector
+     ** See Copyright Notice in lua.h
+     */
     /*
-    ** Collectable objects may have one of three colors: white, which
-    ** means the object is not marked; gray, which means the
-    ** object is marked, but its references may be not marked; and
-    ** black, which means that the object and all its references are marked.
-    ** The main invariant of the garbage collector, while marking objects,
-    ** is that a black object can never point to a white one. Moreover,
-    ** any gray object must be in a "gray list" (gray, grayagain, weak,
-    ** allweak, ephemeron) so that it can be visited again before finishing
-    ** the collection cycle. These lists have no meaning when the invariant
-    ** is not being enforced (e.g., sweep phase).
-    */
+     ** Collectable objects may have one of three colors: white, which
+     ** means the object is not marked; gray, which means the
+     ** object is marked, but its references may be not marked; and
+     ** black, which means that the object and all its references are marked.
+     ** The main invariant of the garbage collector, while marking objects,
+     ** is that a black object can never point to a white one. Moreover,
+     ** any gray object must be in a "gray list" (gray, grayagain, weak,
+     ** allweak, ephemeron) so that it can be visited again before finishing
+     ** the collection cycle. These lists have no meaning when the invariant
+     ** is not being enforced (e.g., sweep phase).
+     */
     /* how much to allocate before next GC step */
     /* ~100 small strings */
     /*
-    ** Possible states of the Garbage Collector
-    */
+     ** Possible states of the Garbage Collector
+     */
     /*
-    ** macro to tell when main invariant (white objects cannot point to black
-    ** ones) must be kept. During a collection, the sweep
-    ** phase may break the invariant, as objects turned white may point to
-    ** still-black objects. The invariant is restored when sweep ends and
-    ** all objects are white again.
-    */
+     ** macro to tell when main invariant (white objects cannot point to black
+     ** ones) must be kept. During a collection, the sweep
+     ** phase may break the invariant, as objects turned white may point to
+     ** still-black objects. The invariant is restored when sweep ends and
+     ** all objects are white again.
+     */
     /*
-    ** some useful bit tricks
-    */
+     ** some useful bit tricks
+     */
     /* Layout for bit use in 'marked' field: */
     /* object is white (type 0) */
     /* object is white (type 1) */
@@ -130,11 +130,11 @@ extern "C" {
     /* bit 7 is currently used by tests (luaL_checkmemory) */
     /* neither white nor black */
     /*
-    ** Does one step of collection when debt becomes positive. 'pre'/'pos'
-    ** allows some adjustments to be done only when needed. macro
-    ** 'condchangemem' is used only for heavy tests (forcing a full
-    ** GC cycle on every opportunity)
-    */
+     ** Does one step of collection when debt becomes positive. 'pre'/'pos'
+     ** allows some adjustments to be done only when needed. macro
+     ** 'condchangemem' is used only for heavy tests (forcing a full
+     ** GC cycle on every opportunity)
+     */
     /* more often than not, 'pre'/'pos' are empty */
     #[no_mangle]
     fn luaC_fix(L: *mut lua_State, o: *mut GCObject) -> ();
@@ -189,7 +189,7 @@ pub struct lua_State {
     pub allowhook: lu_byte,
 }
 /* 16-bit ints */
- /* }{ */
+/* }{ */
 /* } */
 /* chars used as small naturals (so that 'char' is reserved for characters) */
 pub type lu_byte = libc::c_uchar;
@@ -418,7 +418,7 @@ pub struct GCObject {
 /* call is running a Lua function */
 /* call is running a debug hook */
 /* call is running on a fresh invocation
-                                   of luaV_execute */
+of luaV_execute */
 /* call is a yieldable protected call */
 /* call was tail called */
 /* last hook called yielded */
@@ -915,8 +915,9 @@ pub unsafe extern "C" fn luaS_newlstr(
             !(0i32 as size_t)
         } else {
             9223372036854775807i64 as size_t
-        }.wrapping_sub(::std::mem::size_of::<TString>() as libc::c_ulong)
-            .wrapping_div(::std::mem::size_of::<libc::c_char>() as libc::c_ulong)
+        }
+        .wrapping_sub(::std::mem::size_of::<TString>() as libc::c_ulong)
+        .wrapping_div(::std::mem::size_of::<libc::c_char>() as libc::c_ulong)
         {
             luaM_toobig(L);
         } else {
@@ -1058,7 +1059,8 @@ pub unsafe extern "C" fn luaS_newudata(mut L: *mut lua_State, mut s: size_t) -> 
         !(0i32 as size_t)
     } else {
         9223372036854775807i64 as size_t
-    }.wrapping_sub(::std::mem::size_of::<Udata>() as libc::c_ulong)
+    }
+    .wrapping_sub(::std::mem::size_of::<Udata>() as libc::c_ulong)
     {
         luaM_toobig(L);
     } else {
