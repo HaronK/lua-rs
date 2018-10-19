@@ -307,6 +307,11 @@ pub type lua_Alloc = Option<
 ** Debug API
 ** =======================================================================
 */
+// TODO: implement!
+#[macro_export]
+macro_rules! luaL_error {
+    ($lua_State:expr, $fmt:expr, $($args:tt)*) => ({ 0 });
+}
 /*
 ** Event codes
 */
@@ -408,19 +413,19 @@ pub unsafe extern "C" fn luaL_checkversion_(
         .wrapping_mul(16i32 as libc::c_ulong)
         .wrapping_add(::std::mem::size_of::<lua_Number>() as libc::c_ulong)
     {
-        luaL_error(
+        luaL_error!(
             L,
             b"core and library have incompatible numeric types\x00" as *const u8
                 as *const libc::c_char,
         );
     }
     if v != lua_version(0 as *mut lua_State) {
-        luaL_error(
+        luaL_error!(
             L,
             b"multiple Lua VMs detected\x00" as *const u8 as *const libc::c_char,
         );
     } else if *v != ver {
-        luaL_error(
+        luaL_error!(
             L,
             b"version mismatch: app. needs %f, Lua core provides %f\x00" as *const u8
                 as *const libc::c_char,
@@ -520,7 +525,7 @@ pub unsafe extern "C" fn luaL_tolstring(
     ) {
         /* metafield? */
         if 0 == lua_isstring(L, -1i32) {
-            luaL_error(
+            luaL_error!(
                 L,
                 b"\'__tostring\' must return a string\x00" as *const u8 as *const libc::c_char,
             );
@@ -607,7 +612,7 @@ pub unsafe extern "C" fn luaL_argerror(
     };
     /* no stack frame? */
     if 0 == lua_getstack(L, 0i32, &mut ar) {
-        return luaL_error(
+        return luaL_error!(
             L,
             b"bad argument #%d (%s)\x00" as *const u8 as *const libc::c_char,
             arg,
@@ -624,7 +629,7 @@ pub unsafe extern "C" fn luaL_argerror(
             arg -= 1;
             /* error is in the self argument itself? */
             if arg == 0i32 {
-                return luaL_error(
+                return luaL_error!(
                     L,
                     b"calling \'%s\' on bad self (%s)\x00" as *const u8 as *const libc::c_char,
                     ar.name,
@@ -639,7 +644,7 @@ pub unsafe extern "C" fn luaL_argerror(
                 b"?\x00" as *const u8 as *const libc::c_char
             }
         }
-        return luaL_error(
+        return luaL_error!(
             L,
             b"bad argument #%d to \'%s\' (%s)\x00" as *const u8 as *const libc::c_char,
             arg,
@@ -879,13 +884,13 @@ pub unsafe extern "C" fn luaL_checkstack(
 ) -> () {
     if 0 == lua_checkstack(L, space) {
         if !msg.is_null() {
-            luaL_error(
+            luaL_error!(
                 L,
                 b"stack overflow (%s)\x00" as *const u8 as *const libc::c_char,
                 msg,
             );
         } else {
-            luaL_error(L, b"stack overflow\x00" as *const u8 as *const libc::c_char);
+            luaL_error!(L, b"stack overflow\x00" as *const u8 as *const libc::c_char,);
         }
     };
 }
@@ -1384,7 +1389,7 @@ pub unsafe extern "C" fn luaL_len(mut L: *mut lua_State, mut idx: libc::c_int) -
     lua_len(L, idx);
     l = lua_tointegerx(L, -1i32, &mut isnum);
     if 0 == isnum {
-        luaL_error(
+        luaL_error!(
             L,
             b"object length is not an integer\x00" as *const u8 as *const libc::c_char,
         );
@@ -1457,7 +1462,7 @@ unsafe extern "C" fn resizebox(
         /* allocation error? */
         /* free buffer */
         resizebox(L, idx, 0i32 as size_t);
-        luaL_error(
+        luaL_error!(
             L,
             b"not enough memory for buffer allocation\x00" as *const u8 as *const libc::c_char,
         );
@@ -1503,7 +1508,7 @@ pub unsafe extern "C" fn luaL_prepbuffsize(
             newsize = (*B).n.wrapping_add(sz)
         }
         if newsize < (*B).n || newsize.wrapping_sub((*B).n) < sz {
-            luaL_error(
+            luaL_error!(
                 L,
                 b"buffer too large\x00" as *const u8 as *const libc::c_char,
             );

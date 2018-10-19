@@ -1536,6 +1536,11 @@ pub unsafe extern "C" fn lua_gethookmask(mut L: *mut lua_State) -> libc::c_int {
 pub unsafe extern "C" fn lua_gethookcount(mut L: *mut lua_State) -> libc::c_int {
     return (*L).basehookcount;
 }
+// TODO: implement!
+#[macro_export]
+macro_rules! luaG_runerror {
+    ($lua_State:expr, $fmt:expr, $($args:tt)*) => ({ ::std::process::exit(1); });
+}
 /*
 ** $Id: ldebug.h,v 2.14.1.1 2017/04/19 17:20:42 roberto Exp $
 ** Auxiliary functions from Debug Interface module
@@ -1548,7 +1553,7 @@ pub unsafe extern "C" fn luaG_typeerror(
     mut op: *const libc::c_char,
 ) -> ! {
     let mut t: *const libc::c_char = luaT_objtypename(L, o);
-    luaG_runerror(
+    luaG_runerror!(
         L,
         b"attempt to %s a %s value%s\x00" as *const u8 as *const libc::c_char,
         op,
@@ -1717,7 +1722,7 @@ pub unsafe extern "C" fn luaG_tointerror(
     } {
         p2 = p1
     }
-    luaG_runerror(
+    luaG_runerror!(
         L,
         b"number%s has no integer representation\x00" as *const u8 as *const libc::c_char,
         varinfo(L, p2),
@@ -1732,13 +1737,13 @@ pub unsafe extern "C" fn luaG_ordererror(
     let mut t1: *const libc::c_char = luaT_objtypename(L, p1);
     let mut t2: *const libc::c_char = luaT_objtypename(L, p2);
     if strcmp(t1, t2) == 0i32 {
-        luaG_runerror(
+        luaG_runerror!(
             L,
             b"attempt to compare two %s values\x00" as *const u8 as *const libc::c_char,
             t1,
         );
     } else {
-        luaG_runerror(
+        luaG_runerror!(
             L,
             b"attempt to compare %s with %s\x00" as *const u8 as *const libc::c_char,
             t1,
