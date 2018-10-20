@@ -1,3 +1,6 @@
+// ------------------------------------------------
+// Common macros
+
 #[macro_export]
 macro_rules! s {
     ($str:expr) => {
@@ -19,14 +22,8 @@ macro_rules! pub_const_c_str {
     };
 }
 
-// TODO: implement!
-#[macro_export]
-macro_rules! luaO_pushfstring {
-    ($lua_State:expr, $($args:tt)*) => {{
-        let mut endptr: *const libc::c_char = 0 as *const libc::c_char;
-        endptr
-    }};
-}
+// ------------------------------------------------
+// lapi macros
 
 // TODO: implement!
 #[macro_export]
@@ -37,6 +34,20 @@ macro_rules! lua_pushfstring {
     }};
 }
 
+// ------------------------------------------------
+// lauxlib macros
+
+// TODO: implement!
+#[macro_export]
+macro_rules! luaL_error {
+    ($lua_State:expr, $fmt:expr, $($args:tt)*) => {{
+        0
+    }};
+}
+
+// ------------------------------------------------
+// ldebug macros
+
 // TODO: implement!
 #[macro_export]
 macro_rules! luaG_runerror {
@@ -45,10 +56,14 @@ macro_rules! luaG_runerror {
     };
 }
 
+// ------------------------------------------------
+// lobject macros
+
 // TODO: implement!
 #[macro_export]
-macro_rules! luaL_error {
-    ($lua_State:expr, $fmt:expr, $($args:tt)*) => {{
-        0
+macro_rules! luaO_pushfstring {
+    ($lua_State:expr, $($args:tt)*) => {{
+        let mut endptr: *const libc::c_char = 0 as *const libc::c_char;
+        endptr
     }};
 }
