@@ -374,7 +374,7 @@ unsafe extern "C" fn pushutfchar(mut L: *mut lua_State, mut arg: libc::c_int) ->
             arg,
             b"value out of range\x00" as *const u8 as *const libc::c_char,
         )) as libc::c_int;
-    lua_pushfstring(
+    lua_pushfstring!(
         L,
         b"%U\x00" as *const u8 as *const libc::c_char,
         code as libc::c_long,

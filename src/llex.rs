@@ -1340,7 +1340,7 @@ unsafe extern "C" fn lexerror(
 ) -> ! {
     msg = luaG_addinfo((*ls).L, msg, (*ls).source, (*ls).linenumber);
     if 0 != token {
-        luaO_pushfstring(
+        luaO_pushfstring!(
             (*ls).L,
             b"%s near %s\x00" as *const u8 as *const libc::c_char,
             msg,
@@ -1356,7 +1356,7 @@ unsafe extern "C" fn txtToken(
     match token {
         292 | 293 | 290 | 291 => {
             save(ls, '\u{0}' as i32);
-            return luaO_pushfstring(
+            return luaO_pushfstring!(
                 (*ls).L,
                 b"\'%s\'\x00" as *const u8 as *const libc::c_char,
                 (*(*ls).buff).buffer,
@@ -1372,7 +1372,7 @@ pub unsafe extern "C" fn luaX_token2str(
 ) -> *const libc::c_char {
     if token < 257i32 {
         /* single-byte symbols? */
-        return luaO_pushfstring(
+        return luaO_pushfstring!(
             (*ls).L,
             b"\'%c\'\x00" as *const u8 as *const libc::c_char,
             token,
@@ -1381,7 +1381,7 @@ pub unsafe extern "C" fn luaX_token2str(
         let mut s: *const libc::c_char = luaX_tokens[(token - 257i32) as usize];
         /* fixed format (symbols and reserved words)? */
         if token < TK_EOS as libc::c_int {
-            return luaO_pushfstring(
+            return luaO_pushfstring!(
                 (*ls).L,
                 b"\'%s\'\x00" as *const u8 as *const libc::c_char,
                 s,
@@ -1979,7 +1979,7 @@ unsafe extern "C" fn read_long_string(
                 } else {
                     b"comment\x00" as *const u8 as *const libc::c_char
                 };
-                let mut msg: *const libc::c_char = luaO_pushfstring(
+                let mut msg: *const libc::c_char = luaO_pushfstring!(
                     (*ls).L,
                     b"unfinished long %s (starting at line %d)\x00" as *const u8
                         as *const libc::c_char,

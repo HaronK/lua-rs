@@ -1526,7 +1526,7 @@ unsafe extern "C" fn undefgoto(mut ls: *mut LexState, mut gt: *mut Labeldesc) ->
     } else {
         b"no visible label \'%s\' for <goto> at line %d\x00" as *const u8 as *const libc::c_char
     };
-    msg = luaO_pushfstring(
+    msg = luaO_pushfstring!(
         (*ls).L,
         msg,
         ((*gt).name as *mut libc::c_char)
@@ -1607,7 +1607,7 @@ unsafe extern "C" fn closegoto(
     let mut gt: *mut Labeldesc = &mut *(*gl).arr.offset(g as isize) as *mut Labeldesc;
     if ((*gt).nactvar as libc::c_int) < (*label).nactvar as libc::c_int {
         let mut vname: *mut TString = (*getlocvar(fs, (*gt).nactvar as libc::c_int)).varname;
-        let mut msg: *const libc::c_char = luaO_pushfstring(
+        let mut msg: *const libc::c_char = luaO_pushfstring!(
             (*ls).L,
             b"<goto %s> at line %d jumps into the scope of local \'%s\'\x00" as *const u8
                 as *const libc::c_char,
@@ -1704,7 +1704,7 @@ unsafe extern "C" fn check(mut ls: *mut LexState, mut c: libc::c_int) -> () {
 unsafe extern "C" fn error_expected(mut ls: *mut LexState, mut token: libc::c_int) -> ! {
     luaX_syntaxerror(
         ls,
-        luaO_pushfstring(
+        luaO_pushfstring!(
             (*ls).L,
             b"%s expected\x00" as *const u8 as *const libc::c_char,
             luaX_token2str(ls, token),
@@ -2378,7 +2378,7 @@ unsafe extern "C" fn check_match(
         } else {
             luaX_syntaxerror(
                 ls,
-                luaO_pushfstring(
+                luaO_pushfstring!(
                     (*ls).L,
                     b"%s expected (to close %s at line %d)\x00" as *const u8 as *const libc::c_char,
                     luaX_token2str(ls, what),
@@ -2454,13 +2454,13 @@ unsafe extern "C" fn errorlimit(
     let mut where_0: *const libc::c_char = if line == 0i32 {
         b"main function\x00" as *const u8 as *const libc::c_char
     } else {
-        luaO_pushfstring(
+        luaO_pushfstring!(
             L,
             b"function at line %d\x00" as *const u8 as *const libc::c_char,
             line,
         )
     };
-    msg = luaO_pushfstring(
+    msg = luaO_pushfstring!(
         L,
         b"too many %s (limit is %d) in %s\x00" as *const u8 as *const libc::c_char,
         what,
@@ -3208,7 +3208,7 @@ unsafe extern "C" fn checkrepeated(
     i = (*(*fs).bl).firstlabel;
     while i < (*ll).n {
         if label == (*(*ll).arr.offset(i as isize)).name {
-            let mut msg: *const libc::c_char = luaO_pushfstring(
+            let mut msg: *const libc::c_char = luaO_pushfstring!(
                 (*(*fs).ls).L,
                 b"label \'%s\' already defined on line %d\x00" as *const u8 as *const libc::c_char,
                 (label as *mut libc::c_char)

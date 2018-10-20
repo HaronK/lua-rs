@@ -546,7 +546,7 @@ unsafe extern "C" fn f_tostring(mut L: *mut lua_State) -> libc::c_int {
     if (*p).closef.is_none() {
         lua_pushstring(L, b"file (closed)\x00" as *const u8 as *const libc::c_char);
     } else {
-        lua_pushfstring(
+        lua_pushfstring!(
             L,
             b"file (%p)\x00" as *const u8 as *const libc::c_char,
             (*p).f,

@@ -792,7 +792,7 @@ unsafe extern "C" fn checkoption(
     luaL_argerror(
         L,
         1i32,
-        lua_pushfstring(
+        lua_pushfstring!(
             L,
             b"invalid conversion specifier \'%%%s\'\x00" as *const u8 as *const libc::c_char,
             conv,

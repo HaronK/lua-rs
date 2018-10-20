@@ -1,4 +1,5 @@
 use libc;
+
 extern "C" {
     /*
      ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
@@ -63,8 +64,8 @@ extern "C" {
         fmt: *const libc::c_char,
         argp: *mut __va_list_tag,
     ) -> *const libc::c_char;
-    #[no_mangle]
-    fn luaO_pushfstring(L: *mut lua_State, fmt: *const libc::c_char, ...) -> *const libc::c_char;
+    // #[no_mangle]
+    // fn luaO_pushfstring(L: *mut lua_State, fmt: *const libc::c_char, ...) -> *const libc::c_char;
     #[no_mangle]
     fn luaT_objtypename(L: *mut lua_State, o: *const TValue) -> *const libc::c_char;
     #[no_mangle]
@@ -1539,13 +1540,7 @@ pub unsafe extern "C" fn lua_gethookmask(mut L: *mut lua_State) -> libc::c_int {
 pub unsafe extern "C" fn lua_gethookcount(mut L: *mut lua_State) -> libc::c_int {
     return (*L).basehookcount;
 }
-// TODO: implement!
-#[macro_export]
-macro_rules! luaG_runerror {
-    ($lua_State:expr, $fmt:expr, $($args:tt)*) => {{
-        ::std::process::exit(1);
-    }};
-}
+
 /*
 ** $Id: ldebug.h,v 2.14.1.1 2017/04/19 17:20:42 roberto Exp $
 ** Auxiliary functions from Debug Interface module
@@ -1585,7 +1580,7 @@ unsafe extern "C" fn varinfo(mut L: *mut lua_State, mut o: *const TValue) -> *co
         }
     }
     return if !kind.is_null() {
-        luaO_pushfstring(
+        luaO_pushfstring!(
             L,
             b" (%s \'%s\')\x00" as *const u8 as *const libc::c_char,
             kind,
@@ -1669,7 +1664,7 @@ pub unsafe extern "C" fn luaG_addinfo(
         buff[0usize] = '?' as i32 as libc::c_char;
         buff[1usize] = '\u{0}' as i32 as libc::c_char
     }
-    return luaO_pushfstring(
+    return luaO_pushfstring!(
         L,
         b"%s:%d: %s\x00" as *const u8 as *const libc::c_char,
         buff.as_mut_ptr(),

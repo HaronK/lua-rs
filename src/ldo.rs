@@ -1004,13 +1004,13 @@ pub unsafe extern "C" fn lua_yieldk(
     let mut ci: *mut CallInfo = (*L).ci;
     if (*L).nny as libc::c_int > 0i32 {
         if L != (*(*L).l_G).mainthread {
-            luaG_runerror(
+            luaG_runerror!(
                 L,
                 b"attempt to yield across a C-call boundary\x00" as *const u8
                     as *const libc::c_char,
             );
         } else {
-            luaG_runerror(
+            luaG_runerror!(
                 L,
                 b"attempt to yield from outside a coroutine\x00" as *const u8
                     as *const libc::c_char,
@@ -1412,7 +1412,7 @@ pub unsafe extern "C" fn luaD_growstack(mut L: *mut lua_State, mut n: libc::c_in
         if newsize > 1000000i32 {
             /* stack overflow? */
             luaD_reallocstack(L, 1000000i32 + 200i32);
-            luaG_runerror(L, b"stack overflow\x00" as *const u8 as *const libc::c_char);
+            luaG_runerror!(L, b"stack overflow\x00" as *const u8 as *const libc::c_char);
         } else {
             luaD_reallocstack(L, newsize);
             return;
@@ -1984,7 +1984,7 @@ unsafe extern "C" fn checkmode(
     mut x: *const libc::c_char,
 ) -> () {
     if !mode.is_null() && strchr(mode, *x.offset(0isize) as libc::c_int).is_null() {
-        luaO_pushfstring(
+        luaO_pushfstring!(
             L,
             b"attempt to load a %s chunk (mode is \'%s\')\x00" as *const u8 as *const libc::c_char,
             x,
@@ -2051,7 +2051,7 @@ pub unsafe extern "C" fn luaD_call(
 */
 unsafe extern "C" fn stackerror(mut L: *mut lua_State) -> () {
     if (*L).nCcalls as libc::c_int == 200i32 {
-        luaG_runerror(
+        luaG_runerror!(
             L,
             b"C stack overflow\x00" as *const u8 as *const libc::c_char,
         );

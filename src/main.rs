@@ -1,6 +1,6 @@
 #![feature(extern_types)]
-#![feature(ptr_wrapping_offset_from)]
 #![feature(const_slice_as_ptr)]
+#![feature(ptr_wrapping_offset_from)]
 #![allow(non_upper_case_globals)]
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
@@ -49,3 +49,23 @@ pub mod lundump;
 pub mod lutf8lib;
 pub mod lvm;
 pub mod lzio;
+
+use luac::main_0;
+
+fn main() -> () {
+    let mut args: Vec<*mut libc::c_char> = Vec::new();
+    for arg in ::std::env::args() {
+        args.push(
+            ::std::ffi::CString::new(arg)
+                .expect("Failed to convert argument into CString.")
+                .into_raw(),
+        );
+    }
+    args.push(::std::ptr::null_mut());
+    unsafe {
+        ::std::process::exit(main_0(
+            (args.len() - 1) as libc::c_int,
+            args.as_mut_ptr() as *mut *mut libc::c_char,
+        ) as i32)
+    }
+}

@@ -385,7 +385,7 @@ unsafe extern "C" fn msghandler(mut L: *mut lua_State) -> libc::c_int {
             /* that is the message */
             return 1i32;
         } else {
-            msg = lua_pushfstring(
+            msg = lua_pushfstring!(
                 L,
                 b"(error object is a %s value)\x00" as *const u8 as *const libc::c_char,
                 lua_typename(L, lua_type(L, 1i32)),
@@ -599,7 +599,7 @@ unsafe extern "C" fn pushline(mut L: *mut lua_State, mut firstline: libc::c_int)
         /* for compatibility with 5.2, ... */
         if 0 != firstline && *b.offset(0isize) as libc::c_int == '=' as i32 {
             /* change '=' to 'return' */
-            lua_pushfstring(
+            lua_pushfstring!(
                 L,
                 b"return %s\x00" as *const u8 as *const libc::c_char,
                 b.offset(1isize),
@@ -618,7 +618,7 @@ unsafe extern "C" fn pushline(mut L: *mut lua_State, mut firstline: libc::c_int)
 unsafe extern "C" fn addreturn(mut L: *mut lua_State) -> libc::c_int {
     /* original line */
     let mut line: *const libc::c_char = lua_tolstring(L, -1i32, 0 as *mut size_t);
-    let mut retline: *const libc::c_char = lua_pushfstring(
+    let mut retline: *const libc::c_char = lua_pushfstring!(
         L,
         b"return %s;\x00" as *const u8 as *const libc::c_char,
         line,
@@ -719,7 +719,7 @@ unsafe extern "C" fn l_print(mut L: *mut lua_State) -> () {
         if lua_pcallk(L, n, 0i32, 0i32, 0i32 as lua_KContext, None) != 0i32 {
             l_message(
                 progname,
-                lua_pushfstring(
+                lua_pushfstring!(
                     L,
                     b"error calling \'print\' (%s)\x00" as *const u8 as *const libc::c_char,
                     lua_tolstring(L, -1i32, 0 as *mut size_t),

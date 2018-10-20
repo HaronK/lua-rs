@@ -1017,7 +1017,7 @@ unsafe extern "C" fn GCTM(mut L: *mut lua_State, mut propagateerrors: libc::c_in
                 } else {
                     b"no message\x00" as *const u8 as *const libc::c_char
                 };
-                luaO_pushfstring(
+                luaO_pushfstring!(
                     L,
                     b"error in __gc metamethod (%s)\x00" as *const u8 as *const libc::c_char,
                     msg,

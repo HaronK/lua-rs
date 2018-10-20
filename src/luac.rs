@@ -1706,7 +1706,10 @@ unsafe extern "C" fn pmain(mut L: *mut lua_State) -> libc::c_int {
     }
     return 0i32;
 }
-unsafe fn main_0(mut argc: libc::c_int, mut argv: *mut *mut libc::c_char) -> libc::c_int {
+pub(crate) unsafe fn main_0(
+    mut argc: libc::c_int,
+    mut argv: *mut *mut libc::c_char,
+) -> libc::c_int {
     let mut L: *mut lua_State = 0 as *mut lua_State;
     let mut i: libc::c_int = doargs(argc, argv);
     argc -= i;
@@ -1726,21 +1729,4 @@ unsafe fn main_0(mut argc: libc::c_int, mut argv: *mut *mut libc::c_char) -> lib
     }
     lua_close(L);
     return 0i32;
-}
-pub fn main() -> () {
-    let mut args: Vec<*mut libc::c_char> = Vec::new();
-    for arg in ::std::env::args() {
-        args.push(
-            ::std::ffi::CString::new(arg)
-                .expect("Failed to convert argument into CString.")
-                .into_raw(),
-        );
-    }
-    args.push(::std::ptr::null_mut());
-    unsafe {
-        ::std::process::exit(main_0(
-            (args.len() - 1) as libc::c_int,
-            args.as_mut_ptr() as *mut *mut libc::c_char,
-        ) as i32)
-    }
 }

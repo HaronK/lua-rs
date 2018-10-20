@@ -908,7 +908,7 @@ unsafe extern "C" fn LoadBlock(
     };
 }
 unsafe extern "C" fn error(mut S: *mut LoadState, mut why: *const libc::c_char) -> ! {
-    luaO_pushfstring(
+    luaO_pushfstring!(
         (*S).L,
         b"%s: %s precompiled chunk\x00" as *const u8 as *const libc::c_char,
         (*S).name,
@@ -1168,7 +1168,7 @@ unsafe extern "C" fn fchecksize(
     if LoadByte(S) as libc::c_ulong != size {
         error(
             S,
-            luaO_pushfstring(
+            luaO_pushfstring!(
                 (*S).L,
                 b"%s size mismatch in\x00" as *const u8 as *const libc::c_char,
                 tname,

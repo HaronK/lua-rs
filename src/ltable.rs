@@ -783,7 +783,7 @@ pub unsafe extern "C" fn luaH_newkey(
         tt_: 0,
     };
     if (*key).tt_ == 0i32 {
-        luaG_runerror(
+        luaG_runerror!(
             L,
             b"table index is nil\x00" as *const u8 as *const libc::c_char,
         );
@@ -798,7 +798,7 @@ pub unsafe extern "C" fn luaH_newkey(
                 /* insert it as an integer */
                 key = &mut aux
             } else if !((*key).value_.n == (*key).value_.n) {
-                luaG_runerror(
+                luaG_runerror!(
                     L,
                     b"table index is NaN\x00" as *const u8 as *const libc::c_char,
                 );
@@ -1270,7 +1270,7 @@ unsafe extern "C" fn setnodevector(
                 .wrapping_sub(1i32 as libc::c_ulong) as libc::c_int
                 - 1i32
         {
-            luaG_runerror(L, b"table overflow\x00" as *const u8 as *const libc::c_char);
+            luaG_runerror!(L, b"table overflow\x00" as *const u8 as *const libc::c_char);
         } else {
             size = (1i32 << lsize) as libc::c_uint;
             if ::std::mem::size_of::<libc::c_uint>() as libc::c_ulong
@@ -1665,7 +1665,7 @@ unsafe extern "C" fn findindex(
                     nx = (*n).i_key.nk.next;
                     if nx == 0i32 {
                         /* key not found */
-                        luaG_runerror(
+                        luaG_runerror!(
                             L,
                             b"invalid key to \'next\'\x00" as *const u8 as *const libc::c_char,
                         );

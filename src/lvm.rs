@@ -1497,7 +1497,7 @@ pub unsafe extern "C" fn luaV_finishget(
         }
     }
     /* else repeat (tail call 'luaV_finishget') */
-    luaG_runerror(
+    luaG_runerror!(
         L,
         b"\'__index\' chain too long; possible loop\x00" as *const u8 as *const libc::c_char,
     );
@@ -1600,7 +1600,7 @@ pub unsafe extern "C" fn luaV_finishset(
         }
     }
     /* else loop */
-    luaG_runerror(
+    luaG_runerror!(
         L,
         b"\'__newindex\' chain too long; possible loop\x00" as *const u8 as *const libc::c_char,
     );
@@ -1785,7 +1785,7 @@ pub unsafe extern "C" fn luaV_concat(mut L: *mut lua_State, mut total: libc::c_i
                 .wrapping_div(::std::mem::size_of::<libc::c_char>() as libc::c_ulong)
                 .wrapping_sub(tl)
                 {
-                    luaG_runerror(
+                    luaG_runerror!(
                         L,
                         b"string length overflow\x00" as *const u8 as *const libc::c_char,
                     );
@@ -3636,7 +3636,7 @@ pub unsafe extern "C" fn luaV_execute(mut L: *mut lua_State) -> () {
                         } else {
                             luaV_tonumber_(plimit, &mut nlimit)
                         } {
-                            luaG_runerror(
+                            luaG_runerror!(
                                 L,
                                 b"\'for\' limit must be a number\x00" as *const u8
                                     as *const libc::c_char,
@@ -3651,7 +3651,7 @@ pub unsafe extern "C" fn luaV_execute(mut L: *mut lua_State) -> () {
                             } else {
                                 luaV_tonumber_(pstep, &mut nstep)
                             } {
-                                luaG_runerror(
+                                luaG_runerror!(
                                     L,
                                     b"\'for\' step must be a number\x00" as *const u8
                                         as *const libc::c_char,
@@ -3666,7 +3666,7 @@ pub unsafe extern "C" fn luaV_execute(mut L: *mut lua_State) -> () {
                                 } else {
                                     luaV_tonumber_(init, &mut ninit)
                                 } {
-                                    luaG_runerror(
+                                    luaG_runerror!(
                                         L,
                                         b"\'for\' initial value must be a number\x00" as *const u8
                                             as *const libc::c_char,
@@ -4065,7 +4065,7 @@ pub unsafe extern "C" fn luaV_div(
     if (n as lua_Unsigned).wrapping_add(1u32 as libc::c_ulonglong) <= 1u32 as libc::c_ulonglong {
         /* special cases: -1 or 0 */
         if n == 0i32 as libc::c_longlong {
-            luaG_runerror(
+            luaG_runerror!(
                 L,
                 b"attempt to divide by zero\x00" as *const u8 as *const libc::c_char,
             );
@@ -4092,7 +4092,7 @@ pub unsafe extern "C" fn luaV_mod(
     if (n as lua_Unsigned).wrapping_add(1u32 as libc::c_ulonglong) <= 1u32 as libc::c_ulonglong {
         /* special cases: -1 or 0 */
         if n == 0i32 as libc::c_longlong {
-            luaG_runerror(
+            luaG_runerror!(
                 L,
                 b"attempt to perform \'n%%0\'\x00" as *const u8 as *const libc::c_char,
             );

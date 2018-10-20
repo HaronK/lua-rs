@@ -812,7 +812,7 @@ unsafe extern "C" fn db_getinfo(mut L: *mut lua_State) -> libc::c_int {
     if lua_type(L, arg + 1i32) == 6i32 {
         /* info about a function? */
         /* add '>' to 'options' */
-        options = lua_pushfstring(L, b">%s\x00" as *const u8 as *const libc::c_char, options);
+        options = lua_pushfstring!(L, b">%s\x00" as *const u8 as *const libc::c_char, options);
         /* move function to 'L1' stack */
         lua_pushvalue(L, arg + 1i32);
         lua_xmove(L, L1, 1i32);

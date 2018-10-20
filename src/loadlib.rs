@@ -425,7 +425,7 @@ unsafe extern "C" fn setpath(
     mut envname: *const libc::c_char,
     mut dft: *const libc::c_char,
 ) -> () {
-    let mut nver: *const libc::c_char = lua_pushfstring(
+    let mut nver: *const libc::c_char = lua_pushfstring!(
         L,
         b"%s%s\x00" as *const u8 as *const libc::c_char,
         envname,
@@ -557,7 +557,7 @@ unsafe extern "C" fn searcher_Croot(mut L: *mut lua_State) -> libc::c_int {
                     return checkload(L, 0i32, filename);
                 } else {
                     /* open function not found */
-                    lua_pushfstring(
+                    lua_pushfstring!(
                         L,
                         b"\n\tno module \'%s\' in file \'%s\'\x00" as *const u8
                             as *const libc::c_char,
@@ -628,7 +628,7 @@ unsafe extern "C" fn loadfunc(
             modname,
             mark.wrapping_offset_from(modname) as libc::c_long as size_t,
         );
-        openfunc = lua_pushfstring(
+        openfunc = lua_pushfstring!(
             L,
             b"luaopen_%s\x00" as *const u8 as *const libc::c_char,
             openfunc,
@@ -640,7 +640,7 @@ unsafe extern "C" fn loadfunc(
             modname = mark.offset(1isize)
         }
     }
-    openfunc = lua_pushfstring(
+    openfunc = lua_pushfstring!(
         L,
         b"luaopen_%s\x00" as *const u8 as *const libc::c_char,
         modname,
@@ -865,7 +865,7 @@ unsafe extern "C" fn searchpath(
             /* return that file name */
             return filename;
         } else {
-            lua_pushfstring(
+            lua_pushfstring!(
                 L,
                 b"\n\tno file \'%s\'\x00" as *const u8 as *const libc::c_char,
                 filename,
@@ -976,7 +976,7 @@ unsafe extern "C" fn searcher_preload(mut L: *mut lua_State) -> libc::c_int {
     );
     /* not found? */
     if lua_getfield(L, -1i32, name) == 0i32 {
-        lua_pushfstring(
+        lua_pushfstring!(
             L,
             b"\n\tno field package.preload[\'%s\']\x00" as *const u8 as *const libc::c_char,
             name,
