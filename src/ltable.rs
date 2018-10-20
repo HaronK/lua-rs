@@ -934,6 +934,7 @@ unsafe extern "C" fn mainposition(mut t: *const Table, mut key: *const TValue) -
         }
         22 => {
             return &mut *(*t).node.offset(
+                // TODO: check this!
                 // ((::std::mem::transmute::<lua_CFunction, size_t>((*key).value_.f)
                 (((*key).value_.f.unwrap() as size_t
                     & (2147483647i32 as libc::c_uint)

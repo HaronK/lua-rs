@@ -588,7 +588,7 @@ unsafe extern "C" fn b_str2int(
                         __res = *(*__ctype_toupper_loc())
                             .offset(*s as libc::c_uchar as libc::c_int as isize)
                     }
-                    //__res // What is this?
+                    //__res // TODO: What is this?
                 }
                 -('A' as i32) + 10i32
             };

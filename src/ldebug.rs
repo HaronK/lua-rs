@@ -1,5 +1,4 @@
 use libc;
-
 extern "C" {
     /*
      ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
@@ -64,8 +63,8 @@ extern "C" {
         fmt: *const libc::c_char,
         argp: *mut __va_list_tag,
     ) -> *const libc::c_char;
-    // #[no_mangle]
-    // fn luaO_pushfstring(L: *mut lua_State, fmt: *const libc::c_char, ...) -> *const libc::c_char;
+    #[no_mangle]
+    fn luaO_pushfstring(L: *mut lua_State, fmt: *const libc::c_char, ...) -> *const libc::c_char;
     #[no_mangle]
     fn luaT_objtypename(L: *mut lua_State, o: *const TValue) -> *const libc::c_char;
     #[no_mangle]
@@ -1540,7 +1539,6 @@ pub unsafe extern "C" fn lua_gethookmask(mut L: *mut lua_State) -> libc::c_int {
 pub unsafe extern "C" fn lua_gethookcount(mut L: *mut lua_State) -> libc::c_int {
     return (*L).basehookcount;
 }
-
 /*
 ** $Id: ldebug.h,v 2.14.1.1 2017/04/19 17:20:42 roberto Exp $
 ** Auxiliary functions from Debug Interface module

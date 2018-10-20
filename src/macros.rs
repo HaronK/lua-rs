@@ -23,3 +23,11 @@ macro_rules! luaG_runerror {
         ::std::process::exit(1)
     };
 }
+
+// TODO: implement!
+#[macro_export]
+macro_rules! luaL_error {
+    ($lua_State:expr, $fmt:expr, $($args:tt)*) => {{
+        0
+    }};
+}

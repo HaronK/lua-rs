@@ -307,13 +307,6 @@ pub type lua_Alloc = Option<
 ** Debug API
 ** =======================================================================
 */
-// TODO: implement!
-#[macro_export]
-macro_rules! luaL_error {
-    ($lua_State:expr, $fmt:expr, $($args:tt)*) => {{
-        0
-    }};
-}
 /*
 ** Event codes
 */
