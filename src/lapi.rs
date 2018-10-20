@@ -1,5 +1,6 @@
 use libc;
 use lua::*;
+
 extern "C" {
     /*
      ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
@@ -230,7 +231,9 @@ extern "C" {
     #[no_mangle]
     fn luaC_upvdeccount(L: *mut lua_State, uv: *mut UpVal) -> ();
 }
+
 pub type __builtin_va_list = [__va_list_tag; 1];
+
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct __va_list_tag {
@@ -239,11 +242,13 @@ pub struct __va_list_tag {
     pub overflow_arg_area: *mut libc::c_void,
     pub reg_save_area: *mut libc::c_void,
 }
+
 pub type va_list = __builtin_va_list;
 pub type size_t = libc::c_ulong;
 pub type ptrdiff_t = libc::c_long;
 pub type __sig_atomic_t = libc::c_int;
 pub type intptr_t = libc::c_long;
+
 /*
 ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
 ** Lua - A Scripting Language
@@ -904,6 +909,58 @@ pub struct Zio {
 /*
 ** RCS ident string
 */
+
+/*
+** $Id: lapi.c,v 2.259.1.2 2017/12/06 18:35:12 roberto Exp $
+** Lua API
+** See Copyright Notice in lua.h
+*/
+
+/* value at a non-valid index */
+//#define NONVALIDVALUE		cast(TValue *, luaO_nilobject)
+macro_rules! NONVALIDVALUE {
+    () => {
+        &luaO_nilobject_ as *const TValue as *mut TValue
+    };
+}
+
+/* corresponding test */
+//#define isvalid(o)	((o) != luaO_nilobject)
+macro_rules! isvalid {
+    ($o:expr) => {
+        ($o != &luaO_nilobject_ as *const TValue as StkId)
+    };
+}
+
+/* test for pseudo index */
+//#define ispseudo(i)		((i) <= LUA_REGISTRYINDEX)
+macro_rules! ispseudo {
+    ($i:expr) => {
+        ($i <= LUA_REGISTRYINDEX)
+    };
+}
+
+/* test for upvalue */
+//#define isupvalue(i)		((i) < LUA_REGISTRYINDEX)
+macro_rules! isupvalue {
+    ($i:expr) => {
+        ($i < LUA_REGISTRYINDEX)
+    };
+}
+
+/* test for valid but not pseudo index */
+//#define isstackindex(i, o)	(isvalid(o) && !ispseudo(i))
+macro_rules! isstackindex {
+    ($i:expr, $o:expr) => {
+        (isvalid!(o) && !ispseudo!(i))
+    };
+}
+
+// #define api_checkvalidindex(l,o)  api_check(l, isvalid(o), "invalid index")
+
+// #define api_checkstackindex(l, i, o)  \
+// 	api_check(l, isstackindex(i, o), "index not in the stack")
+
 #[no_mangle]
 pub static mut lua_ident: [libc::c_char; 129] = [
     36, 76, 117, 97, 86, 101, 114, 115, 105, 111, 110, 58, 32, 76, 117, 97, 32, 53, 46, 51, 46, 53,
@@ -937,7 +994,7 @@ pub unsafe extern "C" fn lua_version(mut L: *mut lua_State) -> *const lua_Number
 */
 #[no_mangle]
 pub unsafe extern "C" fn lua_absindex(mut L: *mut lua_State, mut idx: libc::c_int) -> libc::c_int {
-    return if idx > 0i32 || idx <= -1000000i32 - 1000i32 {
+    return if idx > 0i32 || ispseudo!(idx) {
         idx
     } else {
         (*L).top.wrapping_offset_from((*(*L).ci).func) as libc::c_long as libc::c_int + idx
@@ -970,26 +1027,17 @@ pub unsafe extern "C" fn lua_pushvalue(mut L: *mut lua_State, mut idx: libc::c_i
     *io1 = *index2addr(L, idx);
     (*L).top = (*L).top.offset(1isize);
 }
-/*
-** $Id: lapi.c,v 2.259.1.2 2017/12/06 18:35:12 roberto Exp $
-** Lua API
-** See Copyright Notice in lua.h
-*/
-/* value at a non-valid index */
-/* corresponding test */
-/* test for pseudo index */
-/* test for upvalue */
-/* test for valid but not pseudo index */
+
 unsafe extern "C" fn index2addr(mut L: *mut lua_State, mut idx: libc::c_int) -> *mut TValue {
     let mut ci: *mut CallInfo = (*L).ci;
     if idx > 0i32 {
         let mut o: *mut TValue = (*ci).func.offset(idx as isize);
         if o >= (*L).top {
-            return &luaO_nilobject_ as *const TValue as *mut TValue;
+            return NONVALIDVALUE!();
         } else {
             return o;
         }
-    } else if !(idx <= -1000000i32 - 1000i32) {
+    } else if !ispseudo!(idx) {
         /* negative index */
         return (*L).top.offset(idx as isize);
     } else if idx == -1000000i32 - 1000i32 {
@@ -1000,13 +1048,13 @@ unsafe extern "C" fn index2addr(mut L: *mut lua_State, mut idx: libc::c_int) -> 
         /* light C function? */
         if (*(*ci).func).tt_ == 6i32 | 1i32 << 4i32 {
             /* it has no upvalues */
-            return &luaO_nilobject_ as *const TValue as *mut TValue;
+            return NONVALIDVALUE!();
         } else {
             let mut func: *mut CClosure = &mut (*((*(*ci).func).value_.gc as *mut GCUnion)).cl.c;
             return if idx <= (*func).nupvalues as libc::c_int {
                 &mut (*func).upvalue[(idx - 1i32) as usize] as *mut TValue
             } else {
-                &luaO_nilobject_ as *const TValue as *mut TValue
+                NONVALIDVALUE!()
             };
         }
     };
@@ -1072,7 +1120,7 @@ pub unsafe extern "C" fn lua_copy(
     let mut io1: *mut TValue = to;
     *io1 = *fr;
     /* function upvalue? */
-    if toidx < -1000000i32 - 1000i32 {
+    if isupvalue!(toidx) {
         if 0 != (*fr).tt_ & 1i32 << 6i32
             && 0 != (*((*(*(*L).ci).func).value_.gc as *mut GCUnion))
                 .cl
@@ -1196,7 +1244,7 @@ pub unsafe extern "C" fn lua_isuserdata(
 #[no_mangle]
 pub unsafe extern "C" fn lua_type(mut L: *mut lua_State, mut idx: libc::c_int) -> libc::c_int {
     let mut o: StkId = index2addr(L, idx);
-    return if o != &luaO_nilobject_ as *const TValue as StkId {
+    return if isvalid!(o) {
         (*o).tt_ & 0xfi32
     } else {
         -1i32
@@ -1412,9 +1460,7 @@ pub unsafe extern "C" fn lua_rawequal(
 ) -> libc::c_int {
     let mut o1: StkId = index2addr(L, index1);
     let mut o2: StkId = index2addr(L, index2);
-    return if o1 != &luaO_nilobject_ as *const TValue as StkId
-        && o2 != &luaO_nilobject_ as *const TValue as StkId
-    {
+    return if isvalid!(o1) && isvalid!(o2) {
         luaV_equalobj(
             0 as *mut lua_State,
             o1 as *const TValue,
@@ -1438,9 +1484,7 @@ pub unsafe extern "C" fn lua_compare(
     /* may call tag method */
     o1 = index2addr(L, index1);
     o2 = index2addr(L, index2);
-    if o1 != &luaO_nilobject_ as *const TValue as StkId
-        && o2 != &luaO_nilobject_ as *const TValue as StkId
-    {
+    if isvalid!(o1) && isvalid!(o2) {
         match op {
             0 => {
                 current_block = 9754527956383385389;

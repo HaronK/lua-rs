@@ -216,6 +216,7 @@ pub const LUA_MULTRET: i32 = -1;
  */
 // #define LUA_REGISTRYINDEX	(-LUAI_MAXSTACK - 1000)
 // #define lua_upvalueindex(i)	(LUA_REGISTRYINDEX - (i))
+pub const LUA_REGISTRYINDEX: i32 = -LUAI_MAXSTACK - 1000;
 
 /* thread status */
 pub const LUA_OK: i32 = 0;

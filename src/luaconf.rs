@@ -194,3 +194,16 @@ macro_rules! lua_number2str {
 */
 // pub type LUA_UNSIGNED = f64;
 // #define LUA_UNSIGNED		unsigned LUAI_UACINT
+
+/*
+@@ LUAI_MAXSTACK limits the size of the Lua stack.
+** CHANGE it if you need a different limit. This limit is arbitrary;
+** its only purpose is to stop Lua from consuming unlimited stack
+** space (and to reserve some numbers for pseudo-indices).
+*/
+// #if LUAI_BITSINT >= 32
+// #define LUAI_MAXSTACK		1000000
+// #else
+// #define LUAI_MAXSTACK		15000
+// #endif
+pub const LUAI_MAXSTACK: i32 = 1000000;
