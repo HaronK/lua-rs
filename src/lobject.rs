@@ -384,7 +384,6 @@ pub type lua_Integer = libc::c_longlong;
 */
 pub type lua_CFunction = Option<unsafe extern "C" fn(_: *mut lua_State) -> libc::c_int>;
 
-
 /*
 ** $Id: lobject.h,v 2.117.1.1 2017/04/19 17:39:34 roberto Exp $
 ** Type definitions for Lua objects
@@ -417,17 +416,17 @@ pub const LUA_TOTALTAGS: i32 = LUA_TPROTO + 2;
 */
 
 /* Variant tags for functions */
-pub const LUA_TLCL: i32 = (LUA_TFUNCTION | (0 << 4));  /* Lua closure */
-pub const LUA_TLCF: i32 = (LUA_TFUNCTION | (1 << 4));  /* light C function */
-pub const LUA_TCCL: i32 = (LUA_TFUNCTION | (2 << 4));  /* C closure */
+pub const LUA_TLCL: i32 = (LUA_TFUNCTION | (0 << 4)); /* Lua closure */
+pub const LUA_TLCF: i32 = (LUA_TFUNCTION | (1 << 4)); /* light C function */
+pub const LUA_TCCL: i32 = (LUA_TFUNCTION | (2 << 4)); /* C closure */
 
 /* Variant tags for strings */
-pub const LUA_TSHRSTR: i32 = (LUA_TSTRING | (0 << 4));  /* short strings */
-pub const LUA_TLNGSTR: i32 = (LUA_TSTRING | (1 << 4));  /* long strings */
+pub const LUA_TSHRSTR: i32 = (LUA_TSTRING | (0 << 4)); /* short strings */
+pub const LUA_TLNGSTR: i32 = (LUA_TSTRING | (1 << 4)); /* long strings */
 
 /* Variant tags for numbers */
-pub const LUA_TNUMFLT: i32 = (LUA_TNUMBER | (0 << 4));  /* float numbers */
-pub const LUA_TNUMINT: i32 = (LUA_TNUMBER | (1 << 4));  /* integer numbers */
+pub const LUA_TNUMFLT: i32 = (LUA_TNUMBER | (0 << 4)); /* float numbers */
+pub const LUA_TNUMINT: i32 = (LUA_TNUMBER | (1 << 4)); /* integer numbers */
 
 /* Bit mark for collectable types */
 pub const BIT_ISCOLLECTABLE: i32 = (1 << 6);

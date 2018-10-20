@@ -1,6 +1,6 @@
 use libc;
-use lua::*;
 use llimits::*;
+use lua::*;
 extern "C" {
     #[no_mangle]
     fn _setjmp(_: *mut __jmp_buf_tag) -> libc::c_int;
