@@ -1,4 +1,6 @@
 use libc;
+use lua::*;
+use lobject::*;
 extern "C" {
     /*
      ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
@@ -644,17 +646,12 @@ pub unsafe extern "C" fn luaU_dump(
     mut strip: libc::c_int,
 ) -> libc::c_int {
     let mut D: DumpState = DumpState {
-        L: 0 as *mut lua_State,
-        writer: None,
-        data: 0 as *mut libc::c_void,
-        strip: 0,
+        L: L,
+        writer: w,
+        data: data,
+        strip: strip,
         status: 0,
     };
-    D.L = L;
-    D.writer = w;
-    D.data = data;
-    D.strip = strip;
-    D.status = 0i32;
     DumpHeader(&mut D);
     DumpByte((*f).sizeupvalues, &mut D);
     DumpFunction(f, 0 as *mut TString, &mut D);
@@ -816,19 +813,20 @@ unsafe extern "C" fn DumpConstants(mut f: *const Proto, mut D: *mut DumpState) -
         let mut o: *const TValue = &mut *(*f).k.offset(i as isize) as *mut TValue;
         DumpByte((*o).tt_ & 0x3fi32, D);
         match (*o).tt_ & 0x3fi32 {
-            1 => {
+            LUA_TNIL => {}
+            LUA_TBOOLEAN => {
                 DumpByte((*o).value_.b, D);
             }
-            3 => {
+            LUA_TNUMFLT => {
                 DumpNumber((*o).value_.n, D);
             }
-            19 => {
+            LUA_TNUMINT => {
                 DumpInteger((*o).value_.i, D);
             }
-            4 | 20 => {
+            LUA_TSHRSTR | LUA_TLNGSTR => {
                 DumpString(&mut (*((*o).value_.gc as *mut GCUnion)).ts, D);
             }
-            0 | _ => {}
+            _ => {}
         }
         i += 1
     }

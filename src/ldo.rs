@@ -1,4 +1,6 @@
 use libc;
+use lua::*;
+use llimits::*;
 extern "C" {
     #[no_mangle]
     fn _setjmp(_: *mut __jmp_buf_tag) -> libc::c_int;
@@ -1114,7 +1116,7 @@ pub unsafe extern "C" fn lua_resume(
     let mut status: libc::c_int = 0;
     /* save "number of non-yieldable" calls */
     let mut oldnny: libc::c_ushort = (*L).nny;
-    if (*L).status as libc::c_int == 0i32 {
+    if (*L).status as libc::c_int == LUA_OK {
         /* may be starting a coroutine */
         /* not in base level? */
         if (*L).ci != &mut (*L).base_ci as *mut CallInfo {
@@ -1128,7 +1130,7 @@ pub unsafe extern "C" fn lua_resume(
     } else {
         1i32
     }) as libc::c_ushort;
-    if (*L).nCcalls as libc::c_int >= 200i32 {
+    if (*L).nCcalls as libc::c_int >= LUAI_MAXCCALLS {
         return resume_error(L, s!(b"C stack overflow\x00"), nargs);
     } else {
         /* allow yields */
@@ -1476,7 +1478,7 @@ pub unsafe extern "C" fn luaD_rawrunprotected(
             __mask_was_saved: 0,
             __saved_mask: __sigset_t { __val: [0; 16] },
         }; 1],
-        status: 0,
+        status: LUA_OK,
     };
     ::std::ptr::write_volatile(&mut lj.status as *mut libc::c_int, 0i32);
     /* chain new error handler */
@@ -1583,17 +1585,17 @@ unsafe extern "C" fn resume(mut L: *mut lua_State, mut ud: *mut libc::c_void) ->
     /* first argument */
     let mut firstArg: StkId = (*L).top.offset(-(n as isize));
     let mut ci: *mut CallInfo = (*L).ci;
-    if (*L).status as libc::c_int == 0i32 {
+    if (*L).status as libc::c_int == LUA_OK {
         /* starting a coroutine? */
         /* Lua function? */
-        if 0 == luaD_precall(L, firstArg.offset(-1isize), -1i32) {
+        if 0 == luaD_precall(L, firstArg.offset(-1isize), LUA_MULTRET) {
             /* call it */
             luaV_execute(L);
         }
     } else {
         /* resuming from previous yield */
         /* mark that it is running (again) */
-        (*L).status = 0i32 as lu_byte;
+        (*L).status = LUA_OK as lu_byte;
         (*ci).func = ((*L).stack as *mut libc::c_char).offset((*ci).extra as isize) as *mut TValue;
         /* yielded inside a hook? */
         if 0 != (*ci).callstatus as libc::c_int & 1i32 << 1i32 {
@@ -2000,7 +2002,7 @@ pub unsafe extern "C" fn luaD_call(
     mut nResults: libc::c_int,
 ) -> () {
     (*L).nCcalls = (*L).nCcalls.wrapping_add(1);
-    if (*L).nCcalls as libc::c_int >= 200i32 {
+    if (*L).nCcalls as libc::c_int >= LUAI_MAXCCALLS {
         stackerror(L);
     }
     /* is a Lua function? */
@@ -2018,9 +2020,9 @@ pub unsafe extern "C" fn luaD_call(
 ** allow overflow handling to work)
 */
 unsafe extern "C" fn stackerror(mut L: *mut lua_State) -> () {
-    if (*L).nCcalls as libc::c_int == 200i32 {
+    if (*L).nCcalls as libc::c_int == LUAI_MAXCCALLS {
         luaG_runerror!(L, s!(b"C stack overflow\x00"),);
-    } else if (*L).nCcalls as libc::c_int >= 200i32 + (200i32 >> 3i32) {
+    } else if (*L).nCcalls as libc::c_int >= LUAI_MAXCCALLS + (LUAI_MAXCCALLS >> 3i32) {
         /* error while handing stack error */
         luaD_throw(L, 6i32);
     } else {

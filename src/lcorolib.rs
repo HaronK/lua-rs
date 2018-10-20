@@ -1,4 +1,5 @@
 use libc;
+use lua::*;
 extern "C" {
     /*
      ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
@@ -254,14 +255,14 @@ unsafe extern "C" fn auxresume(
         lua_pushstring(L, s!(b"too many arguments to resume\x00"));
         /* error flag */
         return -1i32;
-    } else if lua_status(co) == 0i32 && lua_gettop(co) == 0i32 {
+    } else if lua_status(co) == LUA_OK && lua_gettop(co) == 0i32 {
         lua_pushstring(L, s!(b"cannot resume dead coroutine\x00"));
         /* error flag */
         return -1i32;
     } else {
         lua_xmove(L, co, narg);
         status = lua_resume(co, L, narg);
-        if status == 0i32 || status == 1i32 {
+        if status == LUA_OK || status == LUA_YIELD {
             let mut nres: libc::c_int = lua_gettop(co);
             if 0 == lua_checkstack(L, nres + 1i32) {
                 /* remove results anyway */
@@ -298,10 +299,10 @@ unsafe extern "C" fn luaB_costatus(mut L: *mut lua_State) -> libc::c_int {
         lua_pushstring(L, s!(b"running\x00"));
     } else {
         match lua_status(co) {
-            1 => {
+            LUA_YIELD => {
                 lua_pushstring(L, s!(b"suspended\x00"));
             }
-            0 => {
+            LUA_OK => {
                 let mut ar: lua_Debug = lua_Debug {
                     event: 0,
                     name: 0 as *const libc::c_char,

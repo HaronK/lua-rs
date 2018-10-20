@@ -1,4 +1,5 @@
 use libc;
+use lua::*;
 extern "C" {
     /*
      ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
@@ -382,43 +383,68 @@ pub type lua_Integer = libc::c_longlong;
 ** Type for C functions registered with Lua
 */
 pub type lua_CFunction = Option<unsafe extern "C" fn(_: *mut lua_State) -> libc::c_int>;
+
+
 /*
 ** $Id: lobject.h,v 2.117.1.1 2017/04/19 17:39:34 roberto Exp $
 ** Type definitions for Lua objects
 ** See Copyright Notice in lua.h
 */
+
 /*
 ** Extra tags for non-values
 */
-/* function prototypes */
-/* removed keys in tables */
+pub const LUA_TPROTO: i32 = LUA_NUMTAGS; /* function prototypes */
+pub const LUA_TDEADKEY: i32 = LUA_NUMTAGS + 1; /* removed keys in tables */
+
 /*
 ** number of all possible tags (including LUA_TNONE but excluding DEADKEY)
 */
+pub const LUA_TOTALTAGS: i32 = LUA_TPROTO + 2;
+
 /*
 ** tags for Tagged Values have the following use of bits:
 ** bits 0-3: actual tag (a LUA_T* value)
 ** bits 4-5: variant bits
 ** bit 6: whether value is collectable
 */
+
 /*
 ** LUA_TFUNCTION variants:
 ** 0 - Lua function
 ** 1 - light C function
 ** 2 - regular C function (closure)
 */
+
 /* Variant tags for functions */
+pub const LUA_TLCL: i32 = (LUA_TFUNCTION | (0 << 4));  /* Lua closure */
+pub const LUA_TLCF: i32 = (LUA_TFUNCTION | (1 << 4));  /* light C function */
+pub const LUA_TCCL: i32 = (LUA_TFUNCTION | (2 << 4));  /* C closure */
+
+/* Variant tags for strings */
+pub const LUA_TSHRSTR: i32 = (LUA_TSTRING | (0 << 4));  /* short strings */
+pub const LUA_TLNGSTR: i32 = (LUA_TSTRING | (1 << 4));  /* long strings */
+
+/* Variant tags for numbers */
+pub const LUA_TNUMFLT: i32 = (LUA_TNUMBER | (0 << 4));  /* float numbers */
+pub const LUA_TNUMINT: i32 = (LUA_TNUMBER | (1 << 4));  /* integer numbers */
+
+/* Bit mark for collectable types */
+pub const BIT_ISCOLLECTABLE: i32 = (1 << 6);
+
+/* mark a tag as collectable */
+
+/* function prototypes */
+
+/* removed keys in tables */
+
 /* Lua closure */
 /* light C function */
 /* C closure */
-/* Variant tags for strings */
 /* short strings */
 /* long strings */
-/* Variant tags for numbers */
 /* float numbers */
 /* integer numbers */
-/* Bit mark for collectable types */
-/* mark a tag as collectable */
 /*
 ** Common type for all collectable objects
 */

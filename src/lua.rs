@@ -1,4 +1,5 @@
 use libc;
+use luaconf::*;
 extern "C" {
     pub type _IO_wide_data;
     pub type _IO_codecvt;
@@ -9,15 +10,9 @@ extern "C" {
      ** Lua.org, PUC-Rio, Brazil (http://www.lua.org)
      ** See Copyright Notice at the end of this file
      */
-    /* mark for precompiled code ('<esc>Lua') */
-    /* option for multiple returns in 'lua_pcall' and 'lua_call' */
-    /*
-     ** Pseudo-indices
-     ** (-LUAI_MAXSTACK is the minimum valid index; we keep some free empty
-     ** space after that to help overflow detection)
-     */
-    /* thread status */
+
     pub type lua_State;
+
     /* private part */
     pub type CallInfo;
     #[no_mangle]
@@ -192,17 +187,82 @@ pub struct _IO_FILE {
 pub type _IO_lock_t = ();
 pub type FILE = _IO_FILE;
 pub type intptr_t = libc::c_long;
+
+// ----------- Header declarations -----------
+
+pub_const_c_str!(LUA_VERSION_MAJOR, b"5\x00");
+pub_const_c_str!(LUA_VERSION_MINOR, b"3\x00");
+pub const LUA_VERSION_NUM: i32 = 503;
+pub_const_c_str!(LUA_VERSION_RELEASE, b"5\x00");
+
+// #define LUA_VERSION	"Lua " LUA_VERSION_MAJOR "." LUA_VERSION_MINOR
+// #define LUA_RELEASE	LUA_VERSION "." LUA_VERSION_RELEASE
+// #define LUA_COPYRIGHT	LUA_RELEASE "  Copyright (C) 1994-2018 Lua.org, PUC-Rio"
+pub_const_c_str!(
+    LUA_AUTHORS,
+    b"R. Ierusalimschy, L. H. de Figueiredo, W. Celes\x00"
+);
+
+/* mark for precompiled code ('<esc>Lua') */
+pub_const_c_str!(LUA_SIGNATURE, b"\x1bLua\x00");
+
+/* option for multiple returns in 'lua_pcall' and 'lua_call' */
+pub const LUA_MULTRET: i32 = -1;
+
+/*
+ ** Pseudo-indices
+ ** (-LUAI_MAXSTACK is the minimum valid index; we keep some free empty
+ ** space after that to help overflow detection)
+ */
+// #define LUA_REGISTRYINDEX	(-LUAI_MAXSTACK - 1000)
+// #define lua_upvalueindex(i)	(LUA_REGISTRYINDEX - (i))
+
+/* thread status */
+pub const LUA_OK: i32 = 0;
+pub const LUA_YIELD: i32 = 1;
+pub const LUA_ERRRUN: i32 = 2;
+pub const LUA_ERRSYNTAX: i32 = 3;
+pub const LUA_ERRMEM: i32 = 4;
+pub const LUA_ERRGCMM: i32 = 5;
+pub const LUA_ERRERR: i32 = 6;
+
 /*
 ** basic types
 */
+pub const LUA_TNONE: i32 = -1;
+
+pub const LUA_TNIL: i32 = 0;
+pub const LUA_TBOOLEAN: i32 = 1;
+pub const LUA_TLIGHTUSERDATA: i32 = 2;
+pub const LUA_TNUMBER: i32 = 3;
+pub const LUA_TSTRING: i32 = 4;
+pub const LUA_TTABLE: i32 = 5;
+pub const LUA_TFUNCTION: i32 = 6;
+pub const LUA_TUSERDATA: i32 = 7;
+pub const LUA_TTHREAD: i32 = 8;
+
+pub const LUA_NUMTAGS: i32 = 9;
+
 /* minimum Lua stack available to a C function */
+pub const LUA_MINSTACK: i32 = 20;
+
 /* predefined values in the registry */
+pub const LUA_RIDX_MAINTHREAD: i32 = 1;
+pub const LUA_RIDX_GLOBALS: i32 = 2;
+pub const LUA_RIDX_LAST: i32 = LUA_RIDX_GLOBALS;
+
 /* type of numbers in Lua */
-pub type lua_Number = libc::c_double;
+pub type lua_Number = LUA_NUMBER;
+
 /* type for integer functions */
 pub type lua_Integer = libc::c_longlong;
+
+/* unsigned integer type */
+pub type lua_Unsigned = u64; // TODO: check
+
 /* type for continuation-function contexts */
 pub type lua_KContext = intptr_t;
+
 /*
 ** Type for C functions registered with Lua
 */

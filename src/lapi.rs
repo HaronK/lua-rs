@@ -1,4 +1,5 @@
 use libc;
+use lua::*;
 extern "C" {
     /*
      ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
@@ -1112,7 +1113,7 @@ pub unsafe extern "C" fn lua_checkstack(mut L: *mut lua_State, mut n: libc::c_in
                 L,
                 Some(growstack),
                 &mut n as *mut libc::c_int as *mut libc::c_void,
-            ) == 0i32) as libc::c_int
+            ) == LUA_OK) as libc::c_int
         }
     }
     if 0 != res && (*ci).top < (*L).top.offset(n as isize) {
@@ -1363,10 +1364,8 @@ pub unsafe extern "C" fn lua_topointer(
                 as *const libc::c_void
         }
         22 => {
-            // TODO: check this!
-            return ((*o).value_.f.unwrap() as size_t) as *mut libc::c_void;
-            // return ::std::mem::transmute::<lua_CFunction, size_t>((*o).value_.f)
-            //     as *mut libc::c_void
+            return ::std::mem::transmute::<lua_CFunction, size_t>((*o).value_.f)
+                as *mut libc::c_void
         }
         8 => {
             return &mut (*((*o).value_.gc as *mut GCUnion)).th as *mut lua_State
@@ -2270,7 +2269,7 @@ pub unsafe extern "C" fn lua_pcallk(
         (*ci).callstatus = ((*ci).callstatus as libc::c_int & !(1i32 << 4i32)) as libc::c_ushort;
         (*L).errfunc = (*ci).u.c.old_errfunc;
         /* if it is here, there were no errors */
-        status = 0i32
+        status = LUA_OK
     }
     if nresults == -1i32 && (*(*L).ci).top < (*L).top {
         (*(*L).ci).top = (*L).top
@@ -2302,7 +2301,7 @@ pub unsafe extern "C" fn lua_load(
     }
     luaZ_init(L, &mut z, reader, data);
     status = luaD_protectedparser(L, &mut z, chunkname, mode);
-    if status == 0i32 {
+    if status == LUA_OK {
         /* no errors? */
         /* get newly created function */
         let mut f: *mut LClosure = &mut (*((*(*L).top.offset(-1isize)).value_.gc as *mut GCUnion))

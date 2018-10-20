@@ -1,4 +1,6 @@
 use libc;
+use lua::*;
+use luaconf::*;
 extern "C" {
     pub type _IO_wide_data;
     pub type _IO_codecvt;
@@ -1606,7 +1608,7 @@ unsafe extern "C" fn pmain(mut L: *mut lua_State) -> libc::c_int {
             } else {
                 *argv.offset(i as isize)
             };
-        if luaL_loadfilex(L, filename, 0 as *const libc::c_char) != 0i32 {
+        if luaL_loadfilex(L, filename, 0 as *const libc::c_char) != LUA_OK {
             fatal(lua_tolstring(L, -1i32, 0 as *mut size_t));
         }
         i += 1
@@ -1652,9 +1654,9 @@ pub(crate) unsafe fn main_0(
     lua_pushcclosure(L, Some(pmain), 0i32);
     lua_pushinteger(L, argc as lua_Integer);
     lua_pushlightuserdata(L, argv as *mut libc::c_void);
-    if lua_pcallk(L, 2i32, 0i32, 0i32, 0i32 as lua_KContext, None) != 0i32 {
+    if lua_pcallk(L, 2i32, 0i32, 0i32, 0i32 as lua_KContext, None) != LUA_OK {
         fatal(lua_tolstring(L, -1i32, 0 as *mut size_t));
     }
     lua_close(L);
-    return 0i32;
+    return EXIT_SUCCESS;
 }

@@ -1,4 +1,5 @@
 use libc;
+use lua::*;
 extern "C" {
     pub type _IO_wide_data;
     pub type _IO_codecvt;
@@ -460,7 +461,7 @@ unsafe extern "C" fn finishpcall(
     mut status: libc::c_int,
     mut extra: lua_KContext,
 ) -> libc::c_int {
-    if status != 0i32 && status != 1i32 {
+    if status != LUA_OK && status != LUA_YIELD {
         /* error? */
         /* first result (false) */
         lua_pushboolean(L, 0i32);
@@ -812,7 +813,7 @@ unsafe extern "C" fn load_aux(
     mut status: libc::c_int,
     mut envidx: libc::c_int,
 ) -> libc::c_int {
-    if status == 0i32 {
+    if status == LUA_OK {
         if envidx != 0i32 {
             /* 'env' parameter? */
             /* environment for loaded function */
@@ -935,10 +936,10 @@ unsafe extern "C" fn luaB_dofile(mut L: *mut lua_State) -> libc::c_int {
     let mut fname: *const libc::c_char =
         luaL_optlstring(L, 1i32, 0 as *const libc::c_char, 0 as *mut size_t);
     lua_settop(L, 1i32);
-    if luaL_loadfilex(L, fname, 0 as *const libc::c_char) != 0i32 {
+    if luaL_loadfilex(L, fname, 0 as *const libc::c_char) != LUA_OK {
         return lua_error(L);
     } else {
-        lua_callk(L, 0i32, -1i32, 0i32 as lua_KContext, Some(dofilecont));
+        lua_callk(L, 0i32, LUA_MULTRET, 0i32 as lua_KContext, Some(dofilecont));
         return dofilecont(L, 0i32, 0i32 as lua_KContext);
     };
 }

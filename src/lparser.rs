@@ -1,4 +1,5 @@
 use libc;
+use llimits::*;
 extern "C" {
     /*
      ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
@@ -1855,7 +1856,7 @@ unsafe extern "C" fn assignment(
             checklimit(
                 (*ls).fs,
                 nvars + (*(*ls).L).nCcalls as libc::c_int,
-                200i32,
+                LUAI_MAXCCALLS,
                 s!(b"C levels\x00"),
             );
             assignment(ls, &mut nv, nvars + 1i32);
@@ -3011,7 +3012,7 @@ unsafe extern "C" fn enterlevel(mut ls: *mut LexState) -> () {
     checklimit(
         (*ls).fs,
         (*L).nCcalls as libc::c_int,
-        200i32,
+        LUAI_MAXCCALLS,
         s!(b"C levels\x00"),
     );
 }
