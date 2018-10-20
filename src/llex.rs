@@ -870,7 +870,7 @@ pub unsafe extern "C" fn luaX_init(mut L: *mut lua_State) -> () {
     /* create env name */
     let mut e: *mut TString = luaS_newlstr(
         L,
-        b"_ENV\x00" as *const u8 as *const libc::c_char,
+        s!(b"_ENV\x00"),
         (::std::mem::size_of::<[libc::c_char; 5]>() as libc::c_ulong)
             .wrapping_div(::std::mem::size_of::<libc::c_char>() as libc::c_ulong)
             .wrapping_sub(1i32 as libc::c_ulong),
@@ -894,43 +894,43 @@ pub unsafe extern "C" fn luaX_init(mut L: *mut lua_State) -> () {
 */
 /* ORDER RESERVED */
 static mut luaX_tokens: [*const libc::c_char; 37] = [
-    b"and\x00" as *const u8 as *const libc::c_char,
-    b"break\x00" as *const u8 as *const libc::c_char,
-    b"do\x00" as *const u8 as *const libc::c_char,
-    b"else\x00" as *const u8 as *const libc::c_char,
-    b"elseif\x00" as *const u8 as *const libc::c_char,
-    b"end\x00" as *const u8 as *const libc::c_char,
-    b"false\x00" as *const u8 as *const libc::c_char,
-    b"for\x00" as *const u8 as *const libc::c_char,
-    b"function\x00" as *const u8 as *const libc::c_char,
-    b"goto\x00" as *const u8 as *const libc::c_char,
-    b"if\x00" as *const u8 as *const libc::c_char,
-    b"in\x00" as *const u8 as *const libc::c_char,
-    b"local\x00" as *const u8 as *const libc::c_char,
-    b"nil\x00" as *const u8 as *const libc::c_char,
-    b"not\x00" as *const u8 as *const libc::c_char,
-    b"or\x00" as *const u8 as *const libc::c_char,
-    b"repeat\x00" as *const u8 as *const libc::c_char,
-    b"return\x00" as *const u8 as *const libc::c_char,
-    b"then\x00" as *const u8 as *const libc::c_char,
-    b"true\x00" as *const u8 as *const libc::c_char,
-    b"until\x00" as *const u8 as *const libc::c_char,
-    b"while\x00" as *const u8 as *const libc::c_char,
-    b"//\x00" as *const u8 as *const libc::c_char,
-    b"..\x00" as *const u8 as *const libc::c_char,
-    b"...\x00" as *const u8 as *const libc::c_char,
-    b"==\x00" as *const u8 as *const libc::c_char,
-    b">=\x00" as *const u8 as *const libc::c_char,
-    b"<=\x00" as *const u8 as *const libc::c_char,
-    b"~=\x00" as *const u8 as *const libc::c_char,
-    b"<<\x00" as *const u8 as *const libc::c_char,
-    b">>\x00" as *const u8 as *const libc::c_char,
-    b"::\x00" as *const u8 as *const libc::c_char,
-    b"<eof>\x00" as *const u8 as *const libc::c_char,
-    b"<number>\x00" as *const u8 as *const libc::c_char,
-    b"<integer>\x00" as *const u8 as *const libc::c_char,
-    b"<name>\x00" as *const u8 as *const libc::c_char,
-    b"<string>\x00" as *const u8 as *const libc::c_char,
+    s!(b"and\x00"),
+    s!(b"break\x00"),
+    s!(b"do\x00"),
+    s!(b"else\x00"),
+    s!(b"elseif\x00"),
+    s!(b"end\x00"),
+    s!(b"false\x00"),
+    s!(b"for\x00"),
+    s!(b"function\x00"),
+    s!(b"goto\x00"),
+    s!(b"if\x00"),
+    s!(b"in\x00"),
+    s!(b"local\x00"),
+    s!(b"nil\x00"),
+    s!(b"not\x00"),
+    s!(b"or\x00"),
+    s!(b"repeat\x00"),
+    s!(b"return\x00"),
+    s!(b"then\x00"),
+    s!(b"true\x00"),
+    s!(b"until\x00"),
+    s!(b"while\x00"),
+    s!(b"//\x00"),
+    s!(b"..\x00"),
+    s!(b"...\x00"),
+    s!(b"==\x00"),
+    s!(b">=\x00"),
+    s!(b"<=\x00"),
+    s!(b"~=\x00"),
+    s!(b"<<\x00"),
+    s!(b">>\x00"),
+    s!(b"::\x00"),
+    s!(b"<eof>\x00"),
+    s!(b"<number>\x00"),
+    s!(b"<integer>\x00"),
+    s!(b"<name>\x00"),
+    s!(b"<string>\x00"),
 ];
 #[no_mangle]
 pub unsafe extern "C" fn luaX_setinput(
@@ -953,7 +953,7 @@ pub unsafe extern "C" fn luaX_setinput(
     /* get env name */
     (*ls).envn = luaS_newlstr(
         L,
-        b"_ENV\x00" as *const u8 as *const libc::c_char,
+        s!(b"_ENV\x00"),
         (::std::mem::size_of::<[libc::c_char; 5]>() as libc::c_ulong)
             .wrapping_div(::std::mem::size_of::<libc::c_char>() as libc::c_ulong)
             .wrapping_sub(1i32 as libc::c_ulong),
@@ -1108,7 +1108,7 @@ unsafe extern "C" fn llex(mut ls: *mut LexState, mut seminfo: *mut SemInfo) -> l
                 } else if sep_0 != -1i32 {
                     lexerror(
                         ls,
-                        b"invalid long string delimiter\x00" as *const u8 as *const libc::c_char,
+                        s!(b"invalid long string delimiter\x00"),
                         TK_STRING as libc::c_int,
                     );
                 } else {
@@ -1312,11 +1312,7 @@ unsafe extern "C" fn save(mut ls: *mut LexState, mut c: libc::c_int) -> () {
         }
         .wrapping_div(2i32 as libc::c_ulong)
         {
-            lexerror(
-                ls,
-                b"lexical element too long\x00" as *const u8 as *const libc::c_char,
-                0i32,
-            );
+            lexerror(ls, s!(b"lexical element too long\x00"), 0i32);
         } else {
             newsize = (*b).buffsize.wrapping_mul(2i32 as libc::c_ulong);
             (*b).buffer = luaM_realloc_(
@@ -1340,12 +1336,7 @@ unsafe extern "C" fn lexerror(
 ) -> ! {
     msg = luaG_addinfo((*ls).L, msg, (*ls).source, (*ls).linenumber);
     if 0 != token {
-        luaO_pushfstring!(
-            (*ls).L,
-            b"%s near %s\x00" as *const u8 as *const libc::c_char,
-            msg,
-            txtToken(ls, token),
-        );
+        luaO_pushfstring!((*ls).L, s!(b"%s near %s\x00"), msg, txtToken(ls, token),);
     }
     luaD_throw((*ls).L, 3i32);
 }
@@ -1356,11 +1347,7 @@ unsafe extern "C" fn txtToken(
     match token {
         292 | 293 | 290 | 291 => {
             save(ls, '\u{0}' as i32);
-            return luaO_pushfstring!(
-                (*ls).L,
-                b"\'%s\'\x00" as *const u8 as *const libc::c_char,
-                (*(*ls).buff).buffer,
-            );
+            return luaO_pushfstring!((*ls).L, s!(b"\'%s\'\x00"), (*(*ls).buff).buffer,);
         }
         _ => return luaX_token2str(ls, token),
     };
@@ -1372,20 +1359,12 @@ pub unsafe extern "C" fn luaX_token2str(
 ) -> *const libc::c_char {
     if token < 257i32 {
         /* single-byte symbols? */
-        return luaO_pushfstring!(
-            (*ls).L,
-            b"\'%c\'\x00" as *const u8 as *const libc::c_char,
-            token,
-        );
+        return luaO_pushfstring!((*ls).L, s!(b"\'%c\'\x00"), token,);
     } else {
         let mut s: *const libc::c_char = luaX_tokens[(token - 257i32) as usize];
         /* fixed format (symbols and reserved words)? */
         if token < TK_EOS as libc::c_int {
-            return luaO_pushfstring!(
-                (*ls).L,
-                b"\'%s\'\x00" as *const u8 as *const libc::c_char,
-                s,
-            );
+            return luaO_pushfstring!((*ls).L, s!(b"\'%s\'\x00"), s,);
         } else {
             return s;
         }
@@ -1403,7 +1382,7 @@ unsafe extern "C" fn read_numeral(mut ls: *mut LexState, mut seminfo: *mut SemIn
         },
         tt_: 0,
     };
-    let mut expo: *const libc::c_char = b"Ee\x00" as *const u8 as *const libc::c_char;
+    let mut expo: *const libc::c_char = s!(b"Ee\x00");
     let mut first: libc::c_int = (*ls).current;
     save(ls, (*ls).current);
     let fresh28 = (*(*ls).z).n;
@@ -1416,14 +1395,14 @@ unsafe extern "C" fn read_numeral(mut ls: *mut LexState, mut seminfo: *mut SemIn
         luaZ_fill((*ls).z)
     };
     /* hexadecimal? */
-    if first == '0' as i32 && 0 != check_next2(ls, b"xX\x00" as *const u8 as *const libc::c_char) {
-        expo = b"Pp\x00" as *const u8 as *const libc::c_char
+    if first == '0' as i32 && 0 != check_next2(ls, s!(b"xX\x00")) {
+        expo = s!(b"Pp\x00")
     }
     loop {
         /* exponent part? */
         if 0 != check_next2(ls, expo) {
             /* optional exponent sign */
-            check_next2(ls, b"-+\x00" as *const u8 as *const libc::c_char);
+            check_next2(ls, s!(b"-+\x00"));
         }
         if 0 != luai_ctype_[((*ls).current + 1i32) as usize] as libc::c_int & 1i32 << 4i32 {
             save(ls, (*ls).current);
@@ -1455,11 +1434,7 @@ unsafe extern "C" fn read_numeral(mut ls: *mut LexState, mut seminfo: *mut SemIn
     save(ls, '\u{0}' as i32);
     /* format error? */
     if luaO_str2num((*(*ls).buff).buffer, &mut obj) == 0i32 as libc::c_ulong {
-        lexerror(
-            ls,
-            b"malformed number\x00" as *const u8 as *const libc::c_char,
-            TK_FLT as libc::c_int,
-        );
+        lexerror(ls, s!(b"malformed number\x00"), TK_FLT as libc::c_int);
     } else if obj.tt_ == 3i32 | 1i32 << 4i32 {
         (*seminfo).i = obj.value_.i;
         return TK_INT as libc::c_int;
@@ -1535,18 +1510,10 @@ unsafe extern "C" fn read_string(
     's_4: while (*ls).current != del {
         match (*ls).current {
             -1 => {
-                lexerror(
-                    ls,
-                    b"unfinished string\x00" as *const u8 as *const libc::c_char,
-                    TK_EOS as libc::c_int,
-                );
+                lexerror(ls, s!(b"unfinished string\x00"), TK_EOS as libc::c_int);
             }
             10 | 13 => {
-                lexerror(
-                    ls,
-                    b"unfinished string\x00" as *const u8 as *const libc::c_char,
-                    TK_STRING as libc::c_int,
-                );
+                lexerror(ls, s!(b"unfinished string\x00"), TK_STRING as libc::c_int);
             }
             92 => {
                 /* escape sequences */
@@ -1656,7 +1623,7 @@ unsafe extern "C" fn read_string(
                             ls,
                             luai_ctype_[((*ls).current + 1i32) as usize] as libc::c_int
                                 & 1i32 << 1i32,
-                            b"invalid escape sequence\x00" as *const u8 as *const libc::c_char,
+                            s!(b"invalid escape sequence\x00"),
                         );
                         /* digital escape '\ddd' */
                         c = readdecesc(ls);
@@ -1741,7 +1708,7 @@ unsafe extern "C" fn readdecesc(mut ls: *mut LexState) -> libc::c_int {
     esccheck(
         ls,
         (r <= 127i32 * 2i32 + 1i32) as libc::c_int,
-        b"decimal escape too large\x00" as *const u8 as *const libc::c_char,
+        s!(b"decimal escape too large\x00"),
     );
     /* remove read digits from buffer */
     (*(*ls).buff).n =
@@ -1802,11 +1769,7 @@ unsafe extern "C" fn inclinenumber(mut ls: *mut LexState) -> () {
     }
     (*ls).linenumber += 1;
     if (*ls).linenumber >= 2147483647i32 {
-        lexerror(
-            ls,
-            b"chunk has too many lines\x00" as *const u8 as *const libc::c_char,
-            0i32,
-        );
+        lexerror(ls, s!(b"chunk has too many lines\x00"), 0i32);
     } else {
         return;
     };
@@ -1838,7 +1801,7 @@ unsafe extern "C" fn readutf8esc(mut ls: *mut LexState) -> libc::c_ulong {
     esccheck(
         ls,
         ((*ls).current == '{' as i32) as libc::c_int,
-        b"missing \'{\'\x00" as *const u8 as *const libc::c_char,
+        s!(b"missing \'{\'\x00"),
     );
     /* must have at least one digit */
     r = gethexa(ls) as libc::c_ulong;
@@ -1861,13 +1824,13 @@ unsafe extern "C" fn readutf8esc(mut ls: *mut LexState) -> libc::c_ulong {
         esccheck(
             ls,
             (r <= 0x10ffffi32 as libc::c_ulong) as libc::c_int,
-            b"UTF-8 value too large\x00" as *const u8 as *const libc::c_char,
+            s!(b"UTF-8 value too large\x00"),
         );
     }
     esccheck(
         ls,
         ((*ls).current == '}' as i32) as libc::c_int,
-        b"missing \'}\'\x00" as *const u8 as *const libc::c_char,
+        s!(b"missing \'}\'\x00"),
     );
     /* skip '}' */
     let fresh64 = (*(*ls).z).n;
@@ -1898,7 +1861,7 @@ unsafe extern "C" fn gethexa(mut ls: *mut LexState) -> libc::c_int {
     esccheck(
         ls,
         luai_ctype_[((*ls).current + 1i32) as usize] as libc::c_int & 1i32 << 4i32,
-        b"hexadecimal digit expected\x00" as *const u8 as *const libc::c_char,
+        s!(b"hexadecimal digit expected\x00"),
     );
     return luaO_hexavalue((*ls).current);
 }
@@ -1975,14 +1938,13 @@ unsafe extern "C" fn read_long_string(
             -1 => {
                 /* error */
                 let mut what: *const libc::c_char = if !seminfo.is_null() {
-                    b"string\x00" as *const u8 as *const libc::c_char
+                    s!(b"string\x00")
                 } else {
-                    b"comment\x00" as *const u8 as *const libc::c_char
+                    s!(b"comment\x00")
                 };
                 let mut msg: *const libc::c_char = luaO_pushfstring!(
                     (*ls).L,
-                    b"unfinished long %s (starting at line %d)\x00" as *const u8
-                        as *const libc::c_char,
+                    s!(b"unfinished long %s (starting at line %d)\x00"),
                     what,
                     line,
                 );

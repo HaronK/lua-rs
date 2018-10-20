@@ -91,51 +91,51 @@ pub unsafe extern "C" fn luaopen_bit32(mut L: *mut lua_State) -> libc::c_int {
 }
 static mut bitlib: [luaL_Reg; 13] = [
     luaL_Reg {
-        name: b"arshift\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"arshift\x00"),
         func: Some(b_arshift),
     },
     luaL_Reg {
-        name: b"band\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"band\x00"),
         func: Some(b_and),
     },
     luaL_Reg {
-        name: b"bnot\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"bnot\x00"),
         func: Some(b_not),
     },
     luaL_Reg {
-        name: b"bor\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"bor\x00"),
         func: Some(b_or),
     },
     luaL_Reg {
-        name: b"bxor\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"bxor\x00"),
         func: Some(b_xor),
     },
     luaL_Reg {
-        name: b"btest\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"btest\x00"),
         func: Some(b_test),
     },
     luaL_Reg {
-        name: b"extract\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"extract\x00"),
         func: Some(b_extract),
     },
     luaL_Reg {
-        name: b"lrotate\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"lrotate\x00"),
         func: Some(b_lrot),
     },
     luaL_Reg {
-        name: b"lshift\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"lshift\x00"),
         func: Some(b_lshift),
     },
     luaL_Reg {
-        name: b"replace\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"replace\x00"),
         func: Some(b_replace),
     },
     luaL_Reg {
-        name: b"rrotate\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"rrotate\x00"),
         func: Some(b_rrot),
     },
     luaL_Reg {
-        name: b"rshift\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"rshift\x00"),
         func: Some(b_rshift),
     },
     luaL_Reg {
@@ -220,21 +220,13 @@ unsafe extern "C" fn fieldargs(
 ) -> libc::c_int {
     let mut f: lua_Integer = luaL_checkinteger(L, farg);
     let mut w: lua_Integer = luaL_optinteger(L, farg + 1i32, 1i32 as lua_Integer);
-    (0i32 as libc::c_longlong <= f || 0 != luaL_argerror(
-        L,
-        farg,
-        b"field cannot be negative\x00" as *const u8 as *const libc::c_char,
-    )) as libc::c_int;
-    ((0i32 as libc::c_longlong) < w || 0 != luaL_argerror(
-        L,
-        farg + 1i32,
-        b"width must be positive\x00" as *const u8 as *const libc::c_char,
-    )) as libc::c_int;
+    (0i32 as libc::c_longlong <= f
+        || 0 != luaL_argerror(L, farg, s!(b"field cannot be negative\x00"))) as libc::c_int;
+    ((0i32 as libc::c_longlong) < w
+        || 0 != luaL_argerror(L, farg + 1i32, s!(b"width must be positive\x00")))
+        as libc::c_int;
     if f + w > 32i32 as libc::c_longlong {
-        luaL_error(
-            L,
-            b"trying to access non-existent bits\x00" as *const u8 as *const libc::c_char,
-        );
+        luaL_error(L, s!(b"trying to access non-existent bits\x00"));
     }
     *width = w as libc::c_int;
     return f as libc::c_int;

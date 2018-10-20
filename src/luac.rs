@@ -988,27 +988,27 @@ unsafe extern "C" fn PrintDebug(mut f: *const Proto) -> () {
     let mut n: libc::c_int = 0;
     n = (*f).sizek;
     printf(
-        b"constants (%d) for %p:\n\x00" as *const u8 as *const libc::c_char,
+        s!(b"constants (%d) for %p:\n\x00"),
         n,
         f as *const libc::c_void,
     );
     i = 0i32;
     while i < n {
-        printf(b"\t%d\t\x00" as *const u8 as *const libc::c_char, i + 1i32);
+        printf(s!(b"\t%d\t\x00"), i + 1i32);
         PrintConstant(f, i);
-        printf(b"\n\x00" as *const u8 as *const libc::c_char);
+        printf(s!(b"\n\x00"));
         i += 1
     }
     n = (*f).sizelocvars;
     printf(
-        b"locals (%d) for %p:\n\x00" as *const u8 as *const libc::c_char,
+        s!(b"locals (%d) for %p:\n\x00"),
         n,
         f as *const libc::c_void,
     );
     i = 0i32;
     while i < n {
         printf(
-            b"\t%d\t%s\t%d\t%d\n\x00" as *const u8 as *const libc::c_char,
+            s!(b"\t%d\t%s\t%d\t%d\n\x00"),
             i,
             ((*(*f).locvars.offset(i as isize)).varname as *mut libc::c_char)
                 .offset(::std::mem::size_of::<UTString>() as libc::c_ulong as isize),
@@ -1019,20 +1019,20 @@ unsafe extern "C" fn PrintDebug(mut f: *const Proto) -> () {
     }
     n = (*f).sizeupvalues;
     printf(
-        b"upvalues (%d) for %p:\n\x00" as *const u8 as *const libc::c_char,
+        s!(b"upvalues (%d) for %p:\n\x00"),
         n,
         f as *const libc::c_void,
     );
     i = 0i32;
     while i < n {
         printf(
-            b"\t%d\t%s\t%d\t%d\n\x00" as *const u8 as *const libc::c_char,
+            s!(b"\t%d\t%s\t%d\t%d\n\x00"),
             i,
             if !(*(*f).upvalues.offset(i as isize)).name.is_null() {
                 ((*(*f).upvalues.offset(i as isize)).name as *mut libc::c_char)
                     .offset(::std::mem::size_of::<UTString>() as libc::c_ulong as isize)
             } else {
-                b"-\x00" as *const u8 as *const libc::c_char
+                s!(b"-\x00")
             },
             (*(*f).upvalues.offset(i as isize)).instack as libc::c_int,
             (*(*f).upvalues.offset(i as isize)).idx as libc::c_int,
@@ -1044,49 +1044,33 @@ unsafe extern "C" fn PrintConstant(mut f: *const Proto, mut i: libc::c_int) -> (
     let mut o: *const TValue = &mut *(*f).k.offset(i as isize) as *mut TValue;
     match (*o).tt_ & 0x3fi32 {
         0 => {
-            printf(b"nil\x00" as *const u8 as *const libc::c_char);
+            printf(s!(b"nil\x00"));
         }
         1 => {
             printf(if 0 != (*o).value_.b {
-                b"true\x00" as *const u8 as *const libc::c_char
+                s!(b"true\x00")
             } else {
-                b"false\x00" as *const u8 as *const libc::c_char
+                s!(b"false\x00")
             });
         }
         3 => {
             let mut buff: [libc::c_char; 100] = [0; 100];
-            sprintf(
-                buff.as_mut_ptr(),
-                b"%.14g\x00" as *const u8 as *const libc::c_char,
-                (*o).value_.n,
-            );
-            printf(
-                b"%s\x00" as *const u8 as *const libc::c_char,
-                buff.as_mut_ptr(),
-            );
-            if buff[strspn(
-                buff.as_mut_ptr(),
-                b"-0123456789\x00" as *const u8 as *const libc::c_char,
-            ) as usize] as libc::c_int
+            sprintf(buff.as_mut_ptr(), s!(b"%.14g\x00"), (*o).value_.n);
+            printf(s!(b"%s\x00"), buff.as_mut_ptr());
+            if buff[strspn(buff.as_mut_ptr(), s!(b"-0123456789\x00")) as usize] as libc::c_int
                 == '\u{0}' as i32
             {
-                printf(b".0\x00" as *const u8 as *const libc::c_char);
+                printf(s!(b".0\x00"));
             }
         }
         19 => {
-            printf(
-                b"%lld\x00" as *const u8 as *const libc::c_char,
-                (*o).value_.i,
-            );
+            printf(s!(b"%lld\x00"), (*o).value_.i);
         }
         4 | 20 => {
             PrintString(&mut (*((*o).value_.gc as *mut GCUnion)).ts);
         }
         _ => {
-            printf(
-                b"? type=%d\x00" as *const u8 as *const libc::c_char,
-                (*o).tt_ & 0x3fi32,
-            );
+            printf(s!(b"? type=%d\x00"), (*o).tt_ & 0x3fi32);
         }
     };
 }
@@ -1104,51 +1088,51 @@ unsafe extern "C" fn PrintString(mut ts: *const TString) -> () {
     } else {
         (*ts).u.lnglen
     };
-    printf(b"%c\x00" as *const u8 as *const libc::c_char, '\"' as i32);
+    printf(s!(b"%c\x00"), '\"' as i32);
     i = 0i32 as size_t;
     while i < n {
         let mut c: libc::c_int = *s.offset(i as isize) as libc::c_uchar as libc::c_int;
         match c {
             34 => {
-                printf(b"\\\"\x00" as *const u8 as *const libc::c_char);
+                printf(s!(b"\\\"\x00"));
             }
             92 => {
-                printf(b"\\\\\x00" as *const u8 as *const libc::c_char);
+                printf(s!(b"\\\\\x00"));
             }
             7 => {
-                printf(b"\\a\x00" as *const u8 as *const libc::c_char);
+                printf(s!(b"\\a\x00"));
             }
             8 => {
-                printf(b"\\b\x00" as *const u8 as *const libc::c_char);
+                printf(s!(b"\\b\x00"));
             }
             12 => {
-                printf(b"\\f\x00" as *const u8 as *const libc::c_char);
+                printf(s!(b"\\f\x00"));
             }
             10 => {
-                printf(b"\\n\x00" as *const u8 as *const libc::c_char);
+                printf(s!(b"\\n\x00"));
             }
             13 => {
-                printf(b"\\r\x00" as *const u8 as *const libc::c_char);
+                printf(s!(b"\\r\x00"));
             }
             9 => {
-                printf(b"\\t\x00" as *const u8 as *const libc::c_char);
+                printf(s!(b"\\t\x00"));
             }
             11 => {
-                printf(b"\\v\x00" as *const u8 as *const libc::c_char);
+                printf(s!(b"\\v\x00"));
             }
             _ => {
                 if 0 != *(*__ctype_b_loc()).offset(c as isize) as libc::c_int
                     & _ISprint as libc::c_int as libc::c_ushort as libc::c_int
                 {
-                    printf(b"%c\x00" as *const u8 as *const libc::c_char, c);
+                    printf(s!(b"%c\x00"), c);
                 } else {
-                    printf(b"\\%03d\x00" as *const u8 as *const libc::c_char, c);
+                    printf(s!(b"\\%03d\x00"), c);
                 }
             }
         }
         i = i.wrapping_add(1)
     }
-    printf(b"%c\x00" as *const u8 as *const libc::c_char, '\"' as i32);
+    printf(s!(b"%c\x00"), '\"' as i32);
 }
 unsafe extern "C" fn PrintCode(mut f: *const Proto) -> () {
     let mut code: *const Instruction = (*f).code;
@@ -1180,25 +1164,22 @@ unsafe extern "C" fn PrintCode(mut f: *const Proto) -> () {
         } else {
             -1i32
         };
-        printf(b"\t%d\t\x00" as *const u8 as *const libc::c_char, pc + 1i32);
+        printf(s!(b"\t%d\t\x00"), pc + 1i32);
         if line > 0i32 {
-            printf(b"[%d]\t\x00" as *const u8 as *const libc::c_char, line);
+            printf(s!(b"[%d]\t\x00"), line);
         } else {
-            printf(b"[-]\t\x00" as *const u8 as *const libc::c_char);
+            printf(s!(b"[-]\t\x00"));
         }
-        printf(
-            b"%-9s\t\x00" as *const u8 as *const libc::c_char,
-            luaP_opnames[o as usize],
-        );
+        printf(s!(b"%-9s\t\x00"), luaP_opnames[o as usize]);
         match (luaP_opmodes[o as usize] as libc::c_int & 3i32) as OpMode as libc::c_uint {
             0 => {
-                printf(b"%d\x00" as *const u8 as *const libc::c_char, a);
+                printf(s!(b"%d\x00"), a);
                 if (luaP_opmodes[o as usize] as libc::c_int >> 4i32 & 3i32) as OpArgMask
                     as libc::c_uint
                     != OpArgN as libc::c_int as libc::c_uint
                 {
                     printf(
-                        b" %d\x00" as *const u8 as *const libc::c_char,
+                        s!(b" %d\x00"),
                         if 0 != b & 1i32 << 9i32 - 1i32 {
                             -1i32 - (b & !(1i32 << 9i32 - 1i32))
                         } else {
@@ -1211,7 +1192,7 @@ unsafe extern "C" fn PrintCode(mut f: *const Proto) -> () {
                     != OpArgN as libc::c_int as libc::c_uint
                 {
                     printf(
-                        b" %d\x00" as *const u8 as *const libc::c_char,
+                        s!(b" %d\x00"),
                         if 0 != c & 1i32 << 9i32 - 1i32 {
                             -1i32 - (c & !(1i32 << 9i32 - 1i32))
                         } else {
@@ -1221,130 +1202,124 @@ unsafe extern "C" fn PrintCode(mut f: *const Proto) -> () {
                 }
             }
             1 => {
-                printf(b"%d\x00" as *const u8 as *const libc::c_char, a);
+                printf(s!(b"%d\x00"), a);
                 if (luaP_opmodes[o as usize] as libc::c_int >> 4i32 & 3i32) as OpArgMask
                     as libc::c_uint
                     == OpArgK as libc::c_int as libc::c_uint
                 {
-                    printf(b" %d\x00" as *const u8 as *const libc::c_char, -1i32 - bx);
+                    printf(s!(b" %d\x00"), -1i32 - bx);
                 }
                 if (luaP_opmodes[o as usize] as libc::c_int >> 4i32 & 3i32) as OpArgMask
                     as libc::c_uint
                     == OpArgU as libc::c_int as libc::c_uint
                 {
-                    printf(b" %d\x00" as *const u8 as *const libc::c_char, bx);
+                    printf(s!(b" %d\x00"), bx);
                 }
             }
             2 => {
-                printf(b"%d %d\x00" as *const u8 as *const libc::c_char, a, sbx);
+                printf(s!(b"%d %d\x00"), a, sbx);
             }
             3 => {
-                printf(b"%d\x00" as *const u8 as *const libc::c_char, -1i32 - ax);
+                printf(s!(b"%d\x00"), -1i32 - ax);
             }
             _ => {}
         }
         match o as libc::c_uint {
             1 => {
-                printf(b"\t; \x00" as *const u8 as *const libc::c_char);
+                printf(s!(b"\t; \x00"));
                 PrintConstant(f, bx);
             }
             5 | 9 => {
                 printf(
-                    b"\t; %s\x00" as *const u8 as *const libc::c_char,
+                    s!(b"\t; %s\x00"),
                     if !(*(*f).upvalues.offset(b as isize)).name.is_null() {
                         ((*(*f).upvalues.offset(b as isize)).name as *mut libc::c_char)
                             .offset(::std::mem::size_of::<UTString>() as libc::c_ulong as isize)
                     } else {
-                        b"-\x00" as *const u8 as *const libc::c_char
+                        s!(b"-\x00")
                     },
                 );
             }
             6 => {
                 printf(
-                    b"\t; %s\x00" as *const u8 as *const libc::c_char,
+                    s!(b"\t; %s\x00"),
                     if !(*(*f).upvalues.offset(b as isize)).name.is_null() {
                         ((*(*f).upvalues.offset(b as isize)).name as *mut libc::c_char)
                             .offset(::std::mem::size_of::<UTString>() as libc::c_ulong as isize)
                     } else {
-                        b"-\x00" as *const u8 as *const libc::c_char
+                        s!(b"-\x00")
                     },
                 );
                 if 0 != c & 1i32 << 9i32 - 1i32 {
-                    printf(b" \x00" as *const u8 as *const libc::c_char);
+                    printf(s!(b" \x00"));
                     PrintConstant(f, c & !(1i32 << 9i32 - 1i32));
                 }
             }
             8 => {
                 printf(
-                    b"\t; %s\x00" as *const u8 as *const libc::c_char,
+                    s!(b"\t; %s\x00"),
                     if !(*(*f).upvalues.offset(a as isize)).name.is_null() {
                         ((*(*f).upvalues.offset(a as isize)).name as *mut libc::c_char)
                             .offset(::std::mem::size_of::<UTString>() as libc::c_ulong as isize)
                     } else {
-                        b"-\x00" as *const u8 as *const libc::c_char
+                        s!(b"-\x00")
                     },
                 );
                 if 0 != b & 1i32 << 9i32 - 1i32 {
-                    printf(b" \x00" as *const u8 as *const libc::c_char);
+                    printf(s!(b" \x00"));
                     PrintConstant(f, b & !(1i32 << 9i32 - 1i32));
                 }
                 if 0 != c & 1i32 << 9i32 - 1i32 {
-                    printf(b" \x00" as *const u8 as *const libc::c_char);
+                    printf(s!(b" \x00"));
                     PrintConstant(f, c & !(1i32 << 9i32 - 1i32));
                 }
             }
             7 | 12 => {
                 if 0 != c & 1i32 << 9i32 - 1i32 {
-                    printf(b"\t; \x00" as *const u8 as *const libc::c_char);
+                    printf(s!(b"\t; \x00"));
                     PrintConstant(f, c & !(1i32 << 9i32 - 1i32));
                 }
             }
             10 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 31 | 32 | 33 => {
                 if 0 != b & 1i32 << 9i32 - 1i32 || 0 != c & 1i32 << 9i32 - 1i32 {
-                    printf(b"\t; \x00" as *const u8 as *const libc::c_char);
+                    printf(s!(b"\t; \x00"));
                     if 0 != b & 1i32 << 9i32 - 1i32 {
                         PrintConstant(f, b & !(1i32 << 9i32 - 1i32));
                     } else {
-                        printf(b"-\x00" as *const u8 as *const libc::c_char);
+                        printf(s!(b"-\x00"));
                     }
-                    printf(b" \x00" as *const u8 as *const libc::c_char);
+                    printf(s!(b" \x00"));
                     if 0 != c & 1i32 << 9i32 - 1i32 {
                         PrintConstant(f, c & !(1i32 << 9i32 - 1i32));
                     } else {
-                        printf(b"-\x00" as *const u8 as *const libc::c_char);
+                        printf(s!(b"-\x00"));
                     }
                 }
             }
             30 | 39 | 40 | 42 => {
-                printf(
-                    b"\t; to %d\x00" as *const u8 as *const libc::c_char,
-                    sbx + pc + 2i32,
-                );
+                printf(s!(b"\t; to %d\x00"), sbx + pc + 2i32);
             }
             44 => {
                 printf(
-                    b"\t; %p\x00" as *const u8 as *const libc::c_char,
+                    s!(b"\t; %p\x00"),
                     *(*f).p.offset(bx as isize) as *const libc::c_void,
                 );
             }
             43 => {
                 if c == 0i32 {
                     pc += 1;
-                    printf(
-                        b"\t; %d\x00" as *const u8 as *const libc::c_char,
-                        *code.offset(pc as isize) as libc::c_int,
-                    );
+                    printf(s!(b"\t; %d\x00"), *code.offset(pc as isize) as libc::c_int);
                 } else {
-                    printf(b"\t; %d\x00" as *const u8 as *const libc::c_char, c);
+                    printf(s!(b"\t; %d\x00"), c);
                 }
             }
             46 => {
-                printf(b"\t; \x00" as *const u8 as *const libc::c_char);
+                printf(s!(b"\t; \x00"));
                 PrintConstant(f, ax);
             }
             _ => {}
         }
-        printf(b"\n\x00" as *const u8 as *const libc::c_char);
+        printf(s!(b"\n\x00"));
         pc += 1
     }
 }
@@ -1353,7 +1328,7 @@ unsafe extern "C" fn PrintHeader(mut f: *const Proto) -> () {
         ((*f).source as *mut libc::c_char)
             .offset(::std::mem::size_of::<UTString>() as libc::c_ulong as isize)
     } else {
-        b"=?\x00" as *const u8 as *const libc::c_char
+        s!(b"=?\x00")
     };
     if *s as libc::c_int == '@' as i32 || *s as libc::c_int == '=' as i32 {
         s = s.offset(1isize)
@@ -1361,73 +1336,73 @@ unsafe extern "C" fn PrintHeader(mut f: *const Proto) -> () {
         == (*::std::mem::transmute::<&[u8; 5], &[libc::c_char; 5]>(b"\x1bLua\x00"))[0usize]
             as libc::c_int
     {
-        s = b"(bstring)\x00" as *const u8 as *const libc::c_char
+        s = s!(b"(bstring)\x00")
     } else {
-        s = b"(string)\x00" as *const u8 as *const libc::c_char
+        s = s!(b"(string)\x00")
     }
     printf(
-        b"\n%s <%s:%d,%d> (%d instruction%s at %p)\n\x00" as *const u8 as *const libc::c_char,
+        s!(b"\n%s <%s:%d,%d> (%d instruction%s at %p)\n\x00"),
         if (*f).linedefined == 0i32 {
-            b"main\x00" as *const u8 as *const libc::c_char
+            s!(b"main\x00")
         } else {
-            b"function\x00" as *const u8 as *const libc::c_char
+            s!(b"function\x00")
         },
         s,
         (*f).linedefined,
         (*f).lastlinedefined,
         (*f).sizecode,
         if (*f).sizecode == 1i32 {
-            b"\x00" as *const u8 as *const libc::c_char
+            s!(b"\x00")
         } else {
-            b"s\x00" as *const u8 as *const libc::c_char
+            s!(b"s\x00")
         },
         f as *const libc::c_void,
     );
     printf(
-        b"%d%s param%s, %d slot%s, %d upvalue%s, \x00" as *const u8 as *const libc::c_char,
+        s!(b"%d%s param%s, %d slot%s, %d upvalue%s, \x00"),
         (*f).numparams as libc::c_int,
         if 0 != (*f).is_vararg as libc::c_int {
-            b"+\x00" as *const u8 as *const libc::c_char
+            s!(b"+\x00")
         } else {
-            b"\x00" as *const u8 as *const libc::c_char
+            s!(b"\x00")
         },
         if (*f).numparams as libc::c_int == 1i32 {
-            b"\x00" as *const u8 as *const libc::c_char
+            s!(b"\x00")
         } else {
-            b"s\x00" as *const u8 as *const libc::c_char
+            s!(b"s\x00")
         },
         (*f).maxstacksize as libc::c_int,
         if (*f).maxstacksize as libc::c_int == 1i32 {
-            b"\x00" as *const u8 as *const libc::c_char
+            s!(b"\x00")
         } else {
-            b"s\x00" as *const u8 as *const libc::c_char
+            s!(b"s\x00")
         },
         (*f).sizeupvalues,
         if (*f).sizeupvalues == 1i32 {
-            b"\x00" as *const u8 as *const libc::c_char
+            s!(b"\x00")
         } else {
-            b"s\x00" as *const u8 as *const libc::c_char
+            s!(b"s\x00")
         },
     );
     printf(
-        b"%d local%s, %d constant%s, %d function%s\n\x00" as *const u8 as *const libc::c_char,
+        s!(b"%d local%s, %d constant%s, %d function%s\n\x00"),
         (*f).sizelocvars,
         if (*f).sizelocvars == 1i32 {
-            b"\x00" as *const u8 as *const libc::c_char
+            s!(b"\x00")
         } else {
-            b"s\x00" as *const u8 as *const libc::c_char
+            s!(b"s\x00")
         },
         (*f).sizek,
         if (*f).sizek == 1i32 {
-            b"\x00" as *const u8 as *const libc::c_char
+            s!(b"\x00")
         } else {
-            b"s\x00" as *const u8 as *const libc::c_char
+            s!(b"s\x00")
         },
         (*f).sizep,
         if (*f).sizep == 1i32 {
-            b"\x00" as *const u8 as *const libc::c_char
+            s!(b"\x00")
         } else {
-            b"s\x00" as *const u8 as *const libc::c_char
+            s!(b"s\x00")
         },
     );
 }
@@ -1444,20 +1419,15 @@ static mut Output: [libc::c_char; 9] = [108, 117, 97, 99, 46, 111, 117, 116, 0];
 /* actual output file name */
 static mut output: *const libc::c_char = unsafe { Output.as_ptr() as *mut _ };
 /* actual program name */
-static mut progname: *const libc::c_char = b"luac\x00" as *const u8 as *const libc::c_char;
+static mut progname: *const libc::c_char = s!(b"luac\x00");
 unsafe extern "C" fn fatal(mut message: *const libc::c_char) -> () {
-    fprintf(
-        stderr,
-        b"%s: %s\n\x00" as *const u8 as *const libc::c_char,
-        progname,
-        message,
-    );
+    fprintf(stderr, s!(b"%s: %s\n\x00"), progname, message);
     exit(1i32);
 }
 unsafe extern "C" fn cannot(mut what: *const libc::c_char) -> () {
     fprintf(
         stderr,
-        b"%s: cannot %s %s: %s\n\x00" as *const u8 as *const libc::c_char,
+        s!(b"%s: cannot %s %s: %s\n\x00"),
         progname,
         what,
         output,
@@ -1469,21 +1439,15 @@ unsafe extern "C" fn usage(mut message: *const libc::c_char) -> () {
     if *message as libc::c_int == '-' as i32 {
         fprintf(
             stderr,
-            b"%s: unrecognized option \'%s\'\n\x00" as *const u8 as *const libc::c_char,
+            s!(b"%s: unrecognized option \'%s\'\n\x00"),
             progname,
             message,
         );
     } else {
-        fprintf(
-            stderr,
-            b"%s: %s\n\x00" as *const u8 as *const libc::c_char,
-            progname,
-            message,
-        );
+        fprintf(stderr, s!(b"%s: %s\n\x00"), progname, message);
     }
     fprintf(stderr,
-            b"usage: %s [options] [filenames]\nAvailable options are:\n  -l       list (use -l -l for full listing)\n  -o name  output to file \'name\' (default is \"%s\")\n  -p       parse only\n  -s       strip debug information\n  -v       show version information\n  --       stop handling options\n  -        stop handling options and process stdin\n\x00"
-                as *const u8 as *const libc::c_char, progname,
+            s!(b"usage: %s [options] [filenames]\nAvailable options are:\n  -l       list (use -l -l for full listing)\n  -o name  output to file \'name\' (default is \"%s\")\n  -p       parse only\n  -s       strip debug information\n  -v       show version information\n  --       stop handling options\n  -        stop handling options and process stdin\n\x00"), progname,
             Output.as_mut_ptr());
     exit(1i32);
 }
@@ -1503,11 +1467,7 @@ unsafe extern "C" fn doargs(
             break;
         }
         /* end of options; skip it */
-        if strcmp(
-            *argv.offset(i as isize),
-            b"--\x00" as *const u8 as *const libc::c_char,
-        ) == 0i32
-        {
+        if strcmp(*argv.offset(i as isize), s!(b"--\x00")) == 0i32 {
             i += 1;
             if !(0 != version) {
                 break;
@@ -1516,25 +1476,13 @@ unsafe extern "C" fn doargs(
             break;
         } else {
             /* end of options; use stdin */
-            if strcmp(
-                *argv.offset(i as isize),
-                b"-\x00" as *const u8 as *const libc::c_char,
-            ) == 0i32
-            {
+            if strcmp(*argv.offset(i as isize), s!(b"-\x00")) == 0i32 {
                 break;
             }
             /* list */
-            if strcmp(
-                *argv.offset(i as isize),
-                b"-l\x00" as *const u8 as *const libc::c_char,
-            ) == 0i32
-            {
+            if strcmp(*argv.offset(i as isize), s!(b"-l\x00")) == 0i32 {
                 listing += 1
-            } else if strcmp(
-                *argv.offset(i as isize),
-                b"-o\x00" as *const u8 as *const libc::c_char,
-            ) == 0i32
-            {
+            } else if strcmp(*argv.offset(i as isize), s!(b"-o\x00")) == 0i32 {
                 i += 1;
                 output = *argv.offset(i as isize);
                 if output.is_null()
@@ -1542,32 +1490,16 @@ unsafe extern "C" fn doargs(
                     || *output as libc::c_int == '-' as i32
                         && *output.offset(1isize) as libc::c_int != 0i32
                 {
-                    usage(b"\'-o\' needs argument\x00" as *const u8 as *const libc::c_char);
+                    usage(s!(b"\'-o\' needs argument\x00"));
                 }
-                if strcmp(
-                    *argv.offset(i as isize),
-                    b"-\x00" as *const u8 as *const libc::c_char,
-                ) == 0i32
-                {
+                if strcmp(*argv.offset(i as isize), s!(b"-\x00")) == 0i32 {
                     output = 0 as *const libc::c_char
                 }
-            } else if strcmp(
-                *argv.offset(i as isize),
-                b"-p\x00" as *const u8 as *const libc::c_char,
-            ) == 0i32
-            {
+            } else if strcmp(*argv.offset(i as isize), s!(b"-p\x00")) == 0i32 {
                 dumping = 0i32
-            } else if strcmp(
-                *argv.offset(i as isize),
-                b"-s\x00" as *const u8 as *const libc::c_char,
-            ) == 0i32
-            {
+            } else if strcmp(*argv.offset(i as isize), s!(b"-s\x00")) == 0i32 {
                 stripping = 1i32
-            } else if strcmp(
-                *argv.offset(i as isize),
-                b"-v\x00" as *const u8 as *const libc::c_char,
-            ) == 0i32
-            {
+            } else if strcmp(*argv.offset(i as isize), s!(b"-v\x00")) == 0i32 {
                 version += 1
             } else {
                 /* unknown option */
@@ -1584,9 +1516,8 @@ unsafe extern "C" fn doargs(
     }
     if 0 != version {
         printf(
-            b"%s\n\x00" as *const u8 as *const libc::c_char,
-            b"Lua 5.3.5  Copyright (C) 1994-2018 Lua.org, PUC-Rio\x00" as *const u8
-                as *const libc::c_char,
+            s!(b"%s\n\x00"),
+            s!(b"Lua 5.3.5  Copyright (C) 1994-2018 Lua.org, PUC-Rio\x00"),
         );
         if version == argc - 1i32 {
             exit(0i32);
@@ -1605,7 +1536,7 @@ unsafe extern "C" fn reader(
     if 0 != fresh2 {
         *size = (::std::mem::size_of::<[libc::c_char; 19]>() as libc::c_ulong)
             .wrapping_sub(1i32 as libc::c_ulong);
-        return b"(function()end)();\x00" as *const u8 as *const libc::c_char;
+        return s!(b"(function()end)();\x00");
     } else {
         *size = 0i32 as size_t;
         return 0 as *const libc::c_char;
@@ -1624,7 +1555,7 @@ unsafe extern "C" fn combine(mut L: *mut lua_State, mut n: libc::c_int) -> *cons
             L,
             Some(reader),
             &mut i as *mut libc::c_int as *mut libc::c_void,
-            b"=(luac)\x00" as *const u8 as *const libc::c_char,
+            s!(b"=(luac)\x00"),
             0 as *const libc::c_char,
         ) != 0i32
         {
@@ -1665,19 +1596,16 @@ unsafe extern "C" fn pmain(mut L: *mut lua_State) -> libc::c_int {
     let mut f: *const Proto = 0 as *const Proto;
     let mut i: libc::c_int = 0;
     if 0 == lua_checkstack(L, argc) {
-        fatal(b"too many input files\x00" as *const u8 as *const libc::c_char);
+        fatal(s!(b"too many input files\x00"));
     }
     i = 0i32;
     while i < argc {
-        let mut filename: *const libc::c_char = if strcmp(
-            *argv.offset(i as isize),
-            b"-\x00" as *const u8 as *const libc::c_char,
-        ) == 0i32
-        {
-            0 as *mut libc::c_char
-        } else {
-            *argv.offset(i as isize)
-        };
+        let mut filename: *const libc::c_char =
+            if strcmp(*argv.offset(i as isize), s!(b"-\x00")) == 0i32 {
+                0 as *mut libc::c_char
+            } else {
+                *argv.offset(i as isize)
+            };
         if luaL_loadfilex(L, filename, 0 as *const libc::c_char) != 0i32 {
             fatal(lua_tolstring(L, -1i32, 0 as *mut size_t));
         }
@@ -1691,17 +1619,17 @@ unsafe extern "C" fn pmain(mut L: *mut lua_State) -> libc::c_int {
         let mut D: *mut FILE = if output.is_null() {
             stdout
         } else {
-            fopen(output, b"wb\x00" as *const u8 as *const libc::c_char)
+            fopen(output, s!(b"wb\x00"))
         };
         if D.is_null() {
-            cannot(b"open\x00" as *const u8 as *const libc::c_char);
+            cannot(s!(b"open\x00"));
         }
         luaU_dump(L, f, Some(writer), D as *mut libc::c_void, stripping);
         if 0 != ferror(D) {
-            cannot(b"write\x00" as *const u8 as *const libc::c_char);
+            cannot(s!(b"write\x00"));
         }
         if 0 != fclose(D) {
-            cannot(b"close\x00" as *const u8 as *const libc::c_char);
+            cannot(s!(b"close\x00"));
         }
     }
     return 0i32;
@@ -1710,16 +1638,16 @@ pub(crate) unsafe fn main_0(
     mut argc: libc::c_int,
     mut argv: *mut *mut libc::c_char,
 ) -> libc::c_int {
-    let mut L: *mut lua_State = 0 as *mut lua_State;
-    let mut i: libc::c_int = doargs(argc, argv);
+    let mut L = 0 as *mut lua_State;
+    let mut i = doargs(argc, argv);
     argc -= i;
     argv = argv.offset(i as isize);
     if argc <= 0i32 {
-        usage(b"no input files given\x00" as *const u8 as *const libc::c_char);
+        usage(s!(b"no input files given\x00"));
     }
     L = luaL_newstate();
     if L.is_null() {
-        fatal(b"cannot create state: not enough memory\x00" as *const u8 as *const libc::c_char);
+        fatal(s!(b"cannot create state: not enough memory\x00"));
     }
     lua_pushcclosure(L, Some(pmain), 0i32);
     lua_pushinteger(L, argc as lua_Integer);

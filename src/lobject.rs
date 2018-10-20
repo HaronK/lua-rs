@@ -1291,8 +1291,7 @@ unsafe extern "C" fn l_str2d(
     mut result: *mut lua_Number,
 ) -> *const libc::c_char {
     let mut endptr: *const libc::c_char = 0 as *const libc::c_char;
-    let mut pmode: *const libc::c_char =
-        strpbrk(s, b".xXnN\x00" as *const u8 as *const libc::c_char);
+    let mut pmode: *const libc::c_char = strpbrk(s, s!(b".xXnN\x00"));
     let mut mode: libc::c_int = if !pmode.is_null() {
         *pmode as libc::c_uchar as libc::c_int | 'A' as i32 ^ 'a' as i32
     } else {
@@ -1469,20 +1468,17 @@ pub unsafe extern "C" fn luaO_tostring(mut L: *mut lua_State, mut obj: StkId) ->
         len = snprintf(
             buff.as_mut_ptr(),
             ::std::mem::size_of::<[libc::c_char; 50]>() as libc::c_ulong,
-            b"%lld\x00" as *const u8 as *const libc::c_char,
+            s!(b"%lld\x00"),
             (*obj).value_.i,
         ) as size_t
     } else {
         len = snprintf(
             buff.as_mut_ptr(),
             ::std::mem::size_of::<[libc::c_char; 50]>() as libc::c_ulong,
-            b"%.14g\x00" as *const u8 as *const libc::c_char,
+            s!(b"%.14g\x00"),
             (*obj).value_.n,
         ) as size_t;
-        if buff[strspn(
-            buff.as_mut_ptr(),
-            b"-0123456789\x00" as *const u8 as *const libc::c_char,
-        ) as usize] as libc::c_int
+        if buff[strspn(buff.as_mut_ptr(), s!(b"-0123456789\x00")) as usize] as libc::c_int
             == '\u{0}' as i32
         {
             /* looks like an int? */
@@ -1552,7 +1548,7 @@ pub unsafe extern "C" fn luaO_chunkid(
             /* add '...' before rest of name */
             memcpy(
                 out as *mut libc::c_void,
-                b"...\x00" as *const u8 as *const libc::c_char as *const libc::c_void,
+                s!(b"...\x00") as *const libc::c_void,
                 (::std::mem::size_of::<[libc::c_char; 4]>() as libc::c_ulong)
                     .wrapping_div(::std::mem::size_of::<libc::c_char>() as libc::c_ulong)
                     .wrapping_sub(1i32 as libc::c_ulong)
@@ -1584,7 +1580,7 @@ pub unsafe extern "C" fn luaO_chunkid(
         /* add prefix */
         memcpy(
             out as *mut libc::c_void,
-            b"[string \"\x00" as *const u8 as *const libc::c_char as *const libc::c_void,
+            s!(b"[string \"\x00") as *const libc::c_void,
             (::std::mem::size_of::<[libc::c_char; 10]>() as libc::c_ulong)
                 .wrapping_div(::std::mem::size_of::<libc::c_char>() as libc::c_ulong)
                 .wrapping_sub(1i32 as libc::c_ulong)
@@ -1627,7 +1623,7 @@ pub unsafe extern "C" fn luaO_chunkid(
             out = out.offset(l as isize);
             memcpy(
                 out as *mut libc::c_void,
-                b"...\x00" as *const u8 as *const libc::c_char as *const libc::c_void,
+                s!(b"...\x00") as *const libc::c_void,
                 (::std::mem::size_of::<[libc::c_char; 4]>() as libc::c_ulong)
                     .wrapping_div(::std::mem::size_of::<libc::c_char>() as libc::c_ulong)
                     .wrapping_sub(1i32 as libc::c_ulong)
@@ -1641,7 +1637,7 @@ pub unsafe extern "C" fn luaO_chunkid(
         }
         memcpy(
             out as *mut libc::c_void,
-            b"\"]\x00" as *const u8 as *const libc::c_char as *const libc::c_void,
+            s!(b"\"]\x00") as *const libc::c_void,
             (::std::mem::size_of::<[libc::c_char; 3]>() as libc::c_ulong)
                 .wrapping_div(::std::mem::size_of::<libc::c_char>() as libc::c_ulong)
                 .wrapping_sub(1i32 as libc::c_ulong)

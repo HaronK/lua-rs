@@ -1514,7 +1514,7 @@ pub unsafe extern "C" fn lua_pushlstring(
 ) -> *const libc::c_char {
     let mut ts: *mut TString = 0 as *mut TString;
     ts = if len == 0i32 as libc::c_ulong {
-        luaS_new(L, b"\x00" as *const u8 as *const libc::c_char)
+        luaS_new(L, s!(b"\x00"))
     } else {
         luaS_newlstr(L, s, len)
     };
@@ -2298,7 +2298,7 @@ pub unsafe extern "C" fn lua_load(
     };
     let mut status: libc::c_int = 0;
     if chunkname.is_null() {
-        chunkname = b"?\x00" as *const u8 as *const libc::c_char
+        chunkname = s!(b"?\x00")
     }
     luaZ_init(L, &mut z, reader, data);
     status = luaD_protectedparser(L, &mut z, chunkname, mode);
@@ -2464,11 +2464,7 @@ pub unsafe extern "C" fn lua_concat(mut L: *mut lua_State, mut n: libc::c_int) -
     } else if n == 0i32 {
         /* push empty string */
         let mut io: *mut TValue = (*L).top;
-        let mut x_: *mut TString = luaS_newlstr(
-            L,
-            b"\x00" as *const u8 as *const libc::c_char,
-            0i32 as size_t,
-        );
+        let mut x_: *mut TString = luaS_newlstr(L, s!(b"\x00"), 0i32 as size_t);
         (*io).value_.gc = &mut (*(x_ as *mut GCUnion)).gc;
         (*io).tt_ = (*x_).tt as libc::c_int | 1i32 << 6i32;
         (*L).top = (*L).top.offset(1isize)
@@ -2558,7 +2554,7 @@ unsafe extern "C" fn aux_upvalue(
                 if !owner.is_null() {
                     *owner = f
                 }
-                return b"\x00" as *const u8 as *const libc::c_char;
+                return s!(b"\x00");
             }
         }
         6 => {
@@ -2575,7 +2571,7 @@ unsafe extern "C" fn aux_upvalue(
                 }
                 name = (*(*p).upvalues.offset((n - 1i32) as isize)).name;
                 return if name.is_null() {
-                    b"(*no name)\x00" as *const u8 as *const libc::c_char
+                    s!(b"(*no name)\x00")
                 } else {
                     (name as *mut libc::c_char)
                         .offset(::std::mem::size_of::<UTString>() as libc::c_ulong as isize)

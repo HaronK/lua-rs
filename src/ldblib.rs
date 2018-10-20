@@ -338,67 +338,67 @@ pub unsafe extern "C" fn luaopen_debug(mut L: *mut lua_State) -> libc::c_int {
 }
 static mut dblib: [luaL_Reg; 17] = [
     luaL_Reg {
-        name: b"debug\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"debug\x00"),
         func: Some(db_debug),
     },
     luaL_Reg {
-        name: b"getuservalue\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"getuservalue\x00"),
         func: Some(db_getuservalue),
     },
     luaL_Reg {
-        name: b"gethook\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"gethook\x00"),
         func: Some(db_gethook),
     },
     luaL_Reg {
-        name: b"getinfo\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"getinfo\x00"),
         func: Some(db_getinfo),
     },
     luaL_Reg {
-        name: b"getlocal\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"getlocal\x00"),
         func: Some(db_getlocal),
     },
     luaL_Reg {
-        name: b"getregistry\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"getregistry\x00"),
         func: Some(db_getregistry),
     },
     luaL_Reg {
-        name: b"getmetatable\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"getmetatable\x00"),
         func: Some(db_getmetatable),
     },
     luaL_Reg {
-        name: b"getupvalue\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"getupvalue\x00"),
         func: Some(db_getupvalue),
     },
     luaL_Reg {
-        name: b"upvaluejoin\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"upvaluejoin\x00"),
         func: Some(db_upvaluejoin),
     },
     luaL_Reg {
-        name: b"upvalueid\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"upvalueid\x00"),
         func: Some(db_upvalueid),
     },
     luaL_Reg {
-        name: b"setuservalue\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"setuservalue\x00"),
         func: Some(db_setuservalue),
     },
     luaL_Reg {
-        name: b"sethook\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"sethook\x00"),
         func: Some(db_sethook),
     },
     luaL_Reg {
-        name: b"setlocal\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"setlocal\x00"),
         func: Some(db_setlocal),
     },
     luaL_Reg {
-        name: b"setmetatable\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"setmetatable\x00"),
         func: Some(db_setmetatable),
     },
     luaL_Reg {
-        name: b"setupvalue\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"setupvalue\x00"),
         func: Some(db_setupvalue),
     },
     luaL_Reg {
-        name: b"traceback\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"traceback\x00"),
         func: Some(db_traceback),
     },
     luaL_Reg {
@@ -470,11 +470,8 @@ unsafe extern "C" fn auxupvalue(mut L: *mut lua_State, mut get: libc::c_int) -> 
 }
 unsafe extern "C" fn db_setmetatable(mut L: *mut lua_State) -> libc::c_int {
     let mut t: libc::c_int = lua_type(L, 2i32);
-    (t == 0i32 || t == 5i32 || 0 != luaL_argerror(
-        L,
-        2i32,
-        b"nil or table expected\x00" as *const u8 as *const libc::c_char,
-    )) as libc::c_int;
+    (t == 0i32 || t == 5i32 || 0 != luaL_argerror(L, 2i32, s!(b"nil or table expected\x00")))
+        as libc::c_int;
     lua_settop(L, 2i32);
     lua_setmetatable(L, 1i32);
     /* return 1st argument */
@@ -504,11 +501,7 @@ unsafe extern "C" fn db_setlocal(mut L: *mut lua_State) -> libc::c_int {
     let mut nvar: libc::c_int = luaL_checkinteger(L, arg + 2i32) as libc::c_int;
     /* out of range? */
     if 0 == lua_getstack(L1, level, &mut ar) {
-        return luaL_argerror(
-            L,
-            arg + 1i32,
-            b"level out of range\x00" as *const u8 as *const libc::c_char,
-        );
+        return luaL_argerror(L, arg + 1i32, s!(b"level out of range\x00"));
     } else {
         luaL_checkany(L, arg + 3i32);
         lua_settop(L, arg + 3i32);
@@ -534,7 +527,7 @@ unsafe extern "C" fn checkstack(
     mut n: libc::c_int,
 ) -> () {
     if L != L1 && 0 == lua_checkstack(L1, n) {
-        luaL_error(L, b"stack overflow\x00" as *const u8 as *const libc::c_char);
+        luaL_error(L, s!(b"stack overflow\x00"));
     };
 }
 unsafe extern "C" fn db_sethook(mut L: *mut lua_State) -> libc::c_int {
@@ -573,9 +566,9 @@ unsafe extern "C" fn db_sethook(mut L: *mut lua_State) -> libc::c_int {
             -1000000i32 - 1000i32,
             &HOOKKEY as *const libc::c_int as *const libc::c_void,
         );
-        lua_pushstring(L, b"k\x00" as *const u8 as *const libc::c_char);
+        lua_pushstring(L, s!(b"k\x00"));
         /* * hooktable.__mode = "k" */
-        lua_setfield(L, -2i32, b"__mode\x00" as *const u8 as *const libc::c_char);
+        lua_setfield(L, -2i32, s!(b"__mode\x00"));
         lua_pushvalue(L, -1i32);
         /* setmetatable(hooktable) = hooktable */
         lua_setmetatable(L, -2i32);
@@ -629,11 +622,11 @@ unsafe extern "C" fn makemask(
 */
 unsafe extern "C" fn hookf(mut L: *mut lua_State, mut ar: *mut lua_Debug) -> () {
     static mut hooknames: [*const libc::c_char; 5] = [
-        b"call\x00" as *const u8 as *const libc::c_char,
-        b"return\x00" as *const u8 as *const libc::c_char,
-        b"line\x00" as *const u8 as *const libc::c_char,
-        b"count\x00" as *const u8 as *const libc::c_char,
-        b"tail call\x00" as *const u8 as *const libc::c_char,
+        s!(b"call\x00"),
+        s!(b"return\x00"),
+        s!(b"line\x00"),
+        s!(b"count\x00"),
+        s!(b"tail call\x00"),
     ];
     lua_rawgetp(
         L,
@@ -680,26 +673,17 @@ unsafe extern "C" fn checkupval(
     let mut nup: libc::c_int = luaL_checkinteger(L, argnup) as libc::c_int;
     /* closure */
     luaL_checktype(L, argf, 6i32);
-    (!lua_getupvalue(L, argf, nup).is_null() || 0 != luaL_argerror(
-        L,
-        argnup,
-        b"invalid upvalue index\x00" as *const u8 as *const libc::c_char,
-    )) as libc::c_int;
+    (!lua_getupvalue(L, argf, nup).is_null()
+        || 0 != luaL_argerror(L, argnup, s!(b"invalid upvalue index\x00"))) as libc::c_int;
     return nup;
 }
 unsafe extern "C" fn db_upvaluejoin(mut L: *mut lua_State) -> libc::c_int {
     let mut n1: libc::c_int = checkupval(L, 1i32, 2i32);
     let mut n2: libc::c_int = checkupval(L, 3i32, 4i32);
-    (0 == lua_iscfunction(L, 1i32) || 0 != luaL_argerror(
-        L,
-        1i32,
-        b"Lua function expected\x00" as *const u8 as *const libc::c_char,
-    )) as libc::c_int;
-    (0 == lua_iscfunction(L, 3i32) || 0 != luaL_argerror(
-        L,
-        3i32,
-        b"Lua function expected\x00" as *const u8 as *const libc::c_char,
-    )) as libc::c_int;
+    (0 == lua_iscfunction(L, 1i32) || 0 != luaL_argerror(L, 1i32, s!(b"Lua function expected\x00")))
+        as libc::c_int;
+    (0 == lua_iscfunction(L, 3i32) || 0 != luaL_argerror(L, 3i32, s!(b"Lua function expected\x00")))
+        as libc::c_int;
     lua_upvaluejoin(L, 1i32, n1, 3i32, n2);
     return 0i32;
 }
@@ -753,11 +737,7 @@ unsafe extern "C" fn db_getlocal(mut L: *mut lua_State) -> libc::c_int {
         let mut level: libc::c_int = luaL_checkinteger(L, arg + 1i32) as libc::c_int;
         /* out of range? */
         if 0 == lua_getstack(L1, level, &mut ar) {
-            return luaL_argerror(
-                L,
-                arg + 1i32,
-                b"level out of range\x00" as *const u8 as *const libc::c_char,
-            );
+            return luaL_argerror(L, arg + 1i32, s!(b"level out of range\x00"));
         } else {
             checkstack(L, L1, 1i32);
             name = lua_getlocal(L1, &mut ar, nvar);
@@ -802,17 +782,13 @@ unsafe extern "C" fn db_getinfo(mut L: *mut lua_State) -> libc::c_int {
     };
     let mut arg: libc::c_int = 0;
     let mut L1: *mut lua_State = getthread(L, &mut arg);
-    let mut options: *const libc::c_char = luaL_optlstring(
-        L,
-        arg + 2i32,
-        b"flnStu\x00" as *const u8 as *const libc::c_char,
-        0 as *mut size_t,
-    );
+    let mut options: *const libc::c_char =
+        luaL_optlstring(L, arg + 2i32, s!(b"flnStu\x00"), 0 as *mut size_t);
     checkstack(L, L1, 3i32);
     if lua_type(L, arg + 1i32) == 6i32 {
         /* info about a function? */
         /* add '>' to 'options' */
-        options = lua_pushfstring!(L, b">%s\x00" as *const u8 as *const libc::c_char, options);
+        options = lua_pushfstring!(L, s!(b">%s\x00"), options);
         /* move function to 'L1' stack */
         lua_pushvalue(L, arg + 1i32);
         lua_xmove(L, L1, 1i32);
@@ -822,85 +798,37 @@ unsafe extern "C" fn db_getinfo(mut L: *mut lua_State) -> libc::c_int {
         return 1i32;
     }
     if 0 == lua_getinfo(L1, options, &mut ar) {
-        return luaL_argerror(
-            L,
-            arg + 2i32,
-            b"invalid option\x00" as *const u8 as *const libc::c_char,
-        );
+        return luaL_argerror(L, arg + 2i32, s!(b"invalid option\x00"));
     } else {
         /* table to collect results */
         lua_createtable(L, 0i32, 0i32);
         if !strchr(options, 'S' as i32).is_null() {
-            settabss(
-                L,
-                b"source\x00" as *const u8 as *const libc::c_char,
-                ar.source,
-            );
-            settabss(
-                L,
-                b"short_src\x00" as *const u8 as *const libc::c_char,
-                ar.short_src.as_mut_ptr(),
-            );
-            settabsi(
-                L,
-                b"linedefined\x00" as *const u8 as *const libc::c_char,
-                ar.linedefined,
-            );
-            settabsi(
-                L,
-                b"lastlinedefined\x00" as *const u8 as *const libc::c_char,
-                ar.lastlinedefined,
-            );
-            settabss(L, b"what\x00" as *const u8 as *const libc::c_char, ar.what);
+            settabss(L, s!(b"source\x00"), ar.source);
+            settabss(L, s!(b"short_src\x00"), ar.short_src.as_mut_ptr());
+            settabsi(L, s!(b"linedefined\x00"), ar.linedefined);
+            settabsi(L, s!(b"lastlinedefined\x00"), ar.lastlinedefined);
+            settabss(L, s!(b"what\x00"), ar.what);
         }
         if !strchr(options, 'l' as i32).is_null() {
-            settabsi(
-                L,
-                b"currentline\x00" as *const u8 as *const libc::c_char,
-                ar.currentline,
-            );
+            settabsi(L, s!(b"currentline\x00"), ar.currentline);
         }
         if !strchr(options, 'u' as i32).is_null() {
-            settabsi(
-                L,
-                b"nups\x00" as *const u8 as *const libc::c_char,
-                ar.nups as libc::c_int,
-            );
-            settabsi(
-                L,
-                b"nparams\x00" as *const u8 as *const libc::c_char,
-                ar.nparams as libc::c_int,
-            );
-            settabsb(
-                L,
-                b"isvararg\x00" as *const u8 as *const libc::c_char,
-                ar.isvararg as libc::c_int,
-            );
+            settabsi(L, s!(b"nups\x00"), ar.nups as libc::c_int);
+            settabsi(L, s!(b"nparams\x00"), ar.nparams as libc::c_int);
+            settabsb(L, s!(b"isvararg\x00"), ar.isvararg as libc::c_int);
         }
         if !strchr(options, 'n' as i32).is_null() {
-            settabss(L, b"name\x00" as *const u8 as *const libc::c_char, ar.name);
-            settabss(
-                L,
-                b"namewhat\x00" as *const u8 as *const libc::c_char,
-                ar.namewhat,
-            );
+            settabss(L, s!(b"name\x00"), ar.name);
+            settabss(L, s!(b"namewhat\x00"), ar.namewhat);
         }
         if !strchr(options, 't' as i32).is_null() {
-            settabsb(
-                L,
-                b"istailcall\x00" as *const u8 as *const libc::c_char,
-                ar.istailcall as libc::c_int,
-            );
+            settabsb(L, s!(b"istailcall\x00"), ar.istailcall as libc::c_int);
         }
         if !strchr(options, 'L' as i32).is_null() {
-            treatstackoption(
-                L,
-                L1,
-                b"activelines\x00" as *const u8 as *const libc::c_char,
-            );
+            treatstackoption(L, L1, s!(b"activelines\x00"));
         }
         if !strchr(options, 'f' as i32).is_null() {
-            treatstackoption(L, L1, b"func\x00" as *const u8 as *const libc::c_char);
+            treatstackoption(L, L1, s!(b"func\x00"));
         }
         /* return table */
         return 1i32;
@@ -967,7 +895,7 @@ unsafe extern "C" fn db_gethook(mut L: *mut lua_State) -> libc::c_int {
     if hook.is_none() {
         lua_pushnil(L);
     } else if hook != Some(hookf) {
-        lua_pushstring(L, b"external hook\x00" as *const u8 as *const libc::c_char);
+        lua_pushstring(L, s!(b"external hook\x00"));
     } else {
         /* hook table must exist */
         lua_rawgetp(
@@ -1027,11 +955,7 @@ unsafe extern "C" fn db_getuservalue(mut L: *mut lua_State) -> libc::c_int {
 unsafe extern "C" fn db_debug(mut L: *mut lua_State) -> libc::c_int {
     loop {
         let mut buffer: [libc::c_char; 250] = [0; 250];
-        fprintf(
-            stderr,
-            b"%s\x00" as *const u8 as *const libc::c_char,
-            b"lua_debug> \x00" as *const u8 as *const libc::c_char,
-        );
+        fprintf(stderr, s!(b"%s\x00"), s!(b"lua_debug> \x00"));
         fflush(stderr);
         if fgets(
             buffer.as_mut_ptr(),
@@ -1039,10 +963,7 @@ unsafe extern "C" fn db_debug(mut L: *mut lua_State) -> libc::c_int {
             stdin,
         )
         .is_null()
-            || strcmp(
-                buffer.as_mut_ptr(),
-                b"cont\n\x00" as *const u8 as *const libc::c_char,
-            ) == 0i32
+            || strcmp(buffer.as_mut_ptr(), s!(b"cont\n\x00")) == 0i32
         {
             return 0i32;
         } else {
@@ -1050,13 +971,13 @@ unsafe extern "C" fn db_debug(mut L: *mut lua_State) -> libc::c_int {
                 L,
                 buffer.as_mut_ptr(),
                 strlen(buffer.as_mut_ptr()),
-                b"=(debug command)\x00" as *const u8 as *const libc::c_char,
+                s!(b"=(debug command)\x00"),
                 0 as *const libc::c_char,
             ) || 0 != lua_pcallk(L, 0i32, 0i32, 0i32, 0i32 as lua_KContext, None)
             {
                 fprintf(
                     stderr,
-                    b"%s\n\x00" as *const u8 as *const libc::c_char,
+                    s!(b"%s\n\x00"),
                     lua_tolstring(L, -1i32, 0 as *mut size_t),
                 );
                 fflush(stderr);

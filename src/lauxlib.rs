@@ -411,20 +411,15 @@ pub unsafe extern "C" fn luaL_checkversion_(
     {
         luaL_error!(
             L,
-            b"core and library have incompatible numeric types\x00" as *const u8
-                as *const libc::c_char,
+            s!(b"core and library have incompatible numeric types\x00"),
         );
     }
     if v != lua_version(0 as *mut lua_State) {
-        luaL_error!(
-            L,
-            b"multiple Lua VMs detected\x00" as *const u8 as *const libc::c_char,
-        );
+        luaL_error!(L, s!(b"multiple Lua VMs detected\x00"),);
     } else if *v != ver {
         luaL_error!(
             L,
-            b"version mismatch: app. needs %f, Lua core provides %f\x00" as *const u8
-                as *const libc::c_char,
+            s!(b"version mismatch: app. needs %f, Lua core provides %f\x00"),
             ver,
             *v,
         );
@@ -451,12 +446,12 @@ pub unsafe extern "C" fn luaL_where(mut L: *mut lua_State, mut level: libc::c_in
     if 0 != lua_getstack(L, level, &mut ar) {
         /* check function at level */
         /* get info about it */
-        lua_getinfo(L, b"Sl\x00" as *const u8 as *const libc::c_char, &mut ar);
+        lua_getinfo(L, s!(b"Sl\x00"), &mut ar);
         if ar.currentline > 0i32 {
             /* is there info? */
             lua_pushfstring!(
                 L,
-                b"%s:%d: \x00" as *const u8 as *const libc::c_char,
+                s!(b"%s:%d: \x00"),
                 ar.short_src.as_mut_ptr(),
                 ar.currentline,
             );
@@ -464,7 +459,7 @@ pub unsafe extern "C" fn luaL_where(mut L: *mut lua_State, mut level: libc::c_in
         }
     }
     /* else, no information available... */
-    lua_pushfstring!(L, b"\x00" as *const u8 as *const libc::c_char);
+    lua_pushfstring!(L, s!(b"\x00"));
 }
 #[no_mangle]
 pub unsafe extern "C" fn luaL_getmetafield(
@@ -514,17 +509,10 @@ pub unsafe extern "C" fn luaL_tolstring(
     mut idx: libc::c_int,
     mut len: *mut size_t,
 ) -> *const libc::c_char {
-    if 0 != luaL_callmeta(
-        L,
-        idx,
-        b"__tostring\x00" as *const u8 as *const libc::c_char,
-    ) {
+    if 0 != luaL_callmeta(L, idx, s!(b"__tostring\x00")) {
         /* metafield? */
         if 0 == lua_isstring(L, -1i32) {
-            luaL_error!(
-                L,
-                b"\'__tostring\' must return a string\x00" as *const u8 as *const libc::c_char,
-            );
+            luaL_error!(L, s!(b"\'__tostring\' must return a string\x00"),);
         }
     } else {
         match lua_type(L, idx) {
@@ -532,13 +520,13 @@ pub unsafe extern "C" fn luaL_tolstring(
                 if 0 != lua_isinteger(L, idx) {
                     lua_pushfstring!(
                         L,
-                        b"%I\x00" as *const u8 as *const libc::c_char,
+                        s!(b"%I\x00"),
                         lua_tointegerx(L, idx, 0 as *mut libc::c_int),
                     );
                 } else {
                     lua_pushfstring!(
                         L,
-                        b"%f\x00" as *const u8 as *const libc::c_char,
+                        s!(b"%f\x00"),
                         lua_tonumberx(L, idx, 0 as *mut libc::c_int),
                     );
                 }
@@ -550,30 +538,24 @@ pub unsafe extern "C" fn luaL_tolstring(
                 lua_pushstring(
                     L,
                     if 0 != lua_toboolean(L, idx) {
-                        b"true\x00" as *const u8 as *const libc::c_char
+                        s!(b"true\x00")
                     } else {
-                        b"false\x00" as *const u8 as *const libc::c_char
+                        s!(b"false\x00")
                     },
                 );
             }
             0 => {
-                lua_pushstring(L, b"nil\x00" as *const u8 as *const libc::c_char);
+                lua_pushstring(L, s!(b"nil\x00"));
             }
             _ => {
                 /* try name */
-                let mut tt: libc::c_int =
-                    luaL_getmetafield(L, idx, b"__name\x00" as *const u8 as *const libc::c_char);
+                let mut tt: libc::c_int = luaL_getmetafield(L, idx, s!(b"__name\x00"));
                 let mut kind: *const libc::c_char = if tt == 4i32 {
                     lua_tolstring(L, -1i32, 0 as *mut size_t)
                 } else {
                     lua_typename(L, lua_type(L, idx))
                 };
-                lua_pushfstring!(
-                    L,
-                    b"%s: %p\x00" as *const u8 as *const libc::c_char,
-                    kind,
-                    lua_topointer(L, idx),
-                );
+                lua_pushfstring!(L, s!(b"%s: %p\x00"), kind, lua_topointer(L, idx),);
                 if tt != 0i32 {
                     /* remove '__name' */
                     lua_rotate(L, -2i32, -1i32);
@@ -608,26 +590,17 @@ pub unsafe extern "C" fn luaL_argerror(
     };
     /* no stack frame? */
     if 0 == lua_getstack(L, 0i32, &mut ar) {
-        return luaL_error!(
-            L,
-            b"bad argument #%d (%s)\x00" as *const u8 as *const libc::c_char,
-            arg,
-            extramsg,
-        );
+        return luaL_error!(L, s!(b"bad argument #%d (%s)\x00"), arg, extramsg,);
     } else {
-        lua_getinfo(L, b"n\x00" as *const u8 as *const libc::c_char, &mut ar);
-        if strcmp(
-            ar.namewhat,
-            b"method\x00" as *const u8 as *const libc::c_char,
-        ) == 0i32
-        {
+        lua_getinfo(L, s!(b"n\x00"), &mut ar);
+        if strcmp(ar.namewhat, s!(b"method\x00")) == 0i32 {
             /* do not count 'self' */
             arg -= 1;
             /* error is in the self argument itself? */
             if arg == 0i32 {
                 return luaL_error!(
                     L,
-                    b"calling \'%s\' on bad self (%s)\x00" as *const u8 as *const libc::c_char,
+                    s!(b"calling \'%s\' on bad self (%s)\x00"),
                     ar.name,
                     extramsg,
                 );
@@ -637,12 +610,12 @@ pub unsafe extern "C" fn luaL_argerror(
             ar.name = if 0 != pushglobalfuncname(L, &mut ar) {
                 lua_tolstring(L, -1i32, 0 as *mut size_t)
             } else {
-                b"?\x00" as *const u8 as *const libc::c_char
+                s!(b"?\x00")
             }
         }
         return luaL_error!(
             L,
-            b"bad argument #%d to \'%s\' (%s)\x00" as *const u8 as *const libc::c_char,
+            s!(b"bad argument #%d to \'%s\' (%s)\x00"),
             arg,
             ar.name,
             extramsg,
@@ -658,20 +631,11 @@ unsafe extern "C" fn pushglobalfuncname(
 ) -> libc::c_int {
     let mut top: libc::c_int = lua_gettop(L);
     /* push function */
-    lua_getinfo(L, b"f\x00" as *const u8 as *const libc::c_char, ar);
-    lua_getfield(
-        L,
-        -1000000i32 - 1000i32,
-        b"_LOADED\x00" as *const u8 as *const libc::c_char,
-    );
+    lua_getinfo(L, s!(b"f\x00"), ar);
+    lua_getfield(L, -1000000i32 - 1000i32, s!(b"_LOADED\x00"));
     if 0 != findfield(L, top + 1i32, 2i32) {
         let mut name: *const libc::c_char = lua_tolstring(L, -1i32, 0 as *mut size_t);
-        if strncmp(
-            name,
-            b"_G.\x00" as *const u8 as *const libc::c_char,
-            3i32 as libc::c_ulong,
-        ) == 0i32
-        {
+        if strncmp(name, s!(b"_G.\x00"), 3i32 as libc::c_ulong) == 0i32 {
             /* name start with '_G.'? */
             /* push name without prefix */
             lua_pushstring(L, name.offset(3isize));
@@ -735,7 +699,7 @@ unsafe extern "C" fn findfield(
                     /* remove table (but keep name) */
                     lua_rotate(L, -2i32, -1i32);
                     lua_settop(L, -1i32 - 1i32);
-                    lua_pushstring(L, b".\x00" as *const u8 as *const libc::c_char);
+                    lua_pushstring(L, s!(b".\x00"));
                     /* place '.' between the two names */
                     lua_rotate(L, -2i32, 1i32);
                     lua_concat(L, 3i32);
@@ -776,21 +740,16 @@ unsafe extern "C" fn typeerror(
     let mut msg: *const libc::c_char = 0 as *const libc::c_char;
     /* name for the type of the actual argument */
     let mut typearg: *const libc::c_char = 0 as *const libc::c_char;
-    if luaL_getmetafield(L, arg, b"__name\x00" as *const u8 as *const libc::c_char) == 4i32 {
+    if luaL_getmetafield(L, arg, s!(b"__name\x00")) == 4i32 {
         /* use the given type name */
         typearg = lua_tolstring(L, -1i32, 0 as *mut size_t)
     } else if lua_type(L, arg) == 2i32 {
         /* special name for messages */
-        typearg = b"light userdata\x00" as *const u8 as *const libc::c_char
+        typearg = s!(b"light userdata\x00")
     } else {
         typearg = lua_typename(L, lua_type(L, arg))
     }
-    msg = lua_pushfstring!(
-        L,
-        b"%s expected, got %s\x00" as *const u8 as *const libc::c_char,
-        tname,
-        typearg,
-    );
+    msg = lua_pushfstring!(L, s!(b"%s expected, got %s\x00"), tname, typearg,);
     return luaL_argerror(L, arg, msg);
 }
 #[no_mangle]
@@ -851,11 +810,7 @@ pub unsafe extern "C" fn luaL_checkinteger(
 }
 unsafe extern "C" fn interror(mut L: *mut lua_State, mut arg: libc::c_int) -> () {
     if 0 != lua_isnumber(L, arg) {
-        luaL_argerror(
-            L,
-            arg,
-            b"number has no integer representation\x00" as *const u8 as *const libc::c_char,
-        );
+        luaL_argerror(L, arg, s!(b"number has no integer representation\x00"));
     } else {
         tag_error(L, arg, 3i32);
     };
@@ -880,13 +835,9 @@ pub unsafe extern "C" fn luaL_checkstack(
 ) -> () {
     if 0 == lua_checkstack(L, space) {
         if !msg.is_null() {
-            luaL_error!(
-                L,
-                b"stack overflow (%s)\x00" as *const u8 as *const libc::c_char,
-                msg,
-            );
+            luaL_error!(L, s!(b"stack overflow (%s)\x00"), msg,);
         } else {
-            luaL_error!(L, b"stack overflow\x00" as *const u8 as *const libc::c_char,);
+            luaL_error!(L, s!(b"stack overflow\x00"),);
         }
     };
 }
@@ -903,11 +854,7 @@ pub unsafe extern "C" fn luaL_checktype(
 #[no_mangle]
 pub unsafe extern "C" fn luaL_checkany(mut L: *mut lua_State, mut arg: libc::c_int) -> () {
     if lua_type(L, arg) == -1i32 {
-        luaL_argerror(
-            L,
-            arg,
-            b"value expected\x00" as *const u8 as *const libc::c_char,
-        );
+        luaL_argerror(L, arg, s!(b"value expected\x00"));
     };
 }
 #[no_mangle]
@@ -925,7 +872,7 @@ pub unsafe extern "C" fn luaL_newmetatable(
         lua_createtable(L, 0i32, 2i32);
         lua_pushstring(L, tname);
         /* metatable.__name = tname */
-        lua_setfield(L, -2i32, b"__name\x00" as *const u8 as *const libc::c_char);
+        lua_setfield(L, -2i32, s!(b"__name\x00"));
         lua_pushvalue(L, -1i32);
         /* registry.name = metatable */
         lua_setfield(L, -1000000i32 - 1000i32, tname);
@@ -1002,11 +949,7 @@ pub unsafe extern "C" fn luaL_checkoption(
     return luaL_argerror(
         L,
         arg,
-        lua_pushfstring!(
-            L,
-            b"invalid option \'%s\'\x00" as *const u8 as *const libc::c_char,
-            name,
-        ),
+        lua_pushfstring!(L, s!(b"invalid option \'%s\'\x00"), name,),
     );
 }
 #[no_mangle]
@@ -1023,12 +966,7 @@ pub unsafe extern "C" fn luaL_fileresult(
     } else {
         lua_pushnil(L);
         if !fname.is_null() {
-            lua_pushfstring!(
-                L,
-                b"%s: %s\x00" as *const u8 as *const libc::c_char,
-                fname,
-                strerror(en),
-            );
+            lua_pushfstring!(L, s!(b"%s: %s\x00"), fname, strerror(en),);
         } else {
             lua_pushstring(L, strerror(en));
         }
@@ -1042,7 +980,7 @@ pub unsafe extern "C" fn luaL_execresult(
     mut stat: libc::c_int,
 ) -> libc::c_int {
     /* type of termination */
-    let mut what: *const libc::c_char = b"exit\x00" as *const u8 as *const libc::c_char;
+    let mut what: *const libc::c_char = s!(b"exit\x00");
     /* error? */
     if stat == -1i32 {
         return luaL_fileresult(L, 0i32, 0 as *const libc::c_char);
@@ -1051,7 +989,7 @@ pub unsafe extern "C" fn luaL_execresult(
             stat = (stat & 0xff00i32) >> 8i32
         } else if ((stat & 0x7fi32) + 1i32) as libc::c_schar as libc::c_int >> 1i32 > 0i32 {
             stat = stat & 0x7fi32;
-            what = b"signal\x00" as *const u8 as *const libc::c_char
+            what = s!(b"signal\x00")
         }
         /* interpret result */
         /* successful termination? */
@@ -1129,17 +1067,13 @@ pub unsafe extern "C" fn luaL_loadfilex(
     /* index of filename on the stack */
     let mut fnameindex: libc::c_int = lua_gettop(L) + 1i32;
     if filename.is_null() {
-        lua_pushstring(L, b"=stdin\x00" as *const u8 as *const libc::c_char);
+        lua_pushstring(L, s!(b"=stdin\x00"));
         lf.f = stdin
     } else {
-        lua_pushfstring!(L, b"@%s\x00" as *const u8 as *const libc::c_char, filename);
-        lf.f = fopen(filename, b"r\x00" as *const u8 as *const libc::c_char);
+        lua_pushfstring!(L, s!(b"@%s\x00"), filename);
+        lf.f = fopen(filename, s!(b"r\x00"));
         if lf.f.is_null() {
-            return errfile(
-                L,
-                b"open\x00" as *const u8 as *const libc::c_char,
-                fnameindex,
-            );
+            return errfile(L, s!(b"open\x00"), fnameindex);
         }
     }
     /* read initial portion */
@@ -1155,17 +1089,9 @@ pub unsafe extern "C" fn luaL_loadfilex(
     {
         /* binary file? */
         /* reopen in binary mode */
-        lf.f = freopen(
-            filename,
-            b"rb\x00" as *const u8 as *const libc::c_char,
-            lf.f,
-        );
+        lf.f = freopen(filename, s!(b"rb\x00"), lf.f);
         if lf.f.is_null() {
-            return errfile(
-                L,
-                b"reopen\x00" as *const u8 as *const libc::c_char,
-                fnameindex,
-            );
+            return errfile(L, s!(b"reopen\x00"), fnameindex);
         } else {
             /* re-read initial portion */
             skipcomment(&mut lf, &mut c);
@@ -1192,11 +1118,7 @@ pub unsafe extern "C" fn luaL_loadfilex(
     if 0 != readstatus {
         /* ignore results from 'lua_load' */
         lua_settop(L, fnameindex);
-        return errfile(
-            L,
-            b"read\x00" as *const u8 as *const libc::c_char,
-            fnameindex,
-        );
+        return errfile(L, s!(b"read\x00"), fnameindex);
     } else {
         lua_rotate(L, fnameindex, -1i32);
         lua_settop(L, -1i32 - 1i32);
@@ -1211,13 +1133,7 @@ unsafe extern "C" fn errfile(
     let mut serr: *const libc::c_char = strerror(*__errno_location());
     let mut filename: *const libc::c_char =
         lua_tolstring(L, fnameindex, 0 as *mut size_t).offset(1isize);
-    lua_pushfstring!(
-        L,
-        b"cannot %s %s: %s\x00" as *const u8 as *const libc::c_char,
-        what,
-        filename,
-        serr,
-    );
+    lua_pushfstring!(L, s!(b"cannot %s %s: %s\x00"), what, filename, serr,);
     lua_rotate(L, fnameindex, -1i32);
     lua_settop(L, -1i32 - 1i32);
     return 6i32 + 1i32;
@@ -1276,7 +1192,7 @@ unsafe extern "C" fn skipcomment(mut lf: *mut LoadF, mut cp: *mut libc::c_int) -
 }
 unsafe extern "C" fn skipBOM(mut lf: *mut LoadF) -> libc::c_int {
     /* UTF-8 BOM mark */
-    let mut p: *const libc::c_char = b"\xef\xbb\xbf\x00" as *const u8 as *const libc::c_char;
+    let mut p: *const libc::c_char = s!(b"\xef\xbb\xbf\x00");
     let mut c: libc::c_int = 0;
     (*lf).n = 0i32;
     loop {
@@ -1371,8 +1287,7 @@ unsafe extern "C" fn l_alloc(
 unsafe extern "C" fn panic(mut L: *mut lua_State) -> libc::c_int {
     fprintf(
         stderr,
-        b"PANIC: unprotected error in call to Lua API (%s)\n\x00" as *const u8
-            as *const libc::c_char,
+        s!(b"PANIC: unprotected error in call to Lua API (%s)\n\x00"),
         lua_tolstring(L, -1i32, 0 as *mut size_t),
     );
     fflush(stderr);
@@ -1386,10 +1301,7 @@ pub unsafe extern "C" fn luaL_len(mut L: *mut lua_State, mut idx: libc::c_int) -
     lua_len(L, idx);
     l = lua_tointegerx(L, -1i32, &mut isnum);
     if 0 == isnum {
-        luaL_error!(
-            L,
-            b"object length is not an integer\x00" as *const u8 as *const libc::c_char,
-        );
+        luaL_error!(L, s!(b"object length is not an integer\x00"),);
     }
     /* remove object */
     lua_settop(L, -1i32 - 1i32);
@@ -1459,10 +1371,7 @@ unsafe extern "C" fn resizebox(
         /* allocation error? */
         /* free buffer */
         resizebox(L, idx, 0i32 as size_t);
-        luaL_error!(
-            L,
-            b"not enough memory for buffer allocation\x00" as *const u8 as *const libc::c_char,
-        );
+        luaL_error!(L, s!(b"not enough memory for buffer allocation\x00"),);
     }
     (*box_0).box_0 = temp;
     (*box_0).bsize = newsize;
@@ -1505,10 +1414,7 @@ pub unsafe extern "C" fn luaL_prepbuffsize(
             newsize = (*B).n.wrapping_add(sz)
         }
         if newsize < (*B).n || newsize.wrapping_sub((*B).n) < sz {
-            luaL_error!(
-                L,
-                b"buffer too large\x00" as *const u8 as *const libc::c_char,
-            );
+            luaL_error!(L, s!(b"buffer too large\x00"),);
         }
         /* create larger buffer */
         if (*B).b != (*B).initb.as_mut_ptr() {
@@ -1534,11 +1440,11 @@ unsafe extern "C" fn newbox(mut L: *mut lua_State, mut newsize: size_t) -> *mut 
         lua_newuserdata(L, ::std::mem::size_of::<UBox>() as libc::c_ulong) as *mut UBox;
     (*box_0).box_0 = 0 as *mut libc::c_void;
     (*box_0).bsize = 0i32 as size_t;
-    if 0 != luaL_newmetatable(L, b"LUABOX\x00" as *const u8 as *const libc::c_char) {
+    if 0 != luaL_newmetatable(L, s!(b"LUABOX\x00")) {
         /* creating metatable? */
         lua_pushcclosure(L, Some(boxgc), 0i32);
         /* metatable.__gc = boxgc */
-        lua_setfield(L, -2i32, b"__gc\x00" as *const u8 as *const libc::c_char);
+        lua_setfield(L, -2i32, s!(b"__gc\x00"));
     }
     lua_setmetatable(L, -2i32);
     return resizebox(L, -1i32, newsize);
@@ -1563,11 +1469,7 @@ pub unsafe extern "C" fn luaL_setfuncs(
     mut l: *const luaL_Reg,
     mut nup: libc::c_int,
 ) -> () {
-    luaL_checkstack(
-        L,
-        nup,
-        b"too many upvalues\x00" as *const u8 as *const libc::c_char,
-    );
+    luaL_checkstack(L, nup, s!(b"too many upvalues\x00"));
     while !(*l).name.is_null() {
         /* fill the table with given functions */
         let mut i: libc::c_int = 0;
@@ -1638,13 +1540,10 @@ pub unsafe extern "C" fn luaL_traceback(
         -1i32
     };
     if !msg.is_null() {
-        lua_pushfstring!(L, b"%s\n\x00" as *const u8 as *const libc::c_char, msg);
+        lua_pushfstring!(L, s!(b"%s\n\x00"), msg);
     }
     luaL_checkstack(L, 10i32, 0 as *const libc::c_char);
-    lua_pushstring(
-        L,
-        b"stack traceback:\x00" as *const u8 as *const libc::c_char,
-    );
+    lua_pushstring(L, s!(b"stack traceback:\x00"));
     loop {
         let fresh4 = level;
         level = level + 1;
@@ -1656,30 +1555,19 @@ pub unsafe extern "C" fn luaL_traceback(
         if fresh5 == 0i32 {
             /* too many levels? */
             /* add a '...' */
-            lua_pushstring(L, b"\n\t...\x00" as *const u8 as *const libc::c_char);
+            lua_pushstring(L, s!(b"\n\t...\x00"));
             /* and skip to last ones */
             level = last - 11i32 + 1i32
         } else {
-            lua_getinfo(L1, b"Slnt\x00" as *const u8 as *const libc::c_char, &mut ar);
-            lua_pushfstring!(
-                L,
-                b"\n\t%s:\x00" as *const u8 as *const libc::c_char,
-                ar.short_src.as_mut_ptr(),
-            );
+            lua_getinfo(L1, s!(b"Slnt\x00"), &mut ar);
+            lua_pushfstring!(L, s!(b"\n\t%s:\x00"), ar.short_src.as_mut_ptr(),);
             if ar.currentline > 0i32 {
-                lua_pushfstring!(
-                    L,
-                    b"%d:\x00" as *const u8 as *const libc::c_char,
-                    ar.currentline,
-                );
+                lua_pushfstring!(L, s!(b"%d:\x00"), ar.currentline,);
             }
-            lua_pushstring(L, b" in \x00" as *const u8 as *const libc::c_char);
+            lua_pushstring(L, s!(b" in \x00"));
             pushfuncname(L, &mut ar);
             if 0 != ar.istailcall {
-                lua_pushstring(
-                    L,
-                    b"\n\t(...tail calls...)\x00" as *const u8 as *const libc::c_char,
-                );
+                lua_pushstring(L, s!(b"\n\t(...tail calls...)\x00"));
             }
             lua_concat(L, lua_gettop(L) - top);
         }
@@ -1691,7 +1579,7 @@ unsafe extern "C" fn pushfuncname(mut L: *mut lua_State, mut ar: *mut lua_Debug)
         /* try first a global name */
         lua_pushfstring!(
             L,
-            b"function \'%s\'\x00" as *const u8 as *const libc::c_char,
+            s!(b"function \'%s\'\x00"),
             lua_tolstring(L, -1i32, 0 as *mut size_t),
         );
         /* remove name */
@@ -1699,24 +1587,19 @@ unsafe extern "C" fn pushfuncname(mut L: *mut lua_State, mut ar: *mut lua_Debug)
         lua_settop(L, -1i32 - 1i32);
     } else if *(*ar).namewhat as libc::c_int != '\u{0}' as i32 {
         /* use it */
-        lua_pushfstring!(
-            L,
-            b"%s \'%s\'\x00" as *const u8 as *const libc::c_char,
-            (*ar).namewhat,
-            (*ar).name,
-        );
+        lua_pushfstring!(L, s!(b"%s \'%s\'\x00"), (*ar).namewhat, (*ar).name,);
     } else if *(*ar).what as libc::c_int == 'm' as i32 {
-        lua_pushstring(L, b"main chunk\x00" as *const u8 as *const libc::c_char);
+        lua_pushstring(L, s!(b"main chunk\x00"));
     } else if *(*ar).what as libc::c_int != 'C' as i32 {
         lua_pushfstring!(
             L,
-            b"function <%s:%d>\x00" as *const u8 as *const libc::c_char,
+            s!(b"function <%s:%d>\x00"),
             (*ar).short_src.as_mut_ptr(),
             (*ar).linedefined,
         );
     } else {
         /* nothing left... */
-        lua_pushstring(L, b"?\x00" as *const u8 as *const libc::c_char);
+        lua_pushstring(L, s!(b"?\x00"));
     };
 }
 unsafe extern "C" fn lastlevel(mut L: *mut lua_State) -> libc::c_int {
@@ -1761,11 +1644,7 @@ pub unsafe extern "C" fn luaL_requiref(
     mut openf: lua_CFunction,
     mut glb: libc::c_int,
 ) -> () {
-    luaL_getsubtable(
-        L,
-        -1000000i32 - 1000i32,
-        b"_LOADED\x00" as *const u8 as *const libc::c_char,
-    );
+    luaL_getsubtable(L, -1000000i32 - 1000i32, s!(b"_LOADED\x00"));
     /* LOADED[modname] */
     lua_getfield(L, -1i32, modname);
     if 0 == lua_toboolean(L, -1i32) {

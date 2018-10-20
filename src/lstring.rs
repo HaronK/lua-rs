@@ -880,7 +880,7 @@ pub unsafe extern "C" fn luaS_init(mut L: *mut lua_State) -> () {
     /* pre-create memory-error message */
     (*g).memerrmsg = luaS_newlstr(
         L,
-        b"not enough memory\x00" as *const u8 as *const libc::c_char,
+        s!(b"not enough memory\x00"),
         (::std::mem::size_of::<[libc::c_char; 18]>() as libc::c_ulong)
             .wrapping_div(::std::mem::size_of::<libc::c_char>() as libc::c_ulong)
             .wrapping_sub(1i32 as libc::c_ulong),

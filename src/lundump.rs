@@ -744,7 +744,7 @@ pub unsafe extern "C" fn luaU_undump(
         == (*::std::mem::transmute::<&[u8; 5], &[libc::c_char; 5]>(b"\x1bLua\x00"))[0usize]
             as libc::c_int
     {
-        S.name = b"binary string\x00" as *const u8 as *const libc::c_char
+        S.name = s!(b"binary string\x00")
     } else {
         S.name = name
     }
@@ -902,18 +902,13 @@ unsafe extern "C" fn LoadBlock(
     mut size: size_t,
 ) -> () {
     if luaZ_read((*S).Z, b, size) != 0i32 as libc::c_ulong {
-        error(S, b"truncated\x00" as *const u8 as *const libc::c_char);
+        error(S, s!(b"truncated\x00"));
     } else {
         return;
     };
 }
 unsafe extern "C" fn error(mut S: *mut LoadState, mut why: *const libc::c_char) -> ! {
-    luaO_pushfstring!(
-        (*S).L,
-        b"%s: %s precompiled chunk\x00" as *const u8 as *const libc::c_char,
-        (*S).name,
-        why,
-    );
+    luaO_pushfstring!((*S).L, s!(b"%s: %s precompiled chunk\x00"), (*S).name, why,);
     luaD_throw((*S).L, 3i32);
 }
 unsafe extern "C" fn LoadInt(mut S: *mut LoadState) -> libc::c_int {
@@ -1091,11 +1086,7 @@ unsafe extern "C" fn LoadCode(mut S: *mut LoadState, mut f: *mut Proto) -> () {
 }
 unsafe extern "C" fn checkHeader(mut S: *mut LoadState) -> () {
     /* 1st char already checked */
-    checkliteral(
-        S,
-        (b"\x1bLua\x00" as *const u8 as *const libc::c_char).offset(1isize),
-        b"not a\x00" as *const u8 as *const libc::c_char,
-    );
+    checkliteral(S, (s!(b"\x1bLua\x00")).offset(1isize), s!(b"not a\x00"));
     if LoadByte(S) as libc::c_int
         != ((*::std::mem::transmute::<&[u8; 2], &[libc::c_char; 2]>(b"5\x00"))[0usize]
             as libc::c_int
@@ -1105,56 +1096,40 @@ unsafe extern "C" fn checkHeader(mut S: *mut LoadState) -> () {
                 as libc::c_int
                 - '0' as i32)
     {
-        error(
-            S,
-            b"version mismatch in\x00" as *const u8 as *const libc::c_char,
-        );
+        error(S, s!(b"version mismatch in\x00"));
     } else if LoadByte(S) as libc::c_int != 0i32 {
-        error(
-            S,
-            b"format mismatch in\x00" as *const u8 as *const libc::c_char,
-        );
+        error(S, s!(b"format mismatch in\x00"));
     } else {
-        checkliteral(
-            S,
-            b"\x19\x93\r\n\x1a\n\x00" as *const u8 as *const libc::c_char,
-            b"corrupted\x00" as *const u8 as *const libc::c_char,
-        );
+        checkliteral(S, s!(b"\x19\x93\r\n\x1a\n\x00"), s!(b"corrupted\x00"));
         fchecksize(
             S,
             ::std::mem::size_of::<libc::c_int>() as libc::c_ulong,
-            b"int\x00" as *const u8 as *const libc::c_char,
+            s!(b"int\x00"),
         );
         fchecksize(
             S,
             ::std::mem::size_of::<size_t>() as libc::c_ulong,
-            b"size_t\x00" as *const u8 as *const libc::c_char,
+            s!(b"size_t\x00"),
         );
         fchecksize(
             S,
             ::std::mem::size_of::<Instruction>() as libc::c_ulong,
-            b"Instruction\x00" as *const u8 as *const libc::c_char,
+            s!(b"Instruction\x00"),
         );
         fchecksize(
             S,
             ::std::mem::size_of::<lua_Integer>() as libc::c_ulong,
-            b"lua_Integer\x00" as *const u8 as *const libc::c_char,
+            s!(b"lua_Integer\x00"),
         );
         fchecksize(
             S,
             ::std::mem::size_of::<lua_Number>() as libc::c_ulong,
-            b"lua_Number\x00" as *const u8 as *const libc::c_char,
+            s!(b"lua_Number\x00"),
         );
         if LoadInteger(S) != 0x5678i32 as libc::c_longlong {
-            error(
-                S,
-                b"endianness mismatch in\x00" as *const u8 as *const libc::c_char,
-            );
+            error(S, s!(b"endianness mismatch in\x00"));
         } else if LoadNumber(S) != 370.5f64 {
-            error(
-                S,
-                b"float format mismatch in\x00" as *const u8 as *const libc::c_char,
-            );
+            error(S, s!(b"float format mismatch in\x00"));
         } else {
             return;
         }
@@ -1168,11 +1143,7 @@ unsafe extern "C" fn fchecksize(
     if LoadByte(S) as libc::c_ulong != size {
         error(
             S,
-            luaO_pushfstring!(
-                (*S).L,
-                b"%s size mismatch in\x00" as *const u8 as *const libc::c_char,
-                tname,
-            ),
+            luaO_pushfstring!((*S).L, s!(b"%s size mismatch in\x00"), tname,),
         );
     } else {
         return;

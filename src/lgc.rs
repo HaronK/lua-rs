@@ -1015,13 +1015,9 @@ unsafe extern "C" fn GCTM(mut L: *mut lua_State, mut propagateerrors: libc::c_in
                         as *mut TString as *mut libc::c_char)
                         .offset(::std::mem::size_of::<UTString>() as libc::c_ulong as isize)
                 } else {
-                    b"no message\x00" as *const u8 as *const libc::c_char
+                    s!(b"no message\x00")
                 };
-                luaO_pushfstring!(
-                    L,
-                    b"error in __gc metamethod (%s)\x00" as *const u8 as *const libc::c_char,
-                    msg,
-                );
+                luaO_pushfstring!(L, s!(b"error in __gc metamethod (%s)\x00"), msg,);
                 /* error in __gc metamethod */
                 status = 5i32
             }

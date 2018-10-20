@@ -729,17 +729,17 @@ pub union GCUnion {
 #[no_mangle]
 pub static mut luaT_typenames_: [*const libc::c_char; 11] = unsafe {
     [
-        b"no value\x00" as *const u8 as *const libc::c_char,
-        b"nil\x00" as *const u8 as *const libc::c_char,
-        b"boolean\x00" as *const u8 as *const libc::c_char,
+        s!(b"no value\x00"),
+        s!(b"nil\x00"),
+        s!(b"boolean\x00"),
         udatatypename.as_ptr(),
-        b"number\x00" as *const u8 as *const libc::c_char,
-        b"string\x00" as *const u8 as *const libc::c_char,
-        b"table\x00" as *const u8 as *const libc::c_char,
-        b"function\x00" as *const u8 as *const libc::c_char,
+        s!(b"number\x00"),
+        s!(b"string\x00"),
+        s!(b"table\x00"),
+        s!(b"function\x00"),
         udatatypename.as_ptr(),
-        b"thread\x00" as *const u8 as *const libc::c_char,
-        b"proto\x00" as *const u8 as *const libc::c_char,
+        s!(b"thread\x00"),
+        s!(b"proto\x00"),
     ]
 };
 /*
@@ -761,10 +761,7 @@ pub unsafe extern "C" fn luaT_objtypename(
         mt = (*((*o).value_.gc as *mut GCUnion)).u.metatable;
         !mt.is_null()
     } {
-        let mut name: *const TValue = luaH_getshortstr(
-            mt,
-            luaS_new(L, b"__name\x00" as *const u8 as *const libc::c_char),
-        );
+        let mut name: *const TValue = luaH_getshortstr(mt, luaS_new(L, s!(b"__name\x00")));
         /* is '__name' a string? */
         if (*name).tt_ & 0xfi32 == 4i32 {
             /* use it as type name */
@@ -816,30 +813,30 @@ pub unsafe extern "C" fn luaT_gettmbyobj(
 pub unsafe extern "C" fn luaT_init(mut L: *mut lua_State) -> () {
     /* ORDER TM */
     static mut luaT_eventname: [*const libc::c_char; 24] = [
-        b"__index\x00" as *const u8 as *const libc::c_char,
-        b"__newindex\x00" as *const u8 as *const libc::c_char,
-        b"__gc\x00" as *const u8 as *const libc::c_char,
-        b"__mode\x00" as *const u8 as *const libc::c_char,
-        b"__len\x00" as *const u8 as *const libc::c_char,
-        b"__eq\x00" as *const u8 as *const libc::c_char,
-        b"__add\x00" as *const u8 as *const libc::c_char,
-        b"__sub\x00" as *const u8 as *const libc::c_char,
-        b"__mul\x00" as *const u8 as *const libc::c_char,
-        b"__mod\x00" as *const u8 as *const libc::c_char,
-        b"__pow\x00" as *const u8 as *const libc::c_char,
-        b"__div\x00" as *const u8 as *const libc::c_char,
-        b"__idiv\x00" as *const u8 as *const libc::c_char,
-        b"__band\x00" as *const u8 as *const libc::c_char,
-        b"__bor\x00" as *const u8 as *const libc::c_char,
-        b"__bxor\x00" as *const u8 as *const libc::c_char,
-        b"__shl\x00" as *const u8 as *const libc::c_char,
-        b"__shr\x00" as *const u8 as *const libc::c_char,
-        b"__unm\x00" as *const u8 as *const libc::c_char,
-        b"__bnot\x00" as *const u8 as *const libc::c_char,
-        b"__lt\x00" as *const u8 as *const libc::c_char,
-        b"__le\x00" as *const u8 as *const libc::c_char,
-        b"__concat\x00" as *const u8 as *const libc::c_char,
-        b"__call\x00" as *const u8 as *const libc::c_char,
+        s!(b"__index\x00"),
+        s!(b"__newindex\x00"),
+        s!(b"__gc\x00"),
+        s!(b"__mode\x00"),
+        s!(b"__len\x00"),
+        s!(b"__eq\x00"),
+        s!(b"__add\x00"),
+        s!(b"__sub\x00"),
+        s!(b"__mul\x00"),
+        s!(b"__mod\x00"),
+        s!(b"__pow\x00"),
+        s!(b"__div\x00"),
+        s!(b"__idiv\x00"),
+        s!(b"__band\x00"),
+        s!(b"__bor\x00"),
+        s!(b"__bxor\x00"),
+        s!(b"__shl\x00"),
+        s!(b"__shr\x00"),
+        s!(b"__unm\x00"),
+        s!(b"__bnot\x00"),
+        s!(b"__lt\x00"),
+        s!(b"__le\x00"),
+        s!(b"__concat\x00"),
+        s!(b"__call\x00"),
     ];
     let mut i: libc::c_int = 0;
     i = 0i32;
@@ -948,21 +945,11 @@ pub unsafe extern "C" fn luaT_trybinTM(
                 } {
                     luaG_tointerror(L, p1, p2);
                 } else {
-                    luaG_opinterror(
-                        L,
-                        p1,
-                        p2,
-                        b"perform bitwise operation on\x00" as *const u8 as *const libc::c_char,
-                    );
+                    luaG_opinterror(L, p1, p2, s!(b"perform bitwise operation on\x00"));
                 }
             }
             _ => {
-                luaG_opinterror(
-                    L,
-                    p1,
-                    p2,
-                    b"perform arithmetic on\x00" as *const u8 as *const libc::c_char,
-                );
+                luaG_opinterror(L, p1, p2, s!(b"perform arithmetic on\x00"));
             }
         }
     } else {

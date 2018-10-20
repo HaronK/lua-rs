@@ -1015,7 +1015,7 @@ unsafe extern "C" fn auxgetinfo(
                 (*ar).namewhat = getfuncname(L, ci, &mut (*ar).name);
                 if (*ar).namewhat.is_null() {
                     /* not found */
-                    (*ar).namewhat = b"\x00" as *const u8 as *const libc::c_char;
+                    (*ar).namewhat = s!(b"\x00");
                     (*ar).name = 0 as *const libc::c_char
                 }
             }
@@ -1042,9 +1042,9 @@ unsafe extern "C" fn getfuncname(
         return 0 as *const libc::c_char;
     } else if 0 != (*ci).callstatus as libc::c_int & 1i32 << 8i32 {
         /* is this a finalizer? */
-        *name = b"__gc\x00" as *const u8 as *const libc::c_char;
+        *name = s!(b"__gc\x00");
         /* report it as such */
-        return b"metamethod\x00" as *const u8 as *const libc::c_char;
+        return s!(b"metamethod\x00");
     } else if 0 == (*ci).callstatus as libc::c_int & 1i32 << 5i32
         && 0 != (*(*ci).previous).callstatus as libc::c_int & 1i32 << 1i32
     {
@@ -1074,8 +1074,8 @@ unsafe extern "C" fn funcnamefromcode(
     let mut i: Instruction = *(*p).code.offset(pc as isize);
     if 0 != (*ci).callstatus as libc::c_int & 1i32 << 2i32 {
         /* was it called inside a hook? */
-        *name = b"?\x00" as *const u8 as *const libc::c_char;
-        return b"hook\x00" as *const u8 as *const libc::c_char;
+        *name = s!(b"?\x00");
+        return s!(b"hook\x00");
     } else {
         match (i >> 0i32 & !((!(0i32 as Instruction)) << 6i32) << 0i32) as OpCode as libc::c_uint {
             36 | 37 => {
@@ -1089,8 +1089,8 @@ unsafe extern "C" fn funcnamefromcode(
             }
             41 => {
                 /* for iterator */
-                *name = b"for iterator\x00" as *const u8 as *const libc::c_char;
-                return b"for iterator\x00" as *const u8 as *const libc::c_char;
+                *name = s!(b"for iterator\x00");
+                return s!(b"for iterator\x00");
             }
             12 | 6 | 7 => tm = TM_INDEX,
             8 | 10 => tm = TM_NEWINDEX,
@@ -1117,7 +1117,7 @@ unsafe extern "C" fn funcnamefromcode(
         }
         *name = ((*(*L).l_G).tmname[tm as usize] as *mut libc::c_char)
             .offset(::std::mem::size_of::<UTString>() as libc::c_ulong as isize);
-        return b"metamethod\x00" as *const u8 as *const libc::c_char;
+        return s!(b"metamethod\x00");
     };
 }
 unsafe extern "C" fn currentpc(mut ci: *mut CallInfo) -> libc::c_int {
@@ -1144,7 +1144,7 @@ unsafe extern "C" fn getobjname(
     *name = luaF_getlocalname(p, reg + 1i32, lastpc);
     /* is a local? */
     if !(*name).is_null() {
-        return b"local\x00" as *const u8 as *const libc::c_char;
+        return s!(b"local\x00");
     } else {
         /* else try symbolic execution */
         pc = findsetreg(p, lastpc, reg);
@@ -1183,12 +1183,10 @@ unsafe extern "C" fn getobjname(
                             upvalname(p, t)
                         };
                     kname(p, pc, k, name);
-                    return if !vn.is_null()
-                        && strcmp(vn, b"_ENV\x00" as *const u8 as *const libc::c_char) == 0i32
-                    {
-                        b"global\x00" as *const u8 as *const libc::c_char
+                    return if !vn.is_null() && strcmp(vn, s!(b"_ENV\x00")) == 0i32 {
+                        s!(b"global\x00")
                     } else {
-                        b"field\x00" as *const u8 as *const libc::c_char
+                        s!(b"field\x00")
                     };
                 }
                 5 => {
@@ -1198,7 +1196,7 @@ unsafe extern "C" fn getobjname(
                             & !((!(0i32 as Instruction)) << 9i32) << 0i32)
                             as libc::c_int,
                     );
-                    return b"upvalue\x00" as *const u8 as *const libc::c_char;
+                    return s!(b"upvalue\x00");
                 }
                 1 | 2 => {
                     let mut b_0: libc::c_int =
@@ -1216,7 +1214,7 @@ unsafe extern "C" fn getobjname(
                             .ts as *mut TString
                             as *mut libc::c_char)
                             .offset(::std::mem::size_of::<UTString>() as libc::c_ulong as isize);
-                        return b"constant\x00" as *const u8 as *const libc::c_char;
+                        return s!(b"constant\x00");
                     }
                 }
                 12 => {
@@ -1225,7 +1223,7 @@ unsafe extern "C" fn getobjname(
                         & !((!(0i32 as Instruction)) << 9i32) << 0i32)
                         as libc::c_int;
                     kname(p, pc, k_0, name);
-                    return b"method\x00" as *const u8 as *const libc::c_char;
+                    return s!(b"method\x00");
                 }
                 _ => {}
             }
@@ -1269,12 +1267,12 @@ unsafe extern "C" fn kname(
     }
     /* else no reasonable name found */
     /* no reasonable name found */
-    *name = b"?\x00" as *const u8 as *const libc::c_char;
+    *name = s!(b"?\x00");
 }
 unsafe extern "C" fn upvalname(mut p: *mut Proto, mut uv: libc::c_int) -> *const libc::c_char {
     let mut s: *mut TString = (*(*p).upvalues.offset(uv as isize)).name;
     if s.is_null() {
-        return b"?\x00" as *const u8 as *const libc::c_char;
+        return s!(b"?\x00");
     } else {
         return (s as *mut libc::c_char)
             .offset(::std::mem::size_of::<UTString>() as libc::c_ulong as isize);
@@ -1370,24 +1368,24 @@ unsafe extern "C" fn currentline(mut ci: *mut CallInfo) -> libc::c_int {
 unsafe extern "C" fn funcinfo(mut ar: *mut lua_Debug, mut cl: *mut Closure) -> () {
     let mut p: *mut Proto = 0 as *mut Proto;
     if cl.is_null() || (*cl).c.tt as libc::c_int == 6i32 | 2i32 << 4i32 {
-        (*ar).source = b"=[C]\x00" as *const u8 as *const libc::c_char;
+        (*ar).source = s!(b"=[C]\x00");
         (*ar).linedefined = -1i32;
         (*ar).lastlinedefined = -1i32;
-        (*ar).what = b"C\x00" as *const u8 as *const libc::c_char
+        (*ar).what = s!(b"C\x00")
     } else {
         p = (*cl).l.p;
         (*ar).source = if !(*p).source.is_null() {
             ((*p).source as *mut libc::c_char)
                 .offset(::std::mem::size_of::<UTString>() as libc::c_ulong as isize)
         } else {
-            b"=?\x00" as *const u8 as *const libc::c_char
+            s!(b"=?\x00")
         };
         (*ar).linedefined = (*p).linedefined;
         (*ar).lastlinedefined = (*p).lastlinedefined;
         (*ar).what = if (*ar).linedefined == 0i32 {
-            b"main\x00" as *const u8 as *const libc::c_char
+            s!(b"main\x00")
         } else {
-            b"Lua\x00" as *const u8 as *const libc::c_char
+            s!(b"Lua\x00")
         }
     }
     luaO_chunkid((*ar).short_src.as_mut_ptr(), (*ar).source, 60i32 as size_t);
@@ -1462,7 +1460,7 @@ unsafe extern "C" fn findlocal(
         /* is 'n' inside 'ci' stack? */
         if limit.wrapping_offset_from(base) as libc::c_long >= n as libc::c_long && n > 0i32 {
             /* generic name for any valid slot */
-            name = b"(*temporary)\x00" as *const u8 as *const libc::c_char
+            name = s!(b"(*temporary)\x00")
         } else {
             return 0 as *const libc::c_char;
         }
@@ -1484,7 +1482,7 @@ unsafe extern "C" fn findvararg(
     } else {
         *pos = (*ci).func.offset(nparams as isize).offset(n as isize);
         /* generic name for any vararg */
-        return b"(*vararg)\x00" as *const u8 as *const libc::c_char;
+        return s!(b"(*vararg)\x00");
     };
 }
 #[no_mangle]
@@ -1553,7 +1551,7 @@ pub unsafe extern "C" fn luaG_typeerror(
     let mut _t: *const libc::c_char = luaT_objtypename(L, o);
     luaG_runerror!(
         L,
-        b"attempt to %s a %s value%s\x00" as *const u8 as *const libc::c_char,
+        s!(b"attempt to %s a %s value%s\x00"),
         op,
         t,
         varinfo(L, o),
@@ -1578,14 +1576,9 @@ unsafe extern "C" fn varinfo(mut L: *mut lua_State, mut o: *const TValue) -> *co
         }
     }
     return if !kind.is_null() {
-        luaO_pushfstring!(
-            L,
-            b" (%s \'%s\')\x00" as *const u8 as *const libc::c_char,
-            kind,
-            name,
-        )
+        luaO_pushfstring!(L, s!(b" (%s \'%s\')\x00"), kind, name,)
     } else {
-        b"\x00" as *const u8 as *const libc::c_char
+        s!(b"\x00")
     };
 }
 /* }====================================================== */
@@ -1616,7 +1609,7 @@ unsafe extern "C" fn getupvalname(
     while i < (*c).nupvalues as libc::c_int {
         if (*(*c).upvals[i as usize]).v == o as *mut TValue {
             *name = upvalname((*c).p, i);
-            return b"upvalue\x00" as *const u8 as *const libc::c_char;
+            return s!(b"upvalue\x00");
         } else {
             i += 1
         }
@@ -1662,13 +1655,7 @@ pub unsafe extern "C" fn luaG_addinfo(
         buff[0usize] = '?' as i32 as libc::c_char;
         buff[1usize] = '\u{0}' as i32 as libc::c_char
     }
-    return luaO_pushfstring!(
-        L,
-        b"%s:%d: %s\x00" as *const u8 as *const libc::c_char,
-        buff.as_mut_ptr(),
-        line,
-        msg,
-    );
+    return luaO_pushfstring!(L, s!(b"%s:%d: %s\x00"), buff.as_mut_ptr(), line, msg,);
 }
 #[no_mangle]
 pub unsafe extern "C" fn luaG_concaterror(
@@ -1679,11 +1666,7 @@ pub unsafe extern "C" fn luaG_concaterror(
     if (*p1).tt_ & 0xfi32 == 4i32 || (*p1).tt_ & 0xfi32 == 3i32 {
         p1 = p2
     }
-    luaG_typeerror(
-        L,
-        p1,
-        b"concatenate\x00" as *const u8 as *const libc::c_char,
-    );
+    luaG_typeerror(L, p1, s!(b"concatenate\x00"));
 }
 #[no_mangle]
 pub unsafe extern "C" fn luaG_opinterror(
@@ -1722,7 +1705,7 @@ pub unsafe extern "C" fn luaG_tointerror(
     }
     luaG_runerror!(
         L,
-        b"number%s has no integer representation\x00" as *const u8 as *const libc::c_char,
+        s!(b"number%s has no integer representation\x00"),
         varinfo(L, p2),
     );
 }
@@ -1735,18 +1718,9 @@ pub unsafe extern "C" fn luaG_ordererror(
     let mut t1: *const libc::c_char = luaT_objtypename(L, p1);
     let mut t2: *const libc::c_char = luaT_objtypename(L, p2);
     if strcmp(t1, t2) == 0i32 {
-        luaG_runerror!(
-            L,
-            b"attempt to compare two %s values\x00" as *const u8 as *const libc::c_char,
-            t1,
-        );
+        luaG_runerror!(L, s!(b"attempt to compare two %s values\x00"), t1,);
     } else {
-        luaG_runerror!(
-            L,
-            b"attempt to compare %s with %s\x00" as *const u8 as *const libc::c_char,
-            t1,
-            t2,
-        );
+        luaG_runerror!(L, s!(b"attempt to compare %s with %s\x00"), t1, t2,);
     };
 }
 #[no_mangle]

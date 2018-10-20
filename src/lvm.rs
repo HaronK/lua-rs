@@ -1443,7 +1443,7 @@ pub unsafe extern "C" fn luaV_finishget(
             tm = luaT_gettmbyobj(L, t, TM_INDEX);
             if (*tm).tt_ == 0i32 {
                 /* no metamethod */
-                luaG_typeerror(L, t, b"index\x00" as *const u8 as *const libc::c_char);
+                luaG_typeerror(L, t, s!(b"index\x00"));
             }
         } else {
             /* else will try the metamethod */
@@ -1497,10 +1497,7 @@ pub unsafe extern "C" fn luaV_finishget(
         }
     }
     /* else repeat (tail call 'luaV_finishget') */
-    luaG_runerror!(
-        L,
-        b"\'__index\' chain too long; possible loop\x00" as *const u8 as *const libc::c_char,
-    );
+    luaG_runerror!(L, s!(b"\'__index\' chain too long; possible loop\x00"),);
 }
 #[no_mangle]
 pub unsafe extern "C" fn luaV_finishset(
@@ -1561,7 +1558,7 @@ pub unsafe extern "C" fn luaV_finishset(
             /* not a table; check metamethod */
             tm = luaT_gettmbyobj(L, t, TM_NEWINDEX);
             if (*tm).tt_ == 0i32 {
-                luaG_typeerror(L, t, b"index\x00" as *const u8 as *const libc::c_char);
+                luaG_typeerror(L, t, s!(b"index\x00"));
             }
         }
         /* try the metamethod */
@@ -1600,10 +1597,7 @@ pub unsafe extern "C" fn luaV_finishset(
         }
     }
     /* else loop */
-    luaG_runerror!(
-        L,
-        b"\'__newindex\' chain too long; possible loop\x00" as *const u8 as *const libc::c_char,
-    );
+    luaG_runerror!(L, s!(b"\'__newindex\' chain too long; possible loop\x00"),);
 }
 #[no_mangle]
 pub unsafe extern "C" fn luaV_finishOp(mut L: *mut lua_State) -> () {
@@ -1785,10 +1779,7 @@ pub unsafe extern "C" fn luaV_concat(mut L: *mut lua_State, mut total: libc::c_i
                 .wrapping_div(::std::mem::size_of::<libc::c_char>() as libc::c_ulong)
                 .wrapping_sub(tl)
                 {
-                    luaG_runerror!(
-                        L,
-                        b"string length overflow\x00" as *const u8 as *const libc::c_char,
-                    );
+                    luaG_runerror!(L, s!(b"string length overflow\x00"),);
                 } else {
                     tl = (tl as libc::c_ulong).wrapping_add(l) as size_t as size_t;
                     n += 1
@@ -3636,11 +3627,7 @@ pub unsafe extern "C" fn luaV_execute(mut L: *mut lua_State) -> () {
                         } else {
                             luaV_tonumber_(plimit, &mut nlimit)
                         } {
-                            luaG_runerror!(
-                                L,
-                                b"\'for\' limit must be a number\x00" as *const u8
-                                    as *const libc::c_char,
-                            );
+                            luaG_runerror!(L, s!(b"\'for\' limit must be a number\x00"),);
                         } else {
                             let mut io_28: *mut TValue = plimit;
                             (*io_28).value_.n = nlimit;
@@ -3651,11 +3638,7 @@ pub unsafe extern "C" fn luaV_execute(mut L: *mut lua_State) -> () {
                             } else {
                                 luaV_tonumber_(pstep, &mut nstep)
                             } {
-                                luaG_runerror!(
-                                    L,
-                                    b"\'for\' step must be a number\x00" as *const u8
-                                        as *const libc::c_char,
-                                );
+                                luaG_runerror!(L, s!(b"\'for\' step must be a number\x00"),);
                             } else {
                                 let mut io_29: *mut TValue = pstep;
                                 (*io_29).value_.n = nstep;
@@ -3668,8 +3651,7 @@ pub unsafe extern "C" fn luaV_execute(mut L: *mut lua_State) -> () {
                                 } {
                                     luaG_runerror!(
                                         L,
-                                        b"\'for\' initial value must be a number\x00" as *const u8
-                                            as *const libc::c_char,
+                                        s!(b"\'for\' initial value must be a number\x00"),
                                     );
                                 } else {
                                     let mut io_30: *mut TValue = init;
@@ -4046,11 +4028,7 @@ pub unsafe extern "C" fn luaV_objlen(
             tm = luaT_gettmbyobj(L, rb, TM_LEN);
             /* no metamethod? */
             if (*tm).tt_ == 0i32 {
-                luaG_typeerror(
-                    L,
-                    rb,
-                    b"get length of\x00" as *const u8 as *const libc::c_char,
-                );
+                luaG_typeerror(L, rb, s!(b"get length of\x00"));
             }
         }
     }
@@ -4065,10 +4043,7 @@ pub unsafe extern "C" fn luaV_div(
     if (n as lua_Unsigned).wrapping_add(1u32 as libc::c_ulonglong) <= 1u32 as libc::c_ulonglong {
         /* special cases: -1 or 0 */
         if n == 0i32 as libc::c_longlong {
-            luaG_runerror!(
-                L,
-                b"attempt to divide by zero\x00" as *const u8 as *const libc::c_char,
-            );
+            luaG_runerror!(L, s!(b"attempt to divide by zero\x00"),);
         } else {
             return (0i32 as lua_Unsigned).wrapping_sub(m as lua_Unsigned) as lua_Integer;
         }
@@ -4092,10 +4067,7 @@ pub unsafe extern "C" fn luaV_mod(
     if (n as lua_Unsigned).wrapping_add(1u32 as libc::c_ulonglong) <= 1u32 as libc::c_ulonglong {
         /* special cases: -1 or 0 */
         if n == 0i32 as libc::c_longlong {
-            luaG_runerror!(
-                L,
-                b"attempt to perform \'n%%0\'\x00" as *const u8 as *const libc::c_char,
-            );
+            luaG_runerror!(L, s!(b"attempt to perform \'n%%0\'\x00"),);
         } else {
             return 0i32 as lua_Integer;
         }

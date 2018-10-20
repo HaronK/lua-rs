@@ -1004,17 +1004,9 @@ pub unsafe extern "C" fn lua_yieldk(
     let mut ci: *mut CallInfo = (*L).ci;
     if (*L).nny as libc::c_int > 0i32 {
         if L != (*(*L).l_G).mainthread {
-            luaG_runerror!(
-                L,
-                b"attempt to yield across a C-call boundary\x00" as *const u8
-                    as *const libc::c_char,
-            );
+            luaG_runerror!(L, s!(b"attempt to yield across a C-call boundary\x00"),);
         } else {
-            luaG_runerror!(
-                L,
-                b"attempt to yield from outside a coroutine\x00" as *const u8
-                    as *const libc::c_char,
-            );
+            luaG_runerror!(L, s!(b"attempt to yield from outside a coroutine\x00"),);
         }
     } else {
         (*L).status = 1i32 as lu_byte;
@@ -1097,7 +1089,7 @@ unsafe extern "C" fn seterrorobj(
             let mut io_0: *mut TValue = oldtop;
             let mut x__0: *mut TString = luaS_newlstr(
                 L,
-                b"error in error handling\x00" as *const u8 as *const libc::c_char,
+                s!(b"error in error handling\x00"),
                 (::std::mem::size_of::<[libc::c_char; 24]>() as libc::c_ulong)
                     .wrapping_div(::std::mem::size_of::<libc::c_char>() as libc::c_ulong)
                     .wrapping_sub(1i32 as libc::c_ulong),
@@ -1126,18 +1118,10 @@ pub unsafe extern "C" fn lua_resume(
         /* may be starting a coroutine */
         /* not in base level? */
         if (*L).ci != &mut (*L).base_ci as *mut CallInfo {
-            return resume_error(
-                L,
-                b"cannot resume non-suspended coroutine\x00" as *const u8 as *const libc::c_char,
-                nargs,
-            );
+            return resume_error(L, s!(b"cannot resume non-suspended coroutine\x00"), nargs);
         }
     } else if (*L).status as libc::c_int != 1i32 {
-        return resume_error(
-            L,
-            b"cannot resume dead coroutine\x00" as *const u8 as *const libc::c_char,
-            nargs,
-        );
+        return resume_error(L, s!(b"cannot resume dead coroutine\x00"), nargs);
     }
     (*L).nCcalls = (if !from.is_null() {
         (*from).nCcalls as libc::c_int + 1i32
@@ -1145,11 +1129,7 @@ pub unsafe extern "C" fn lua_resume(
         1i32
     }) as libc::c_ushort;
     if (*L).nCcalls as libc::c_int >= 200i32 {
-        return resume_error(
-            L,
-            b"C stack overflow\x00" as *const u8 as *const libc::c_char,
-            nargs,
-        );
+        return resume_error(L, s!(b"C stack overflow\x00"), nargs);
     } else {
         /* allow yields */
         (*L).nny = 0i32 as libc::c_ushort;
@@ -1412,7 +1392,7 @@ pub unsafe extern "C" fn luaD_growstack(mut L: *mut lua_State, mut n: libc::c_in
         if newsize > 1000000i32 {
             /* stack overflow? */
             luaD_reallocstack(L, 1000000i32 + 200i32);
-            luaG_runerror!(L, b"stack overflow\x00" as *const u8 as *const libc::c_char);
+            luaG_runerror!(L, s!(b"stack overflow\x00"));
         } else {
             luaD_reallocstack(L, newsize);
             return;
@@ -1762,11 +1742,7 @@ unsafe extern "C" fn tryfuncTM(mut L: *mut lua_State, mut func: StkId) -> () {
     let mut tm: *const TValue = luaT_gettmbyobj(L, func as *const TValue, TM_CALL);
     let mut p: StkId = 0 as *mut TValue;
     if !((*tm).tt_ & 0xfi32 == 6i32) {
-        luaG_typeerror(
-            L,
-            func as *const TValue,
-            b"call\x00" as *const u8 as *const libc::c_char,
-        );
+        luaG_typeerror(L, func as *const TValue, s!(b"call\x00"));
     } else {
         /* Open a hole inside the stack at 'func' */
         p = (*L).top;
@@ -1962,18 +1938,10 @@ unsafe extern "C" fn f_parser(mut L: *mut lua_State, mut ud: *mut libc::c_void) 
     if c == (*::std::mem::transmute::<&[u8; 5], &[libc::c_char; 5]>(b"\x1bLua\x00"))[0usize]
         as libc::c_int
     {
-        checkmode(
-            L,
-            (*p).mode,
-            b"binary\x00" as *const u8 as *const libc::c_char,
-        );
+        checkmode(L, (*p).mode, s!(b"binary\x00"));
         cl = luaU_undump(L, (*p).z, (*p).name)
     } else {
-        checkmode(
-            L,
-            (*p).mode,
-            b"text\x00" as *const u8 as *const libc::c_char,
-        );
+        checkmode(L, (*p).mode, s!(b"text\x00"));
         cl = luaY_parser(L, (*p).z, &mut (*p).buff, &mut (*p).dyd, (*p).name, c)
     }
     luaF_initupvals(L, cl);
@@ -1986,7 +1954,7 @@ unsafe extern "C" fn checkmode(
     if !mode.is_null() && strchr(mode, *x.offset(0isize) as libc::c_int).is_null() {
         luaO_pushfstring!(
             L,
-            b"attempt to load a %s chunk (mode is \'%s\')\x00" as *const u8 as *const libc::c_char,
+            s!(b"attempt to load a %s chunk (mode is \'%s\')\x00"),
             x,
             mode,
         );
@@ -2051,10 +2019,7 @@ pub unsafe extern "C" fn luaD_call(
 */
 unsafe extern "C" fn stackerror(mut L: *mut lua_State) -> () {
     if (*L).nCcalls as libc::c_int == 200i32 {
-        luaG_runerror!(
-            L,
-            b"C stack overflow\x00" as *const u8 as *const libc::c_char,
-        );
+        luaG_runerror!(L, s!(b"C stack overflow\x00"),);
     } else if (*L).nCcalls as libc::c_int >= 200i32 + (200i32 >> 3i32) {
         /* error while handing stack error */
         luaD_throw(L, 6i32);

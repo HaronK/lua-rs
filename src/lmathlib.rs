@@ -166,163 +166,155 @@ pub unsafe extern "C" fn luaopen_math(mut L: *mut lua_State) -> libc::c_int {
     );
     luaL_setfuncs(L, mathlib.as_ptr(), 0i32);
     lua_pushnumber(L, 3.141592653589793f64);
-    lua_setfield(L, -2i32, b"pi\x00" as *const u8 as *const libc::c_char);
+    lua_setfield(L, -2i32, s!(b"pi\x00"));
     lua_pushnumber(L, ::std::f64::INFINITY);
-    lua_setfield(L, -2i32, b"huge\x00" as *const u8 as *const libc::c_char);
+    lua_setfield(L, -2i32, s!(b"huge\x00"));
     lua_pushinteger(L, 9223372036854775807i64);
-    lua_setfield(
-        L,
-        -2i32,
-        b"maxinteger\x00" as *const u8 as *const libc::c_char,
-    );
+    lua_setfield(L, -2i32, s!(b"maxinteger\x00"));
     lua_pushinteger(L, -9223372036854775807i64 - 1i64);
-    lua_setfield(
-        L,
-        -2i32,
-        b"mininteger\x00" as *const u8 as *const libc::c_char,
-    );
+    lua_setfield(L, -2i32, s!(b"mininteger\x00"));
     return 1i32;
 }
 /* }================================================================== */
 static mut mathlib: [luaL_Reg; 36] = [
     luaL_Reg {
-        name: b"abs\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"abs\x00"),
         func: Some(math_abs),
     },
     luaL_Reg {
-        name: b"acos\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"acos\x00"),
         func: Some(math_acos),
     },
     luaL_Reg {
-        name: b"asin\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"asin\x00"),
         func: Some(math_asin),
     },
     luaL_Reg {
-        name: b"atan\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"atan\x00"),
         func: Some(math_atan),
     },
     luaL_Reg {
-        name: b"ceil\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"ceil\x00"),
         func: Some(math_ceil),
     },
     luaL_Reg {
-        name: b"cos\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"cos\x00"),
         func: Some(math_cos),
     },
     luaL_Reg {
-        name: b"deg\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"deg\x00"),
         func: Some(math_deg),
     },
     luaL_Reg {
-        name: b"exp\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"exp\x00"),
         func: Some(math_exp),
     },
     luaL_Reg {
-        name: b"tointeger\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"tointeger\x00"),
         func: Some(math_toint),
     },
     luaL_Reg {
-        name: b"floor\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"floor\x00"),
         func: Some(math_floor),
     },
     luaL_Reg {
-        name: b"fmod\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"fmod\x00"),
         func: Some(math_fmod),
     },
     luaL_Reg {
-        name: b"ult\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"ult\x00"),
         func: Some(math_ult),
     },
     luaL_Reg {
-        name: b"log\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"log\x00"),
         func: Some(math_log),
     },
     luaL_Reg {
-        name: b"max\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"max\x00"),
         func: Some(math_max),
     },
     luaL_Reg {
-        name: b"min\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"min\x00"),
         func: Some(math_min),
     },
     luaL_Reg {
-        name: b"modf\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"modf\x00"),
         func: Some(math_modf),
     },
     luaL_Reg {
-        name: b"rad\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"rad\x00"),
         func: Some(math_rad),
     },
     luaL_Reg {
-        name: b"random\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"random\x00"),
         func: Some(math_random),
     },
     luaL_Reg {
-        name: b"randomseed\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"randomseed\x00"),
         func: Some(math_randomseed),
     },
     luaL_Reg {
-        name: b"sin\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"sin\x00"),
         func: Some(math_sin),
     },
     luaL_Reg {
-        name: b"sqrt\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"sqrt\x00"),
         func: Some(math_sqrt),
     },
     luaL_Reg {
-        name: b"tan\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"tan\x00"),
         func: Some(math_tan),
     },
     luaL_Reg {
-        name: b"type\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"type\x00"),
         func: Some(math_type),
     },
     luaL_Reg {
-        name: b"atan2\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"atan2\x00"),
         func: Some(math_atan),
     },
     luaL_Reg {
-        name: b"cosh\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"cosh\x00"),
         func: Some(math_cosh),
     },
     luaL_Reg {
-        name: b"sinh\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"sinh\x00"),
         func: Some(math_sinh),
     },
     luaL_Reg {
-        name: b"tanh\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"tanh\x00"),
         func: Some(math_tanh),
     },
     luaL_Reg {
-        name: b"pow\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"pow\x00"),
         func: Some(math_pow),
     },
     luaL_Reg {
-        name: b"frexp\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"frexp\x00"),
         func: Some(math_frexp),
     },
     luaL_Reg {
-        name: b"ldexp\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"ldexp\x00"),
         func: Some(math_ldexp),
     },
     luaL_Reg {
-        name: b"log10\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"log10\x00"),
         func: Some(math_log10),
     },
     luaL_Reg {
-        name: b"pi\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"pi\x00"),
         func: None,
     },
     luaL_Reg {
-        name: b"huge\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"huge\x00"),
         func: None,
     },
     luaL_Reg {
-        name: b"maxinteger\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"maxinteger\x00"),
         func: None,
     },
     luaL_Reg {
-        name: b"mininteger\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"mininteger\x00"),
         func: None,
     },
     luaL_Reg {
@@ -378,9 +370,9 @@ unsafe extern "C" fn math_atan(mut L: *mut lua_State) -> libc::c_int {
 unsafe extern "C" fn math_type(mut L: *mut lua_State) -> libc::c_int {
     if lua_type(L, 1i32) == 3i32 {
         if 0 != lua_isinteger(L, 1i32) {
-            lua_pushstring(L, b"integer\x00" as *const u8 as *const libc::c_char);
+            lua_pushstring(L, s!(b"integer\x00"));
         } else {
-            lua_pushstring(L, b"float\x00" as *const u8 as *const libc::c_char);
+            lua_pushstring(L, s!(b"float\x00"));
         }
     } else {
         luaL_checkany(L, 1i32);
@@ -433,24 +425,13 @@ unsafe extern "C" fn math_random(mut L: *mut lua_State) -> libc::c_int {
             low = luaL_checkinteger(L, 1i32);
             up = luaL_checkinteger(L, 2i32)
         }
-        _ => {
-            return luaL_error(
-                L,
-                b"wrong number of arguments\x00" as *const u8 as *const libc::c_char,
-            )
-        }
+        _ => return luaL_error(L, s!(b"wrong number of arguments\x00")),
     }
     /* random integer in the interval [low, up] */
-    (low <= up || 0 != luaL_argerror(
-        L,
-        1i32,
-        b"interval is empty\x00" as *const u8 as *const libc::c_char,
-    )) as libc::c_int;
-    (low >= 0i32 as libc::c_longlong || up <= 9223372036854775807i64 + low || 0 != luaL_argerror(
-        L,
-        1i32,
-        b"interval too large\x00" as *const u8 as *const libc::c_char,
-    )) as libc::c_int;
+    (low <= up || 0 != luaL_argerror(L, 1i32, s!(b"interval is empty\x00"))) as libc::c_int;
+    (low >= 0i32 as libc::c_longlong
+        || up <= 9223372036854775807i64 + low
+        || 0 != luaL_argerror(L, 1i32, s!(b"interval too large\x00"))) as libc::c_int;
     r *= (up - low) as libc::c_double + 1.0f64;
     lua_pushinteger(L, r as lua_Integer + low);
     return 1i32;
@@ -511,11 +492,7 @@ unsafe extern "C" fn math_min(mut L: *mut lua_State) -> libc::c_int {
     /* index of current minimum value */
     let mut imin: libc::c_int = 1i32;
     let mut i: libc::c_int = 0;
-    (n >= 1i32 || 0 != luaL_argerror(
-        L,
-        1i32,
-        b"value expected\x00" as *const u8 as *const libc::c_char,
-    )) as libc::c_int;
+    (n >= 1i32 || 0 != luaL_argerror(L, 1i32, s!(b"value expected\x00"))) as libc::c_int;
     i = 2i32;
     while i <= n {
         if 0 != lua_compare(L, i, imin, 1i32) {
@@ -532,11 +509,7 @@ unsafe extern "C" fn math_max(mut L: *mut lua_State) -> libc::c_int {
     /* index of current maximum value */
     let mut imax: libc::c_int = 1i32;
     let mut i: libc::c_int = 0;
-    (n >= 1i32 || 0 != luaL_argerror(
-        L,
-        1i32,
-        b"value expected\x00" as *const u8 as *const libc::c_char,
-    )) as libc::c_int;
+    (n >= 1i32 || 0 != luaL_argerror(L, 1i32, s!(b"value expected\x00"))) as libc::c_int;
     i = 2i32;
     while i <= n {
         if 0 != lua_compare(L, imax, i, 1i32) {
@@ -577,8 +550,7 @@ unsafe extern "C" fn math_fmod(mut L: *mut lua_State) -> libc::c_int {
         if (d as lua_Unsigned).wrapping_add(1u32 as libc::c_ulonglong) <= 1u32 as libc::c_ulonglong
         {
             /* special cases: -1 or 0 */
-            (d != 0i32 as libc::c_longlong
-                || 0 != luaL_argerror(L, 2i32, b"zero\x00" as *const u8 as *const libc::c_char))
+            (d != 0i32 as libc::c_longlong || 0 != luaL_argerror(L, 2i32, s!(b"zero\x00")))
                 as libc::c_int;
             /* avoid overflow with 0x80000... / -1 */
             lua_pushinteger(L, 0i32 as lua_Integer);

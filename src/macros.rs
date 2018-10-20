@@ -1,3 +1,24 @@
+#[macro_export]
+macro_rules! s {
+    ($str:expr) => {
+        $str as *const u8 as *const libc::c_char
+    };
+}
+
+#[macro_export]
+macro_rules! const_c_str {
+    ($name:ident, $str:expr) => {
+        const $name: *const libc::c_char = s!($str);
+    };
+}
+
+#[macro_export]
+macro_rules! pub_const_c_str {
+    ($name:ident, $str:expr) => {
+        pub const $name: *const libc::c_char = s!($str);
+    };
+}
+
 // TODO: implement!
 #[macro_export]
 macro_rules! luaO_pushfstring {

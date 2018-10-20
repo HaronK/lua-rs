@@ -1048,7 +1048,7 @@ unsafe extern "C" fn luaK_code(mut fs: *mut FuncState, mut i: Instruction) -> li
             &mut (*f).sizecode,
             ::std::mem::size_of::<Instruction>() as libc::c_ulong,
             2147483647i32,
-            b"opcodes\x00" as *const u8 as *const libc::c_char,
+            s!(b"opcodes\x00"),
         ) as *mut Instruction
     }
     *(*f).code.offset((*fs).pc as isize) = i;
@@ -1060,7 +1060,7 @@ unsafe extern "C" fn luaK_code(mut fs: *mut FuncState, mut i: Instruction) -> li
             &mut (*f).sizelineinfo,
             ::std::mem::size_of::<libc::c_int>() as libc::c_ulong,
             2147483647i32,
-            b"opcodes\x00" as *const u8 as *const libc::c_char,
+            s!(b"opcodes\x00"),
         ) as *mut libc::c_int
     }
     *(*f).lineinfo.offset((*fs).pc as isize) = (*(*fs).ls).lastline;
@@ -1129,10 +1129,7 @@ unsafe extern "C" fn fixjump(
     let mut jmp: *mut Instruction = &mut *(*(*fs).f).code.offset(pc as isize) as *mut Instruction;
     let mut offset: libc::c_int = dest - (pc + 1i32);
     if abs(offset) > (1i32 << 9i32 + 9i32) - 1i32 >> 1i32 {
-        luaX_syntaxerror(
-            (*fs).ls,
-            b"control structure too long\x00" as *const u8 as *const libc::c_char,
-        );
+        luaX_syntaxerror((*fs).ls, s!(b"control structure too long\x00"));
     } else {
         *jmp = *jmp & !(!((!(0i32 as Instruction)) << 9i32 + 9i32) << 0i32 + 6i32 + 8i32)
             | ((offset + ((1i32 << 9i32 + 9i32) - 1i32 >> 1i32)) as libc::c_uint)
@@ -1306,8 +1303,7 @@ pub unsafe extern "C" fn luaK_checkstack(mut fs: *mut FuncState, mut n: libc::c_
         if newstack >= 255i32 {
             luaX_syntaxerror(
                 (*fs).ls,
-                b"function or expression needs too many registers\x00" as *const u8
-                    as *const libc::c_char,
+                s!(b"function or expression needs too many registers\x00"),
             );
         } else {
             (*(*fs).f).maxstacksize = newstack as lu_byte
@@ -1374,7 +1370,7 @@ unsafe extern "C" fn addk(
             &mut (*f).sizek,
             ::std::mem::size_of::<TValue>() as libc::c_ulong,
             (1i32 << 9i32 + 9i32 + 8i32) - 1i32,
-            b"constants\x00" as *const u8 as *const libc::c_char,
+            s!(b"constants\x00"),
         ) as *mut TValue
     }
     while oldsize < (*f).sizek {
@@ -2546,10 +2542,7 @@ pub unsafe extern "C" fn luaK_setlist(
         luaK_codeABC(fs, OP_SETLIST, base, b, 0i32);
         codeextraarg(fs, c);
     } else {
-        luaX_syntaxerror(
-            (*fs).ls,
-            b"constructor too long\x00" as *const u8 as *const libc::c_char,
-        );
+        luaX_syntaxerror((*fs).ls, s!(b"constructor too long\x00"));
     }
     /* free registers with list values */
     (*fs).freereg = (base + 1i32) as lu_byte;

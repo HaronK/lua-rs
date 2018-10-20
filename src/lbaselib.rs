@@ -314,111 +314,107 @@ pub unsafe extern "C" fn luaopen_base(mut L: *mut lua_State) -> libc::c_int {
     luaL_setfuncs(L, base_funcs.as_ptr(), 0i32);
     /* set global _G */
     lua_pushvalue(L, -1i32);
-    lua_setfield(L, -2i32, b"_G\x00" as *const u8 as *const libc::c_char);
+    lua_setfield(L, -2i32, s!(b"_G\x00"));
     /* set global _VERSION */
-    lua_pushstring(L, b"Lua 5.3\x00" as *const u8 as *const libc::c_char);
-    lua_setfield(
-        L,
-        -2i32,
-        b"_VERSION\x00" as *const u8 as *const libc::c_char,
-    );
+    lua_pushstring(L, s!(b"Lua 5.3\x00"));
+    lua_setfield(L, -2i32, s!(b"_VERSION\x00"));
     return 1i32;
 }
 static mut base_funcs: [luaL_Reg; 25] = [
     luaL_Reg {
-        name: b"assert\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"assert\x00"),
         func: Some(luaB_assert),
     },
     luaL_Reg {
-        name: b"collectgarbage\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"collectgarbage\x00"),
         func: Some(luaB_collectgarbage),
     },
     luaL_Reg {
-        name: b"dofile\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"dofile\x00"),
         func: Some(luaB_dofile),
     },
     luaL_Reg {
-        name: b"error\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"error\x00"),
         func: Some(luaB_error),
     },
     luaL_Reg {
-        name: b"getmetatable\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"getmetatable\x00"),
         func: Some(luaB_getmetatable),
     },
     luaL_Reg {
-        name: b"ipairs\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"ipairs\x00"),
         func: Some(luaB_ipairs),
     },
     luaL_Reg {
-        name: b"loadfile\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"loadfile\x00"),
         func: Some(luaB_loadfile),
     },
     luaL_Reg {
-        name: b"load\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"load\x00"),
         func: Some(luaB_load),
     },
     luaL_Reg {
-        name: b"next\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"next\x00"),
         func: Some(luaB_next),
     },
     luaL_Reg {
-        name: b"pairs\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"pairs\x00"),
         func: Some(luaB_pairs),
     },
     luaL_Reg {
-        name: b"pcall\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"pcall\x00"),
         func: Some(luaB_pcall),
     },
     luaL_Reg {
-        name: b"print\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"print\x00"),
         func: Some(luaB_print),
     },
     luaL_Reg {
-        name: b"rawequal\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"rawequal\x00"),
         func: Some(luaB_rawequal),
     },
     luaL_Reg {
-        name: b"rawlen\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"rawlen\x00"),
         func: Some(luaB_rawlen),
     },
     luaL_Reg {
-        name: b"rawget\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"rawget\x00"),
         func: Some(luaB_rawget),
     },
     luaL_Reg {
-        name: b"rawset\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"rawset\x00"),
         func: Some(luaB_rawset),
     },
     luaL_Reg {
-        name: b"select\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"select\x00"),
         func: Some(luaB_select),
     },
     luaL_Reg {
-        name: b"setmetatable\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"setmetatable\x00"),
         func: Some(luaB_setmetatable),
     },
     luaL_Reg {
-        name: b"tonumber\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"tonumber\x00"),
         func: Some(luaB_tonumber),
     },
     luaL_Reg {
-        name: b"tostring\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"tostring\x00"),
         func: Some(luaB_tostring),
     },
     luaL_Reg {
-        name: b"type\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"type\x00"),
         func: Some(luaB_type),
     },
     luaL_Reg {
-        name: b"xpcall\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"xpcall\x00"),
         func: Some(luaB_xpcall),
     },
     luaL_Reg {
-        name: b"_G\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"_G\x00"),
         func: None,
     },
     luaL_Reg {
-        name: b"_VERSION\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"_VERSION\x00"),
         func: None,
     },
     luaL_Reg {
@@ -478,11 +474,7 @@ unsafe extern "C" fn finishpcall(
 }
 unsafe extern "C" fn luaB_type(mut L: *mut lua_State) -> libc::c_int {
     let mut t: libc::c_int = lua_type(L, 1i32);
-    (t != -1i32 || 0 != luaL_argerror(
-        L,
-        1i32,
-        b"value expected\x00" as *const u8 as *const libc::c_char,
-    )) as libc::c_int;
+    (t != -1i32 || 0 != luaL_argerror(L, 1i32, s!(b"value expected\x00"))) as libc::c_int;
     lua_pushstring(L, lua_typename(L, t));
     return 1i32;
 }
@@ -519,11 +511,7 @@ unsafe extern "C" fn luaB_tonumber(mut L: *mut lua_State) -> libc::c_int {
         luaL_checktype(L, 1i32, 4i32);
         s_0 = lua_tolstring(L, 1i32, &mut l_0);
         (2i32 as libc::c_longlong <= base && base <= 36i32 as libc::c_longlong
-            || 0 != luaL_argerror(
-                L,
-                2i32,
-                b"base out of range\x00" as *const u8 as *const libc::c_char,
-            )) as libc::c_int;
+            || 0 != luaL_argerror(L, 2i32, s!(b"base out of range\x00"))) as libc::c_int;
         if b_str2int(s_0, base as libc::c_int, &mut n) == s_0.offset(l_0 as isize) {
             lua_pushinteger(L, n);
             return 1i32;
@@ -543,10 +531,7 @@ unsafe extern "C" fn b_str2int(
     let mut n: lua_Unsigned = 0i32 as lua_Unsigned;
     let mut neg: libc::c_int = 0i32;
     /* skip initial spaces */
-    s = s.offset(strspn(
-        s,
-        b" \x0c\n\r\t\x0b\x00" as *const u8 as *const libc::c_char,
-    ) as isize);
+    s = s.offset(strspn(s, s!(b" \x0c\n\r\t\x0b\x00")) as isize);
     if *s as libc::c_int == '-' as i32 {
         s = s.offset(1isize);
         /* handle signal */
@@ -610,10 +595,7 @@ unsafe extern "C" fn b_str2int(
             }
         }
         /* skip trailing spaces */
-        s = s.offset(strspn(
-            s,
-            b" \x0c\n\r\t\x0b\x00" as *const u8 as *const libc::c_char,
-        ) as isize);
+        s = s.offset(strspn(s, s!(b" \x0c\n\r\t\x0b\x00")) as isize);
         *pn = (if 0 != neg {
             (0u32 as libc::c_ulonglong).wrapping_sub(n)
         } else {
@@ -625,21 +607,10 @@ unsafe extern "C" fn b_str2int(
 unsafe extern "C" fn luaB_setmetatable(mut L: *mut lua_State) -> libc::c_int {
     let mut t: libc::c_int = lua_type(L, 2i32);
     luaL_checktype(L, 1i32, 5i32);
-    (t == 0i32 || t == 5i32 || 0 != luaL_argerror(
-        L,
-        2i32,
-        b"nil or table expected\x00" as *const u8 as *const libc::c_char,
-    )) as libc::c_int;
-    if luaL_getmetafield(
-        L,
-        1i32,
-        b"__metatable\x00" as *const u8 as *const libc::c_char,
-    ) != 0i32
-    {
-        return luaL_error(
-            L,
-            b"cannot change a protected metatable\x00" as *const u8 as *const libc::c_char,
-        );
+    (t == 0i32 || t == 5i32 || 0 != luaL_argerror(L, 2i32, s!(b"nil or table expected\x00")))
+        as libc::c_int;
+    if luaL_getmetafield(L, 1i32, s!(b"__metatable\x00")) != 0i32 {
+        return luaL_error(L, s!(b"cannot change a protected metatable\x00"));
     } else {
         lua_settop(L, 2i32);
         lua_setmetatable(L, 1i32);
@@ -660,11 +631,8 @@ unsafe extern "C" fn luaB_select(mut L: *mut lua_State) -> libc::c_int {
         } else if i > n as libc::c_longlong {
             i = n as lua_Integer
         }
-        (1i32 as libc::c_longlong <= i || 0 != luaL_argerror(
-            L,
-            1i32,
-            b"index out of range\x00" as *const u8 as *const libc::c_char,
-        )) as libc::c_int;
+        (1i32 as libc::c_longlong <= i
+            || 0 != luaL_argerror(L, 1i32, s!(b"index out of range\x00"))) as libc::c_int;
         return n - i as libc::c_int;
     };
 }
@@ -685,11 +653,8 @@ unsafe extern "C" fn luaB_rawget(mut L: *mut lua_State) -> libc::c_int {
 }
 unsafe extern "C" fn luaB_rawlen(mut L: *mut lua_State) -> libc::c_int {
     let mut t: libc::c_int = lua_type(L, 1i32);
-    (t == 5i32 || t == 4i32 || 0 != luaL_argerror(
-        L,
-        1i32,
-        b"table or string expected\x00" as *const u8 as *const libc::c_char,
-    )) as libc::c_int;
+    (t == 5i32 || t == 4i32 || 0 != luaL_argerror(L, 1i32, s!(b"table or string expected\x00")))
+        as libc::c_int;
     lua_pushinteger(L, lua_rawlen(L, 1i32) as lua_Integer);
     return 1i32;
 }
@@ -708,7 +673,7 @@ unsafe extern "C" fn luaB_print(mut L: *mut lua_State) -> libc::c_int {
     /* number of arguments */
     let mut n: libc::c_int = lua_gettop(L);
     let mut i: libc::c_int = 0;
-    lua_getglobal(L, b"tostring\x00" as *const u8 as *const libc::c_char);
+    lua_getglobal(L, s!(b"tostring\x00"));
     i = 1i32;
     while i <= n {
         let mut s: *const libc::c_char = 0 as *const libc::c_char;
@@ -721,15 +686,11 @@ unsafe extern "C" fn luaB_print(mut L: *mut lua_State) -> libc::c_int {
         /* get result */
         s = lua_tolstring(L, -1i32, &mut l);
         if s.is_null() {
-            return luaL_error(
-                L,
-                b"\'tostring\' must return a string to \'print\'\x00" as *const u8
-                    as *const libc::c_char,
-            );
+            return luaL_error(L, s!(b"\'tostring\' must return a string to \'print\'\x00"));
         } else {
             if i > 1i32 {
                 fwrite(
-                    b"\t\x00" as *const u8 as *const libc::c_char as *const libc::c_void,
+                    s!(b"\t\x00") as *const libc::c_void,
                     ::std::mem::size_of::<libc::c_char>() as libc::c_ulong,
                     1i32 as size_t,
                     stdout,
@@ -747,7 +708,7 @@ unsafe extern "C" fn luaB_print(mut L: *mut lua_State) -> libc::c_int {
         }
     }
     fwrite(
-        b"\n\x00" as *const u8 as *const libc::c_char as *const libc::c_void,
+        s!(b"\n\x00") as *const libc::c_void,
         ::std::mem::size_of::<libc::c_char>() as libc::c_ulong,
         1i32 as size_t,
         stdout,
@@ -773,12 +734,7 @@ unsafe extern "C" fn luaB_pcall(mut L: *mut lua_State) -> libc::c_int {
     return finishpcall(L, status, 0i32 as lua_KContext);
 }
 unsafe extern "C" fn luaB_pairs(mut L: *mut lua_State) -> libc::c_int {
-    return pairsmeta(
-        L,
-        b"__pairs\x00" as *const u8 as *const libc::c_char,
-        0i32,
-        Some(luaB_next),
-    );
+    return pairsmeta(L, s!(b"__pairs\x00"), 0i32, Some(luaB_next));
 }
 unsafe extern "C" fn luaB_next(mut L: *mut lua_State) -> libc::c_int {
     luaL_checktype(L, 1i32, 5i32);
@@ -824,12 +780,7 @@ unsafe extern "C" fn luaB_load(mut L: *mut lua_State) -> libc::c_int {
     let mut status: libc::c_int = 0;
     let mut l: size_t = 0;
     let mut s: *const libc::c_char = lua_tolstring(L, 1i32, &mut l);
-    let mut mode: *const libc::c_char = luaL_optlstring(
-        L,
-        3i32,
-        b"bt\x00" as *const u8 as *const libc::c_char,
-        0 as *mut size_t,
-    );
+    let mut mode: *const libc::c_char = luaL_optlstring(L, 3i32, s!(b"bt\x00"), 0 as *mut size_t);
     /* 'env' index or 0 if no 'env' */
     let mut env: libc::c_int = if !(lua_type(L, 4i32) == -1i32) {
         4i32
@@ -842,12 +793,7 @@ unsafe extern "C" fn luaB_load(mut L: *mut lua_State) -> libc::c_int {
         status = luaL_loadbufferx(L, s, l, chunkname, mode)
     } else {
         /* loading from a reader function */
-        chunkname_0 = luaL_optlstring(
-            L,
-            2i32,
-            b"=(load)\x00" as *const u8 as *const libc::c_char,
-            0 as *mut size_t,
-        );
+        chunkname_0 = luaL_optlstring(L, 2i32, s!(b"=(load)\x00"), 0 as *mut size_t);
         luaL_checktype(L, 1i32, 6i32);
         /* create reserved slot */
         lua_settop(L, 5i32);
@@ -909,11 +855,7 @@ unsafe extern "C" fn generic_reader(
     mut size: *mut size_t,
 ) -> *const libc::c_char {
     /* not used */
-    luaL_checkstack(
-        L,
-        2i32,
-        b"too many nested functions\x00" as *const u8 as *const libc::c_char,
-    );
+    luaL_checkstack(L, 2i32, s!(b"too many nested functions\x00"));
     /* get function */
     lua_pushvalue(L, 1i32);
     /* call it */
@@ -925,10 +867,7 @@ unsafe extern "C" fn generic_reader(
         return 0 as *const libc::c_char;
     } else {
         if 0 == lua_isstring(L, -1i32) {
-            luaL_error(
-                L,
-                b"reader function must return a string\x00" as *const u8 as *const libc::c_char,
-            );
+            luaL_error(L, s!(b"reader function must return a string\x00"));
         }
         /* save string in reserved slot */
         lua_copy(L, -1i32, 5i32);
@@ -955,12 +894,7 @@ unsafe extern "C" fn luaB_loadfile(mut L: *mut lua_State) -> libc::c_int {
 ** (The given "table" may not be a table.)
 */
 unsafe extern "C" fn luaB_ipairs(mut L: *mut lua_State) -> libc::c_int {
-    return pairsmeta(
-        L,
-        b"__ipairs\x00" as *const u8 as *const libc::c_char,
-        1i32,
-        Some(ipairsaux),
-    );
+    return pairsmeta(L, s!(b"__ipairs\x00"), 1i32, Some(ipairsaux));
 }
 /*
 ** Traversal function for 'ipairs'
@@ -981,11 +915,7 @@ unsafe extern "C" fn luaB_getmetatable(mut L: *mut lua_State) -> libc::c_int {
         /* no metatable */
         return 1i32;
     } else {
-        luaL_getmetafield(
-            L,
-            1i32,
-            b"__metatable\x00" as *const u8 as *const libc::c_char,
-        );
+        luaL_getmetafield(L, 1i32, s!(b"__metatable\x00"));
         /* returns either __metatable field (if present) or metatable */
         return 1i32;
     };
@@ -1024,25 +954,21 @@ unsafe extern "C" fn dofilecont(
 unsafe extern "C" fn luaB_collectgarbage(mut L: *mut lua_State) -> libc::c_int {
     static mut opts: [*const libc::c_char; 9] = unsafe {
         [
-            b"stop\x00" as *const u8 as *const libc::c_char,
-            b"restart\x00" as *const u8 as *const libc::c_char,
-            b"collect\x00" as *const u8 as *const libc::c_char,
-            b"count\x00" as *const u8 as *const libc::c_char,
-            b"step\x00" as *const u8 as *const libc::c_char,
-            b"setpause\x00" as *const u8 as *const libc::c_char,
-            b"setstepmul\x00" as *const u8 as *const libc::c_char,
-            b"isrunning\x00" as *const u8 as *const libc::c_char,
+            s!(b"stop\x00"),
+            s!(b"restart\x00"),
+            s!(b"collect\x00"),
+            s!(b"count\x00"),
+            s!(b"step\x00"),
+            s!(b"setpause\x00"),
+            s!(b"setstepmul\x00"),
+            s!(b"isrunning\x00"),
             0 as *const libc::c_char,
         ]
     };
     static mut optsnum: [libc::c_int; 8] =
         unsafe { [0i32, 1i32, 2i32, 3i32, 5i32, 6i32, 7i32, 9i32] };
-    let mut o: libc::c_int = optsnum[luaL_checkoption(
-        L,
-        1i32,
-        b"collect\x00" as *const u8 as *const libc::c_char,
-        opts.as_ptr(),
-    ) as usize];
+    let mut o: libc::c_int =
+        optsnum[luaL_checkoption(L, 1i32, s!(b"collect\x00"), opts.as_ptr()) as usize];
     let mut ex: libc::c_int = luaL_optinteger(L, 2i32, 0i32 as lua_Integer) as libc::c_int;
     let mut res: libc::c_int = lua_gc(L, o, ex);
     match o {
@@ -1077,10 +1003,7 @@ unsafe extern "C" fn luaB_assert(mut L: *mut lua_State) -> libc::c_int {
         lua_rotate(L, 1i32, -1i32);
         lua_settop(L, -1i32 - 1i32);
         /* default message */
-        lua_pushstring(
-            L,
-            b"assertion failed!\x00" as *const u8 as *const libc::c_char,
-        );
+        lua_pushstring(L, s!(b"assertion failed!\x00"));
         /* leave only message (default if no other one) */
         lua_settop(L, 1i32);
         /* call 'error' */

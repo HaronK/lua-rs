@@ -183,31 +183,31 @@ pub unsafe extern "C" fn luaopen_coroutine(mut L: *mut lua_State) -> libc::c_int
 }
 static mut co_funcs: [luaL_Reg; 8] = [
     luaL_Reg {
-        name: b"create\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"create\x00"),
         func: Some(luaB_cocreate),
     },
     luaL_Reg {
-        name: b"resume\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"resume\x00"),
         func: Some(luaB_coresume),
     },
     luaL_Reg {
-        name: b"running\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"running\x00"),
         func: Some(luaB_corunning),
     },
     luaL_Reg {
-        name: b"status\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"status\x00"),
         func: Some(luaB_costatus),
     },
     luaL_Reg {
-        name: b"wrap\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"wrap\x00"),
         func: Some(luaB_cowrap),
     },
     luaL_Reg {
-        name: b"yield\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"yield\x00"),
         func: Some(luaB_yield),
     },
     luaL_Reg {
-        name: b"isyieldable\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"isyieldable\x00"),
         func: Some(luaB_yieldable),
     },
     luaL_Reg {
@@ -251,17 +251,11 @@ unsafe extern "C" fn auxresume(
 ) -> libc::c_int {
     let mut status: libc::c_int = 0;
     if 0 == lua_checkstack(co, narg) {
-        lua_pushstring(
-            L,
-            b"too many arguments to resume\x00" as *const u8 as *const libc::c_char,
-        );
+        lua_pushstring(L, s!(b"too many arguments to resume\x00"));
         /* error flag */
         return -1i32;
     } else if lua_status(co) == 0i32 && lua_gettop(co) == 0i32 {
-        lua_pushstring(
-            L,
-            b"cannot resume dead coroutine\x00" as *const u8 as *const libc::c_char,
-        );
+        lua_pushstring(L, s!(b"cannot resume dead coroutine\x00"));
         /* error flag */
         return -1i32;
     } else {
@@ -272,10 +266,7 @@ unsafe extern "C" fn auxresume(
             if 0 == lua_checkstack(L, nres + 1i32) {
                 /* remove results anyway */
                 lua_settop(co, -nres - 1i32);
-                lua_pushstring(
-                    L,
-                    b"too many results to resume\x00" as *const u8 as *const libc::c_char,
-                );
+                lua_pushstring(L, s!(b"too many results to resume\x00"));
                 /* error flag */
                 return -1i32;
             } else {
@@ -304,11 +295,11 @@ unsafe extern "C" fn luaB_cocreate(mut L: *mut lua_State) -> libc::c_int {
 unsafe extern "C" fn luaB_costatus(mut L: *mut lua_State) -> libc::c_int {
     let mut co: *mut lua_State = getco(L);
     if L == co {
-        lua_pushstring(L, b"running\x00" as *const u8 as *const libc::c_char);
+        lua_pushstring(L, s!(b"running\x00"));
     } else {
         match lua_status(co) {
             1 => {
-                lua_pushstring(L, b"suspended\x00" as *const u8 as *const libc::c_char);
+                lua_pushstring(L, s!(b"suspended\x00"));
             }
             0 => {
                 let mut ar: lua_Debug = lua_Debug {
@@ -330,16 +321,16 @@ unsafe extern "C" fn luaB_costatus(mut L: *mut lua_State) -> libc::c_int {
                 /* does it have frames? */
                 if lua_getstack(co, 0i32, &mut ar) > 0i32 {
                     /* it is running */
-                    lua_pushstring(L, b"normal\x00" as *const u8 as *const libc::c_char);
+                    lua_pushstring(L, s!(b"normal\x00"));
                 } else if lua_gettop(co) == 0i32 {
-                    lua_pushstring(L, b"dead\x00" as *const u8 as *const libc::c_char);
+                    lua_pushstring(L, s!(b"dead\x00"));
                 } else {
                     /* initial state */
-                    lua_pushstring(L, b"suspended\x00" as *const u8 as *const libc::c_char);
+                    lua_pushstring(L, s!(b"suspended\x00"));
                 }
             }
             _ => {
-                lua_pushstring(L, b"dead\x00" as *const u8 as *const libc::c_char);
+                lua_pushstring(L, s!(b"dead\x00"));
             }
         }
     }
@@ -352,11 +343,7 @@ unsafe extern "C" fn luaB_costatus(mut L: *mut lua_State) -> libc::c_int {
 */
 unsafe extern "C" fn getco(mut L: *mut lua_State) -> *mut lua_State {
     let mut co: *mut lua_State = lua_tothread(L, 1i32);
-    (!co.is_null() || 0 != luaL_argerror(
-        L,
-        1i32,
-        b"thread expected\x00" as *const u8 as *const libc::c_char,
-    )) as libc::c_int;
+    (!co.is_null() || 0 != luaL_argerror(L, 1i32, s!(b"thread expected\x00"))) as libc::c_int;
     return co;
 }
 unsafe extern "C" fn luaB_corunning(mut L: *mut lua_State) -> libc::c_int {

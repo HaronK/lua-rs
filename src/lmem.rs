@@ -492,10 +492,7 @@ pub type lua_Alloc = Option<
 */
 #[no_mangle]
 pub unsafe extern "C" fn luaM_toobig(mut L: *mut lua_State) -> ! {
-    luaG_runerror!(
-        L,
-        b"memory allocation error: block too big\x00" as *const u8 as *const libc::c_char,
-    );
+    luaG_runerror!(L, s!(b"memory allocation error: block too big\x00"),);
 }
 /* not to be called directly */
 #[no_mangle]
@@ -547,12 +544,7 @@ pub unsafe extern "C" fn luaM_growaux_(
         /* cannot double it? */
         /* cannot grow even a little? */
         if *size >= limit {
-            luaG_runerror!(
-                L,
-                b"too many %s (limit is %d)\x00" as *const u8 as *const libc::c_char,
-                what,
-                limit,
-            );
+            luaG_runerror!(L, s!(b"too many %s (limit is %d)\x00"), what, limit,);
         } else {
             newsize = limit
         }

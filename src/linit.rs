@@ -110,47 +110,47 @@ pub unsafe extern "C" fn luaL_openlibs(mut L: *mut lua_State) -> () {
 */
 static mut loadedlibs: [luaL_Reg; 12] = [
     luaL_Reg {
-        name: b"_G\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"_G\x00"),
         func: Some(luaopen_base),
     },
     luaL_Reg {
-        name: b"package\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"package\x00"),
         func: Some(luaopen_package),
     },
     luaL_Reg {
-        name: b"coroutine\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"coroutine\x00"),
         func: Some(luaopen_coroutine),
     },
     luaL_Reg {
-        name: b"table\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"table\x00"),
         func: Some(luaopen_table),
     },
     luaL_Reg {
-        name: b"io\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"io\x00"),
         func: Some(luaopen_io),
     },
     luaL_Reg {
-        name: b"os\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"os\x00"),
         func: Some(luaopen_os),
     },
     luaL_Reg {
-        name: b"string\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"string\x00"),
         func: Some(luaopen_string),
     },
     luaL_Reg {
-        name: b"math\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"math\x00"),
         func: Some(luaopen_math),
     },
     luaL_Reg {
-        name: b"utf8\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"utf8\x00"),
         func: Some(luaopen_utf8),
     },
     luaL_Reg {
-        name: b"debug\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"debug\x00"),
         func: Some(luaopen_debug),
     },
     luaL_Reg {
-        name: b"bit32\x00" as *const u8 as *const libc::c_char,
+        name: s!(b"bit32\x00"),
         func: Some(luaopen_bit32),
     },
     luaL_Reg {

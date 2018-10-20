@@ -858,7 +858,7 @@ unsafe extern "C" fn DumpCode(mut f: *const Proto, mut D: *mut DumpState) -> () 
 }
 unsafe extern "C" fn DumpHeader(mut D: *mut DumpState) -> () {
     DumpBlock(
-        b"\x1bLua\x00" as *const u8 as *const libc::c_char as *const libc::c_void,
+        s!(b"\x1bLua\x00") as *const libc::c_void,
         (::std::mem::size_of::<[libc::c_char; 5]>() as libc::c_ulong)
             .wrapping_sub(::std::mem::size_of::<libc::c_char>() as libc::c_ulong),
         D,
@@ -874,7 +874,7 @@ unsafe extern "C" fn DumpHeader(mut D: *mut DumpState) -> () {
     );
     DumpByte(0i32, D);
     DumpBlock(
-        b"\x19\x93\r\n\x1a\n\x00" as *const u8 as *const libc::c_char as *const libc::c_void,
+        s!(b"\x19\x93\r\n\x1a\n\x00") as *const libc::c_void,
         (::std::mem::size_of::<[libc::c_char; 7]>() as libc::c_ulong)
             .wrapping_sub(::std::mem::size_of::<libc::c_char>() as libc::c_ulong),
         D,

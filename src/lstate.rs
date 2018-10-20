@@ -992,7 +992,7 @@ unsafe extern "C" fn makeseed(mut L: *mut lua_State) -> libc::c_uint {
     p = (p as libc::c_ulong).wrapping_add(::std::mem::size_of::<size_t>() as libc::c_ulong)
         as libc::c_int as libc::c_int;
     /* public function */
-// TODO: check this!
+    // TODO: check this!
     let mut t_2: size_t = lua_newstate as size_t;
     // let mut t_2: size_t = ::std::mem::transmute::<
     //     Option<unsafe extern "C" fn(_: lua_Alloc, _: *mut libc::c_void) -> *mut lua_State>,
