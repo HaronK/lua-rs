@@ -289,16 +289,7 @@ pub unsafe extern "C" fn luaopen_package(mut L: *mut lua_State) -> libc::c_int {
     return 1i32;
 }
 /* placeholders */
-static mut ll_funcs: [luaL_Reg; 2] = [
-    luaL_Reg {
-        name: s!(b"require\x00"),
-        func: Some(ll_require),
-    },
-    luaL_Reg {
-        name: 0 as *const libc::c_char,
-        func: None,
-    },
-];
+static mut ll_funcs: [luaL_Reg; 2] = [lua_reg!(b"require\x00", ll_require), lua_reg_none!(0)];
 unsafe extern "C" fn ll_require(mut L: *mut lua_State) -> libc::c_int {
     let mut name: *const libc::c_char = luaL_checklstring(L, 1i32, 0 as *mut size_t);
     /* LOADED table will be at index 2 */
@@ -892,38 +883,14 @@ unsafe extern "C" fn searcher_preload(mut L: *mut lua_State) -> libc::c_int {
 */
 /* }====================================================== */
 static mut pk_funcs: [luaL_Reg; 8] = [
-    luaL_Reg {
-        name: s!(b"loadlib\x00"),
-        func: Some(ll_loadlib),
-    },
-    luaL_Reg {
-        name: s!(b"searchpath\x00"),
-        func: Some(ll_searchpath),
-    },
-    luaL_Reg {
-        name: s!(b"preload\x00"),
-        func: None,
-    },
-    luaL_Reg {
-        name: s!(b"cpath\x00"),
-        func: None,
-    },
-    luaL_Reg {
-        name: s!(b"path\x00"),
-        func: None,
-    },
-    luaL_Reg {
-        name: s!(b"searchers\x00"),
-        func: None,
-    },
-    luaL_Reg {
-        name: s!(b"loaded\x00"),
-        func: None,
-    },
-    luaL_Reg {
-        name: 0 as *const libc::c_char,
-        func: None,
-    },
+    lua_reg!(b"loadlib\x00", ll_loadlib),
+    lua_reg!(b"searchpath\x00", ll_searchpath),
+    lua_reg_none!(b"preload\x00"),
+    lua_reg_none!(b"cpath\x00"),
+    lua_reg_none!(b"path\x00"),
+    lua_reg_none!(b"searchers\x00"),
+    lua_reg_none!(b"loaded\x00"),
+    lua_reg_none!(0),
 ];
 unsafe extern "C" fn ll_searchpath(mut L: *mut lua_State) -> libc::c_int {
     let mut f: *const libc::c_char = searchpath(

@@ -206,38 +206,14 @@ pub unsafe extern "C" fn luaopen_table(mut L: *mut lua_State) -> libc::c_int {
 }
 /* }====================================================== */
 static mut tab_funcs: [luaL_Reg; 8] = [
-    luaL_Reg {
-        name: s!(b"concat\x00"),
-        func: Some(tconcat),
-    },
-    luaL_Reg {
-        name: s!(b"insert\x00"),
-        func: Some(tinsert),
-    },
-    luaL_Reg {
-        name: s!(b"pack\x00"),
-        func: Some(pack),
-    },
-    luaL_Reg {
-        name: s!(b"unpack\x00"),
-        func: Some(unpack),
-    },
-    luaL_Reg {
-        name: s!(b"remove\x00"),
-        func: Some(tremove),
-    },
-    luaL_Reg {
-        name: s!(b"move\x00"),
-        func: Some(tmove),
-    },
-    luaL_Reg {
-        name: s!(b"sort\x00"),
-        func: Some(sort),
-    },
-    luaL_Reg {
-        name: 0 as *const libc::c_char,
-        func: None,
-    },
+    lua_reg!(b"concat\x00", tconcat),
+    lua_reg!(b"insert\x00", tinsert),
+    lua_reg!(b"pack\x00", pack),
+    lua_reg!(b"unpack\x00", unpack),
+    lua_reg!(b"remove\x00", tremove),
+    lua_reg!(b"move\x00", tmove),
+    lua_reg!(b"sort\x00", sort),
+    lua_reg_none!(0),
 ];
 /* tail call auxsort(L, lo, up, rnd) */
 unsafe extern "C" fn sort(mut L: *mut lua_State) -> libc::c_int {

@@ -57,7 +57,6 @@ pub type lua_Unsigned = libc::c_ulonglong;
 */
 pub type lua_CFunction = Option<unsafe extern "C" fn(_: *mut lua_State) -> libc::c_int>;
 
-
 /*
 ** $Id: lauxlib.h,v 1.131.1.1 2017/04/19 17:20:42 roberto Exp $
 ** Auxiliary functions for building Lua libraries
@@ -96,46 +95,16 @@ static mut bitlib: [luaL_Reg; 13] = [
     lua_reg!(b"arshift\x00", b_arshift),
     lua_reg!(b"band\x00", b_and),
     lua_reg!(b"bnot\x00", b_not),
-    luaL_Reg {
-        name: s!(b"bor\x00"),
-        func: Some(b_or),
-    },
-    luaL_Reg {
-        name: s!(b"bxor\x00"),
-        func: Some(b_xor),
-    },
-    luaL_Reg {
-        name: s!(b"btest\x00"),
-        func: Some(b_test),
-    },
-    luaL_Reg {
-        name: s!(b"extract\x00"),
-        func: Some(b_extract),
-    },
-    luaL_Reg {
-        name: s!(b"lrotate\x00"),
-        func: Some(b_lrot),
-    },
-    luaL_Reg {
-        name: s!(b"lshift\x00"),
-        func: Some(b_lshift),
-    },
-    luaL_Reg {
-        name: s!(b"replace\x00"),
-        func: Some(b_replace),
-    },
-    luaL_Reg {
-        name: s!(b"rrotate\x00"),
-        func: Some(b_rrot),
-    },
-    luaL_Reg {
-        name: s!(b"rshift\x00"),
-        func: Some(b_rshift),
-    },
-    luaL_Reg {
-        name: 0 as *const libc::c_char,
-        func: None,
-    },
+    lua_reg!(b"bor\x00", b_or),
+    lua_reg!(b"bxor\x00", b_xor),
+    lua_reg!(b"btest\x00", b_test),
+    lua_reg!(b"extract\x00", b_extract),
+    lua_reg!(b"lrotate\x00", b_lrot),
+    lua_reg!(b"lshift\x00", b_lshift),
+    lua_reg!(b"replace\x00", b_replace),
+    lua_reg!(b"rrotate\x00", b_rrot),
+    lua_reg!(b"rshift\x00", b_rshift),
+    lua_reg_none!(0),
 ];
 unsafe extern "C" fn b_rshift(mut L: *mut lua_State) -> libc::c_int {
     return b_shift(

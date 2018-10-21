@@ -177,150 +177,42 @@ pub unsafe extern "C" fn luaopen_math(mut L: *mut lua_State) -> libc::c_int {
 }
 /* }================================================================== */
 static mut mathlib: [luaL_Reg; 36] = [
-    luaL_Reg {
-        name: s!(b"abs\x00"),
-        func: Some(math_abs),
-    },
-    luaL_Reg {
-        name: s!(b"acos\x00"),
-        func: Some(math_acos),
-    },
-    luaL_Reg {
-        name: s!(b"asin\x00"),
-        func: Some(math_asin),
-    },
-    luaL_Reg {
-        name: s!(b"atan\x00"),
-        func: Some(math_atan),
-    },
-    luaL_Reg {
-        name: s!(b"ceil\x00"),
-        func: Some(math_ceil),
-    },
-    luaL_Reg {
-        name: s!(b"cos\x00"),
-        func: Some(math_cos),
-    },
-    luaL_Reg {
-        name: s!(b"deg\x00"),
-        func: Some(math_deg),
-    },
-    luaL_Reg {
-        name: s!(b"exp\x00"),
-        func: Some(math_exp),
-    },
-    luaL_Reg {
-        name: s!(b"tointeger\x00"),
-        func: Some(math_toint),
-    },
-    luaL_Reg {
-        name: s!(b"floor\x00"),
-        func: Some(math_floor),
-    },
-    luaL_Reg {
-        name: s!(b"fmod\x00"),
-        func: Some(math_fmod),
-    },
-    luaL_Reg {
-        name: s!(b"ult\x00"),
-        func: Some(math_ult),
-    },
-    luaL_Reg {
-        name: s!(b"log\x00"),
-        func: Some(math_log),
-    },
-    luaL_Reg {
-        name: s!(b"max\x00"),
-        func: Some(math_max),
-    },
-    luaL_Reg {
-        name: s!(b"min\x00"),
-        func: Some(math_min),
-    },
-    luaL_Reg {
-        name: s!(b"modf\x00"),
-        func: Some(math_modf),
-    },
-    luaL_Reg {
-        name: s!(b"rad\x00"),
-        func: Some(math_rad),
-    },
-    luaL_Reg {
-        name: s!(b"random\x00"),
-        func: Some(math_random),
-    },
-    luaL_Reg {
-        name: s!(b"randomseed\x00"),
-        func: Some(math_randomseed),
-    },
-    luaL_Reg {
-        name: s!(b"sin\x00"),
-        func: Some(math_sin),
-    },
-    luaL_Reg {
-        name: s!(b"sqrt\x00"),
-        func: Some(math_sqrt),
-    },
-    luaL_Reg {
-        name: s!(b"tan\x00"),
-        func: Some(math_tan),
-    },
-    luaL_Reg {
-        name: s!(b"type\x00"),
-        func: Some(math_type),
-    },
-    luaL_Reg {
-        name: s!(b"atan2\x00"),
-        func: Some(math_atan),
-    },
-    luaL_Reg {
-        name: s!(b"cosh\x00"),
-        func: Some(math_cosh),
-    },
-    luaL_Reg {
-        name: s!(b"sinh\x00"),
-        func: Some(math_sinh),
-    },
-    luaL_Reg {
-        name: s!(b"tanh\x00"),
-        func: Some(math_tanh),
-    },
-    luaL_Reg {
-        name: s!(b"pow\x00"),
-        func: Some(math_pow),
-    },
-    luaL_Reg {
-        name: s!(b"frexp\x00"),
-        func: Some(math_frexp),
-    },
-    luaL_Reg {
-        name: s!(b"ldexp\x00"),
-        func: Some(math_ldexp),
-    },
-    luaL_Reg {
-        name: s!(b"log10\x00"),
-        func: Some(math_log10),
-    },
-    luaL_Reg {
-        name: s!(b"pi\x00"),
-        func: None,
-    },
-    luaL_Reg {
-        name: s!(b"huge\x00"),
-        func: None,
-    },
-    luaL_Reg {
-        name: s!(b"maxinteger\x00"),
-        func: None,
-    },
-    luaL_Reg {
-        name: s!(b"mininteger\x00"),
-        func: None,
-    },
-    luaL_Reg {
-        name: 0 as *const libc::c_char,
-        func: None,
-    },
+    lua_reg!(b"abs\x00", math_abs),
+    lua_reg!(b"acos\x00", math_acos),
+    lua_reg!(b"asin\x00", math_asin),
+    lua_reg!(b"atan\x00", math_atan),
+    lua_reg!(b"ceil\x00", math_ceil),
+    lua_reg!(b"cos\x00", math_cos),
+    lua_reg!(b"deg\x00", math_deg),
+    lua_reg!(b"exp\x00", math_exp),
+    lua_reg!(b"tointeger\x00", math_toint),
+    lua_reg!(b"floor\x00", math_floor),
+    lua_reg!(b"fmod\x00", math_fmod),
+    lua_reg!(b"ult\x00", math_ult),
+    lua_reg!(b"log\x00", math_log),
+    lua_reg!(b"max\x00", math_max),
+    lua_reg!(b"min\x00", math_min),
+    lua_reg!(b"modf\x00", math_modf),
+    lua_reg!(b"rad\x00", math_rad),
+    lua_reg!(b"random\x00", math_random),
+    lua_reg!(b"randomseed\x00", math_randomseed),
+    lua_reg!(b"sin\x00", math_sin),
+    lua_reg!(b"sqrt\x00", math_sqrt),
+    lua_reg!(b"tan\x00", math_tan),
+    lua_reg!(b"type\x00", math_type),
+    lua_reg!(b"atan2\x00", math_atan),
+    lua_reg!(b"cosh\x00", math_cosh),
+    lua_reg!(b"sinh\x00", math_sinh),
+    lua_reg!(b"tanh\x00", math_tanh),
+    lua_reg!(b"pow\x00", math_pow),
+    lua_reg!(b"frexp\x00", math_frexp),
+    lua_reg!(b"ldexp\x00", math_ldexp),
+    lua_reg!(b"log10\x00", math_log10),
+    lua_reg_none!(b"pi\x00"),
+    lua_reg_none!(b"huge\x00"),
+    lua_reg_none!(b"maxinteger\x00"),
+    lua_reg_none!(b"mininteger\x00"),
+    lua_reg_none!(0),
 ];
 unsafe extern "C" fn math_log10(mut L: *mut lua_State) -> libc::c_int {
     lua_pushnumber(L, log10(luaL_checknumber(L, 1i32)));

@@ -183,38 +183,14 @@ pub unsafe extern "C" fn luaopen_coroutine(mut L: *mut lua_State) -> libc::c_int
     return 1i32;
 }
 static mut co_funcs: [luaL_Reg; 8] = [
-    luaL_Reg {
-        name: s!(b"create\x00"),
-        func: Some(luaB_cocreate),
-    },
-    luaL_Reg {
-        name: s!(b"resume\x00"),
-        func: Some(luaB_coresume),
-    },
-    luaL_Reg {
-        name: s!(b"running\x00"),
-        func: Some(luaB_corunning),
-    },
-    luaL_Reg {
-        name: s!(b"status\x00"),
-        func: Some(luaB_costatus),
-    },
-    luaL_Reg {
-        name: s!(b"wrap\x00"),
-        func: Some(luaB_cowrap),
-    },
-    luaL_Reg {
-        name: s!(b"yield\x00"),
-        func: Some(luaB_yield),
-    },
-    luaL_Reg {
-        name: s!(b"isyieldable\x00"),
-        func: Some(luaB_yieldable),
-    },
-    luaL_Reg {
-        name: 0 as *const libc::c_char,
-        func: None,
-    },
+    lua_reg!(b"create\x00", luaB_cocreate),
+    lua_reg!(b"resume\x00", luaB_coresume),
+    lua_reg!(b"running\x00", luaB_corunning),
+    lua_reg!(b"status\x00", luaB_costatus),
+    lua_reg!(b"wrap\x00", luaB_cowrap),
+    lua_reg!(b"yield\x00", luaB_yield),
+    lua_reg!(b"isyieldable\x00", luaB_yieldable),
+    lua_reg_none!(0),
 ];
 unsafe extern "C" fn luaB_yieldable(mut L: *mut lua_State) -> libc::c_int {
     lua_pushboolean(L, lua_isyieldable(L));

@@ -480,46 +480,16 @@ unsafe extern "C" fn createmeta(mut L: *mut lua_State) -> () {
 ** methods for file handles
 */
 static mut flib: [luaL_Reg; 10] = [
-    luaL_Reg {
-        name: s!(b"close\x00"),
-        func: Some(f_close),
-    },
-    luaL_Reg {
-        name: s!(b"flush\x00"),
-        func: Some(f_flush),
-    },
-    luaL_Reg {
-        name: s!(b"lines\x00"),
-        func: Some(f_lines),
-    },
-    luaL_Reg {
-        name: s!(b"read\x00"),
-        func: Some(f_read),
-    },
-    luaL_Reg {
-        name: s!(b"seek\x00"),
-        func: Some(f_seek),
-    },
-    luaL_Reg {
-        name: s!(b"setvbuf\x00"),
-        func: Some(f_setvbuf),
-    },
-    luaL_Reg {
-        name: s!(b"write\x00"),
-        func: Some(f_write),
-    },
-    luaL_Reg {
-        name: s!(b"__gc\x00"),
-        func: Some(f_gc),
-    },
-    luaL_Reg {
-        name: s!(b"__tostring\x00"),
-        func: Some(f_tostring),
-    },
-    luaL_Reg {
-        name: 0 as *const libc::c_char,
-        func: None,
-    },
+    lua_reg!(b"close\x00", f_close),
+    lua_reg!(b"flush\x00", f_flush),
+    lua_reg!(b"lines\x00", f_lines),
+    lua_reg!(b"read\x00", f_read),
+    lua_reg!(b"seek\x00", f_seek),
+    lua_reg!(b"setvbuf\x00", f_setvbuf),
+    lua_reg!(b"write\x00", f_write),
+    lua_reg!(b"__gc\x00", f_gc),
+    lua_reg!(b"__tostring\x00", f_tostring),
+    lua_reg_none!(0),
 ];
 unsafe extern "C" fn f_tostring(mut L: *mut lua_State) -> libc::c_int {
     let mut p: *mut LStream = luaL_checkudata(L, 1i32, s!(b"FILE*\x00")) as *mut LStream;
@@ -1081,54 +1051,18 @@ unsafe extern "C" fn f_close(mut L: *mut lua_State) -> libc::c_int {
 ** functions for 'io' library
 */
 static mut iolib: [luaL_Reg; 12] = [
-    luaL_Reg {
-        name: s!(b"close\x00"),
-        func: Some(io_close),
-    },
-    luaL_Reg {
-        name: s!(b"flush\x00"),
-        func: Some(io_flush),
-    },
-    luaL_Reg {
-        name: s!(b"input\x00"),
-        func: Some(io_input),
-    },
-    luaL_Reg {
-        name: s!(b"lines\x00"),
-        func: Some(io_lines),
-    },
-    luaL_Reg {
-        name: s!(b"open\x00"),
-        func: Some(io_open),
-    },
-    luaL_Reg {
-        name: s!(b"output\x00"),
-        func: Some(io_output),
-    },
-    luaL_Reg {
-        name: s!(b"popen\x00"),
-        func: Some(io_popen),
-    },
-    luaL_Reg {
-        name: s!(b"read\x00"),
-        func: Some(io_read),
-    },
-    luaL_Reg {
-        name: s!(b"tmpfile\x00"),
-        func: Some(io_tmpfile),
-    },
-    luaL_Reg {
-        name: s!(b"type\x00"),
-        func: Some(io_type),
-    },
-    luaL_Reg {
-        name: s!(b"write\x00"),
-        func: Some(io_write),
-    },
-    luaL_Reg {
-        name: 0 as *const libc::c_char,
-        func: None,
-    },
+    lua_reg!(b"close\x00", io_close),
+    lua_reg!(b"flush\x00", io_flush),
+    lua_reg!(b"input\x00", io_input),
+    lua_reg!(b"lines\x00", io_lines),
+    lua_reg!(b"open\x00", io_open),
+    lua_reg!(b"output\x00", io_output),
+    lua_reg!(b"popen\x00", io_popen),
+    lua_reg!(b"read\x00", io_read),
+    lua_reg!(b"tmpfile\x00", io_tmpfile),
+    lua_reg!(b"type\x00", io_type),
+    lua_reg!(b"write\x00", io_write),
+    lua_reg_none!(0),
 ];
 unsafe extern "C" fn io_write(mut L: *mut lua_State) -> libc::c_int {
     return g_write(L, getiofile(L, s!(b"_IO_output\x00")), 1i32);

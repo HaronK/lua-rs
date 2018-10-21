@@ -224,54 +224,18 @@ pub unsafe extern "C" fn luaopen_os(mut L: *mut lua_State) -> libc::c_int {
     return 1i32;
 }
 static mut syslib: [luaL_Reg; 12] = [
-    luaL_Reg {
-        name: s!(b"clock\x00"),
-        func: Some(os_clock),
-    },
-    luaL_Reg {
-        name: s!(b"date\x00"),
-        func: Some(os_date),
-    },
-    luaL_Reg {
-        name: s!(b"difftime\x00"),
-        func: Some(os_difftime),
-    },
-    luaL_Reg {
-        name: s!(b"execute\x00"),
-        func: Some(os_execute),
-    },
-    luaL_Reg {
-        name: s!(b"exit\x00"),
-        func: Some(os_exit),
-    },
-    luaL_Reg {
-        name: s!(b"getenv\x00"),
-        func: Some(os_getenv),
-    },
-    luaL_Reg {
-        name: s!(b"remove\x00"),
-        func: Some(os_remove),
-    },
-    luaL_Reg {
-        name: s!(b"rename\x00"),
-        func: Some(os_rename),
-    },
-    luaL_Reg {
-        name: s!(b"setlocale\x00"),
-        func: Some(os_setlocale),
-    },
-    luaL_Reg {
-        name: s!(b"time\x00"),
-        func: Some(os_time),
-    },
-    luaL_Reg {
-        name: s!(b"tmpname\x00"),
-        func: Some(os_tmpname),
-    },
-    luaL_Reg {
-        name: 0 as *const libc::c_char,
-        func: None,
-    },
+    lua_reg!(b"clock\x00", os_clock),
+    lua_reg!(b"date\x00", os_date),
+    lua_reg!(b"difftime\x00", os_difftime),
+    lua_reg!(b"execute\x00", os_execute),
+    lua_reg!(b"exit\x00", os_exit),
+    lua_reg!(b"getenv\x00", os_getenv),
+    lua_reg!(b"remove\x00", os_remove),
+    lua_reg!(b"rename\x00", os_rename),
+    lua_reg!(b"setlocale\x00", os_setlocale),
+    lua_reg!(b"time\x00", os_time),
+    lua_reg!(b"tmpname\x00", os_tmpname),
+    lua_reg_none!(0),
 ];
 unsafe extern "C" fn os_tmpname(mut L: *mut lua_State) -> libc::c_int {
     let mut buff: [libc::c_char; 32] = [0; 32];

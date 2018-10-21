@@ -422,78 +422,24 @@ unsafe extern "C" fn createmetatable(mut L: *mut lua_State) -> () {
 }
 /* }====================================================== */
 static mut strlib: [luaL_Reg; 18] = [
-    luaL_Reg {
-        name: s!(b"byte\x00"),
-        func: Some(str_byte),
-    },
-    luaL_Reg {
-        name: s!(b"char\x00"),
-        func: Some(str_char),
-    },
-    luaL_Reg {
-        name: s!(b"dump\x00"),
-        func: Some(str_dump),
-    },
-    luaL_Reg {
-        name: s!(b"find\x00"),
-        func: Some(str_find),
-    },
-    luaL_Reg {
-        name: s!(b"format\x00"),
-        func: Some(str_format),
-    },
-    luaL_Reg {
-        name: s!(b"gmatch\x00"),
-        func: Some(gmatch),
-    },
-    luaL_Reg {
-        name: s!(b"gsub\x00"),
-        func: Some(str_gsub),
-    },
-    luaL_Reg {
-        name: s!(b"len\x00"),
-        func: Some(str_len),
-    },
-    luaL_Reg {
-        name: s!(b"lower\x00"),
-        func: Some(str_lower),
-    },
-    luaL_Reg {
-        name: s!(b"match\x00"),
-        func: Some(str_match),
-    },
-    luaL_Reg {
-        name: s!(b"rep\x00"),
-        func: Some(str_rep),
-    },
-    luaL_Reg {
-        name: s!(b"reverse\x00"),
-        func: Some(str_reverse),
-    },
-    luaL_Reg {
-        name: s!(b"sub\x00"),
-        func: Some(str_sub),
-    },
-    luaL_Reg {
-        name: s!(b"upper\x00"),
-        func: Some(str_upper),
-    },
-    luaL_Reg {
-        name: s!(b"pack\x00"),
-        func: Some(str_pack),
-    },
-    luaL_Reg {
-        name: s!(b"packsize\x00"),
-        func: Some(str_packsize),
-    },
-    luaL_Reg {
-        name: s!(b"unpack\x00"),
-        func: Some(str_unpack),
-    },
-    luaL_Reg {
-        name: 0 as *const libc::c_char,
-        func: None,
-    },
+    lua_reg!(b"byte\x00", str_byte),
+    lua_reg!(b"char\x00", str_char),
+    lua_reg!(b"dump\x00", str_dump),
+    lua_reg!(b"find\x00", str_find),
+    lua_reg!(b"format\x00", str_format),
+    lua_reg!(b"gmatch\x00", gmatch),
+    lua_reg!(b"gsub\x00", str_gsub),
+    lua_reg!(b"len\x00", str_len),
+    lua_reg!(b"lower\x00", str_lower),
+    lua_reg!(b"match\x00", str_match),
+    lua_reg!(b"rep\x00", str_rep),
+    lua_reg!(b"reverse\x00", str_reverse),
+    lua_reg!(b"sub\x00", str_sub),
+    lua_reg!(b"upper\x00", str_upper),
+    lua_reg!(b"pack\x00", str_pack),
+    lua_reg!(b"packsize\x00", str_packsize),
+    lua_reg!(b"unpack\x00", str_unpack),
+    lua_reg_none!(0),
 ];
 unsafe extern "C" fn str_unpack(mut L: *mut lua_State) -> libc::c_int {
     let mut h: Header = Header {

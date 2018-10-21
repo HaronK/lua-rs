@@ -322,106 +322,31 @@ pub unsafe extern "C" fn luaopen_base(mut L: *mut lua_State) -> libc::c_int {
     return 1i32;
 }
 static mut base_funcs: [luaL_Reg; 25] = [
-    luaL_Reg {
-        name: s!(b"assert\x00"),
-        func: Some(luaB_assert),
-    },
-    luaL_Reg {
-        name: s!(b"collectgarbage\x00"),
-        func: Some(luaB_collectgarbage),
-    },
-    luaL_Reg {
-        name: s!(b"dofile\x00"),
-        func: Some(luaB_dofile),
-    },
-    luaL_Reg {
-        name: s!(b"error\x00"),
-        func: Some(luaB_error),
-    },
-    luaL_Reg {
-        name: s!(b"getmetatable\x00"),
-        func: Some(luaB_getmetatable),
-    },
-    luaL_Reg {
-        name: s!(b"ipairs\x00"),
-        func: Some(luaB_ipairs),
-    },
-    luaL_Reg {
-        name: s!(b"loadfile\x00"),
-        func: Some(luaB_loadfile),
-    },
-    luaL_Reg {
-        name: s!(b"load\x00"),
-        func: Some(luaB_load),
-    },
-    luaL_Reg {
-        name: s!(b"next\x00"),
-        func: Some(luaB_next),
-    },
-    luaL_Reg {
-        name: s!(b"pairs\x00"),
-        func: Some(luaB_pairs),
-    },
-    luaL_Reg {
-        name: s!(b"pcall\x00"),
-        func: Some(luaB_pcall),
-    },
-    luaL_Reg {
-        name: s!(b"print\x00"),
-        func: Some(luaB_print),
-    },
-    luaL_Reg {
-        name: s!(b"rawequal\x00"),
-        func: Some(luaB_rawequal),
-    },
-    luaL_Reg {
-        name: s!(b"rawlen\x00"),
-        func: Some(luaB_rawlen),
-    },
-    luaL_Reg {
-        name: s!(b"rawget\x00"),
-        func: Some(luaB_rawget),
-    },
-    luaL_Reg {
-        name: s!(b"rawset\x00"),
-        func: Some(luaB_rawset),
-    },
-    luaL_Reg {
-        name: s!(b"select\x00"),
-        func: Some(luaB_select),
-    },
-    luaL_Reg {
-        name: s!(b"setmetatable\x00"),
-        func: Some(luaB_setmetatable),
-    },
-    luaL_Reg {
-        name: s!(b"tonumber\x00"),
-        func: Some(luaB_tonumber),
-    },
-    luaL_Reg {
-        name: s!(b"tostring\x00"),
-        func: Some(luaB_tostring),
-    },
-    luaL_Reg {
-        name: s!(b"type\x00"),
-        func: Some(luaB_type),
-    },
-    luaL_Reg {
-        name: s!(b"xpcall\x00"),
-        func: Some(luaB_xpcall),
-    },
-    luaL_Reg {
-        name: s!(b"_G\x00"),
-        func: None,
-    },
-    luaL_Reg {
-        name: s!(b"_VERSION\x00"),
-        func: None,
-    },
-    luaL_Reg {
-        name: 0 as *const libc::c_char,
-        func: None,
-    },
+    lua_reg!(b"assert\x00", luaB_assert),
+    lua_reg!(b"collectgarbage\x00", luaB_collectgarbage),
+    lua_reg!(b"dofile\x00", luaB_dofile),
+    lua_reg!(b"error\x00", luaB_error),
+    lua_reg!(b"getmetatable\x00", luaB_getmetatable),
+    lua_reg!(b"ipairs\x00", luaB_ipairs),
+    lua_reg!(b"loadfile\x00", luaB_loadfile),
+    lua_reg!(b"load\x00", luaB_load),
+    lua_reg!(b"next\x00", luaB_next),
+    lua_reg!(b"pairs\x00", luaB_pairs),
+    lua_reg!(b"pcall\x00", luaB_pcall),
+    lua_reg!(b"print\x00", luaB_print),
+    lua_reg!(b"rawequal\x00", luaB_rawequal),
+    lua_reg!(b"rawlen\x00", luaB_rawlen),
+    lua_reg!(b"rawget\x00", luaB_rawget),
+    lua_reg!(b"rawset\x00", luaB_rawset),
+    lua_reg!(b"select\x00", luaB_select),
+    lua_reg!(b"setmetatable\x00", luaB_setmetatable),
+    lua_reg!(b"tonumber\x00", luaB_tonumber),
+    lua_reg!(b"tostring\x00", luaB_tostring),
+    lua_reg!(b"type\x00", luaB_type),
+    lua_reg!(b"xpcall\x00", luaB_xpcall),
+    lua_reg_none!(b"_G\x00"),
+    lua_reg_none!(b"_VERSION\x00"),
+    lua_reg_none!(0),
 ];
 /*
 ** Do a protected call with error handling. After 'lua_rotate', the

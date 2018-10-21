@@ -337,74 +337,23 @@ pub unsafe extern "C" fn luaopen_debug(mut L: *mut lua_State) -> libc::c_int {
     return 1i32;
 }
 static mut dblib: [luaL_Reg; 17] = [
-    luaL_Reg {
-        name: s!(b"debug\x00"),
-        func: Some(db_debug),
-    },
-    luaL_Reg {
-        name: s!(b"getuservalue\x00"),
-        func: Some(db_getuservalue),
-    },
-    luaL_Reg {
-        name: s!(b"gethook\x00"),
-        func: Some(db_gethook),
-    },
-    luaL_Reg {
-        name: s!(b"getinfo\x00"),
-        func: Some(db_getinfo),
-    },
-    luaL_Reg {
-        name: s!(b"getlocal\x00"),
-        func: Some(db_getlocal),
-    },
-    luaL_Reg {
-        name: s!(b"getregistry\x00"),
-        func: Some(db_getregistry),
-    },
-    luaL_Reg {
-        name: s!(b"getmetatable\x00"),
-        func: Some(db_getmetatable),
-    },
-    luaL_Reg {
-        name: s!(b"getupvalue\x00"),
-        func: Some(db_getupvalue),
-    },
-    luaL_Reg {
-        name: s!(b"upvaluejoin\x00"),
-        func: Some(db_upvaluejoin),
-    },
-    luaL_Reg {
-        name: s!(b"upvalueid\x00"),
-        func: Some(db_upvalueid),
-    },
-    luaL_Reg {
-        name: s!(b"setuservalue\x00"),
-        func: Some(db_setuservalue),
-    },
-    luaL_Reg {
-        name: s!(b"sethook\x00"),
-        func: Some(db_sethook),
-    },
-    luaL_Reg {
-        name: s!(b"setlocal\x00"),
-        func: Some(db_setlocal),
-    },
-    luaL_Reg {
-        name: s!(b"setmetatable\x00"),
-        func: Some(db_setmetatable),
-    },
-    luaL_Reg {
-        name: s!(b"setupvalue\x00"),
-        func: Some(db_setupvalue),
-    },
-    luaL_Reg {
-        name: s!(b"traceback\x00"),
-        func: Some(db_traceback),
-    },
-    luaL_Reg {
-        name: 0 as *const libc::c_char,
-        func: None,
-    },
+    lua_reg!(b"debug\x00", db_debug),
+    lua_reg!(b"getuservalue\x00", db_getuservalue),
+    lua_reg!(b"gethook\x00", db_gethook),
+    lua_reg!(b"getinfo\x00", db_getinfo),
+    lua_reg!(b"getlocal\x00", db_getlocal),
+    lua_reg!(b"getregistry\x00", db_getregistry),
+    lua_reg!(b"getmetatable\x00", db_getmetatable),
+    lua_reg!(b"getupvalue\x00", db_getupvalue),
+    lua_reg!(b"upvaluejoin\x00", db_upvaluejoin),
+    lua_reg!(b"upvalueid\x00", db_upvalueid),
+    lua_reg!(b"setuservalue\x00", db_setuservalue),
+    lua_reg!(b"sethook\x00", db_sethook),
+    lua_reg!(b"setlocal\x00", db_setlocal),
+    lua_reg!(b"setmetatable\x00", db_setmetatable),
+    lua_reg!(b"setupvalue\x00", db_setupvalue),
+    lua_reg!(b"traceback\x00", db_traceback),
+    lua_reg_none!(0),
 ];
 unsafe extern "C" fn db_traceback(mut L: *mut lua_State) -> libc::c_int {
     let mut level: libc::c_int = 0;

@@ -109,52 +109,16 @@ pub unsafe extern "C" fn luaL_openlibs(mut L: *mut lua_State) -> () {
 ** program
 */
 static mut loadedlibs: [luaL_Reg; 12] = [
-    luaL_Reg {
-        name: s!(b"_G\x00"),
-        func: Some(luaopen_base),
-    },
-    luaL_Reg {
-        name: s!(b"package\x00"),
-        func: Some(luaopen_package),
-    },
-    luaL_Reg {
-        name: s!(b"coroutine\x00"),
-        func: Some(luaopen_coroutine),
-    },
-    luaL_Reg {
-        name: s!(b"table\x00"),
-        func: Some(luaopen_table),
-    },
-    luaL_Reg {
-        name: s!(b"io\x00"),
-        func: Some(luaopen_io),
-    },
-    luaL_Reg {
-        name: s!(b"os\x00"),
-        func: Some(luaopen_os),
-    },
-    luaL_Reg {
-        name: s!(b"string\x00"),
-        func: Some(luaopen_string),
-    },
-    luaL_Reg {
-        name: s!(b"math\x00"),
-        func: Some(luaopen_math),
-    },
-    luaL_Reg {
-        name: s!(b"utf8\x00"),
-        func: Some(luaopen_utf8),
-    },
-    luaL_Reg {
-        name: s!(b"debug\x00"),
-        func: Some(luaopen_debug),
-    },
-    luaL_Reg {
-        name: s!(b"bit32\x00"),
-        func: Some(luaopen_bit32),
-    },
-    luaL_Reg {
-        name: 0 as *const libc::c_char,
-        func: None,
-    },
+    lua_reg!(b"_G\x00", luaopen_base),
+    lua_reg!(b"package\x00", luaopen_package),
+    lua_reg!(b"coroutine\x00", luaopen_coroutine),
+    lua_reg!(b"table\x00", luaopen_table),
+    lua_reg!(b"io\x00", luaopen_io),
+    lua_reg!(b"os\x00", luaopen_os),
+    lua_reg!(b"string\x00", luaopen_string),
+    lua_reg!(b"math\x00", luaopen_math),
+    lua_reg!(b"utf8\x00", luaopen_utf8),
+    lua_reg!(b"debug\x00", luaopen_debug),
+    lua_reg!(b"bit32\x00", luaopen_bit32),
+    lua_reg_none!(0),
 ];

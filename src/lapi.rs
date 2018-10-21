@@ -1229,8 +1229,7 @@ pub unsafe extern "C" fn lua_iscfunction(
     mut idx: libc::c_int,
 ) -> libc::c_int {
     let mut o: StkId = index2addr(L, idx);
-    return (ttislcf!(*o) || (*o).tt_ == 6i32 | 2i32 << 4i32 | 1i32 << 6i32)
-        as libc::c_int;
+    return (ttislcf!(*o) || (*o).tt_ == 6i32 | 2i32 << 4i32 | 1i32 << 6i32) as libc::c_int;
 }
 #[no_mangle]
 pub unsafe extern "C" fn lua_isinteger(mut L: *mut lua_State, mut idx: libc::c_int) -> libc::c_int {

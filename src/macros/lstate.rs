@@ -1,4 +1,3 @@
-
 // #define isLua(ci)	((ci)->callstatus & CIST_LUA)
 
 /* assume that CIST_OAH has offset 0 and that 'v' is strictly 0/1 */
@@ -26,11 +25,9 @@
 // #define gco2p(o)  check_exp((o)->tt == LUA_TPROTO, &((cast_u(o))->p))
 // #define gco2th(o)  check_exp((o)->tt == LUA_TTHREAD, &((cast_u(o))->th))
 
-
 /* macro to convert a Lua object into a GCObject */
 // #define obj2gco(v) \
 // 	check_exp(novariant((v)->tt) < LUA_TDEADKEY, (&(cast_u(v)->gc)))
-
 
 /* actual number of total bytes allocated */
 // #define gettotalbytes(g)	cast(lu_mem, (g)->totalbytes + (g)->GCdebt)

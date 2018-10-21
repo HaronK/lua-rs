@@ -149,34 +149,13 @@ pub unsafe extern "C" fn luaopen_utf8(mut L: *mut lua_State) -> libc::c_int {
 }
 /* pattern to match a single UTF-8 character */
 static mut funcs: [luaL_Reg; 7] = [
-    luaL_Reg {
-        name: s!(b"offset\x00"),
-        func: Some(byteoffset),
-    },
-    luaL_Reg {
-        name: s!(b"codepoint\x00"),
-        func: Some(codepoint),
-    },
-    luaL_Reg {
-        name: s!(b"char\x00"),
-        func: Some(utfchar),
-    },
-    luaL_Reg {
-        name: s!(b"len\x00"),
-        func: Some(utflen),
-    },
-    luaL_Reg {
-        name: s!(b"codes\x00"),
-        func: Some(iter_codes),
-    },
-    luaL_Reg {
-        name: s!(b"charpattern\x00"),
-        func: None,
-    },
-    luaL_Reg {
-        name: 0 as *const libc::c_char,
-        func: None,
-    },
+    lua_reg!(b"offset\x00", byteoffset),
+    lua_reg!(b"codepoint\x00", codepoint),
+    lua_reg!(b"char\x00", utfchar),
+    lua_reg!(b"len\x00", utflen),
+    lua_reg!(b"codes\x00", iter_codes),
+    lua_reg_none!(b"charpattern\x00"),
+    lua_reg_none!(0),
 ];
 unsafe extern "C" fn iter_codes(mut L: *mut lua_State) -> libc::c_int {
     luaL_checklstring(L, 1i32, 0 as *mut size_t);
