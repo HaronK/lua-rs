@@ -22,6 +22,26 @@ macro_rules! pub_const_c_str {
     };
 }
 
+#[macro_export]
+macro_rules! lua_reg {
+    ($name:expr, $func:ident) => {
+        luaL_Reg {
+            name: s!($name),
+            func: Some($func),
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! lua_reg_none {
+    ($name:expr) => {
+        luaL_Reg {
+            name: s!($name),
+            func: None,
+        }
+    };
+}
+
 // ------------------------------------------------
 // lapi macros
 

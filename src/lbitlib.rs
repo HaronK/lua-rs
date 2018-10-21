@@ -56,11 +56,14 @@ pub type lua_Unsigned = libc::c_ulonglong;
 ** Type for C functions registered with Lua
 */
 pub type lua_CFunction = Option<unsafe extern "C" fn(_: *mut lua_State) -> libc::c_int>;
+
+
 /*
 ** $Id: lauxlib.h,v 1.131.1.1 2017/04/19 17:20:42 roberto Exp $
 ** Auxiliary functions for building Lua libraries
 ** See Copyright Notice in lua.h
 */
+
 /* extra error code for 'luaL_loadfilex' */
 /* key, in the registry, for table of loaded modules */
 /* key, in the registry, for table of preloaded loaders */
@@ -90,18 +93,9 @@ pub unsafe extern "C" fn luaopen_bit32(mut L: *mut lua_State) -> libc::c_int {
     return 1i32;
 }
 static mut bitlib: [luaL_Reg; 13] = [
-    luaL_Reg {
-        name: s!(b"arshift\x00"),
-        func: Some(b_arshift),
-    },
-    luaL_Reg {
-        name: s!(b"band\x00"),
-        func: Some(b_and),
-    },
-    luaL_Reg {
-        name: s!(b"bnot\x00"),
-        func: Some(b_not),
-    },
+    lua_reg!(b"arshift\x00", b_arshift),
+    lua_reg!(b"band\x00", b_and),
+    lua_reg!(b"bnot\x00", b_not),
     luaL_Reg {
         name: s!(b"bor\x00"),
         func: Some(b_or),
