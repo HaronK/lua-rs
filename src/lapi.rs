@@ -1,4 +1,5 @@
 use libc;
+use lobject::*;
 use lua::*;
 
 extern "C" {
@@ -1032,6 +1033,7 @@ unsafe extern "C" fn index2addr(mut L: *mut lua_State, mut idx: libc::c_int) -> 
     let mut ci: *mut CallInfo = (*L).ci;
     if idx > 0i32 {
         let mut o: *mut TValue = (*ci).func.offset(idx as isize);
+        // api_check(L, idx <= ci->top - (ci->func + 1), "unacceptable index");
         if o >= (*L).top {
             return NONVALIDVALUE!();
         } else {
@@ -1039,14 +1041,16 @@ unsafe extern "C" fn index2addr(mut L: *mut lua_State, mut idx: libc::c_int) -> 
         }
     } else if !ispseudo!(idx) {
         /* negative index */
+        // api_check(L, idx != 0 && -idx <= L->top - (ci->func + 1), "invalid index");
         return (*L).top.offset(idx as isize);
-    } else if idx == -1000000i32 - 1000i32 {
+    } else if idx == LUA_REGISTRYINDEX {
         return &mut (*(*L).l_G).l_registry;
     } else {
         /* upvalues */
-        idx = -1000000i32 - 1000i32 - idx;
+        idx = LUA_REGISTRYINDEX - idx;
+        // api_check(L, idx <= MAXUPVAL + 1, "upvalue index too large");
         /* light C function? */
-        if (*(*ci).func).tt_ == 6i32 | 1i32 << 4i32 {
+        if ttislcf!(*(*ci).func) {
             /* it has no upvalues */
             return NONVALIDVALUE!();
         } else {
@@ -1225,7 +1229,7 @@ pub unsafe extern "C" fn lua_iscfunction(
     mut idx: libc::c_int,
 ) -> libc::c_int {
     let mut o: StkId = index2addr(L, idx);
-    return ((*o).tt_ == 6i32 | 1i32 << 4i32 || (*o).tt_ == 6i32 | 2i32 << 4i32 | 1i32 << 6i32)
+    return (ttislcf!(*o) || (*o).tt_ == 6i32 | 2i32 << 4i32 | 1i32 << 6i32)
         as libc::c_int;
 }
 #[no_mangle]
@@ -1359,7 +1363,7 @@ pub unsafe extern "C" fn lua_tocfunction(
     mut idx: libc::c_int,
 ) -> lua_CFunction {
     let mut o: StkId = index2addr(L, idx);
-    if (*o).tt_ == 6i32 | 1i32 << 4i32 {
+    if ttislcf!(*o) {
         return (*o).value_.f;
     } else if (*o).tt_ == 6i32 | 2i32 << 4i32 | 1i32 << 6i32 {
         return (*((*o).value_.gc as *mut GCUnion)).cl.c.f;
