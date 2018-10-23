@@ -10,10 +10,10 @@
 #![allow(unused_mut)]
 #![allow(unused_macros)]
 
-pub mod types;
-
 #[macro_use]
 pub mod macros;
+
+pub mod types;
 
 pub mod lapi;
 pub mod lauxlib;
