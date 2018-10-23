@@ -1,4 +1,4 @@
-use libc;
+use types::*;
 extern "C" {
     /*
      ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
@@ -44,13 +44,13 @@ extern "C" {
      */
     pub type UpVal;
     #[no_mangle]
-    fn memcpy(_: *mut libc::c_void, _: *const libc::c_void, _: libc::c_ulong) -> *mut libc::c_void;
+    fn memcpy(_: *mut lua_void, _: *const lua_void, _: lua_ulong) -> *mut lua_void;
     #[no_mangle]
-    fn memcmp(_: *const libc::c_void, _: *const libc::c_void, _: libc::c_ulong) -> libc::c_int;
+    fn memcmp(_: *const lua_void, _: *const lua_void, _: lua_ulong) -> lua_int;
     #[no_mangle]
-    fn strcmp(_: *const libc::c_char, _: *const libc::c_char) -> libc::c_int;
+    fn strcmp(_: *const lua_char, _: *const lua_char) -> lua_int;
     #[no_mangle]
-    fn strlen(_: *const libc::c_char) -> libc::c_ulong;
+    fn strlen(_: *const lua_char) -> lua_ulong;
     /*
      ** 'module' operation for hashing (size is always a power of 2)
      */
@@ -86,10 +86,10 @@ extern "C" {
     #[no_mangle]
     fn luaM_realloc_(
         L: *mut lua_State,
-        block: *mut libc::c_void,
+        block: *mut lua_void,
         oldsize: size_t,
         size: size_t,
-    ) -> *mut libc::c_void;
+    ) -> *mut lua_void;
     /*
      ** $Id: lgc.h,v 2.91.1.1 2017/04/19 17:39:34 roberto Exp $
      ** Garbage Collector
@@ -139,12 +139,12 @@ extern "C" {
     #[no_mangle]
     fn luaC_fix(L: *mut lua_State, o: *mut GCObject) -> ();
     #[no_mangle]
-    fn luaC_newobj(L: *mut lua_State, tt: libc::c_int, sz: size_t) -> *mut GCObject;
+    fn luaC_newobj(L: *mut lua_State, tt: lua_int, sz: size_t) -> *mut GCObject;
 }
-pub type size_t = libc::c_ulong;
-pub type ptrdiff_t = libc::c_long;
-pub type __sig_atomic_t = libc::c_int;
-pub type intptr_t = libc::c_long;
+pub type size_t = lua_ulong;
+pub type ptrdiff_t = lua_long;
+pub type __sig_atomic_t = lua_int;
+pub type intptr_t = lua_long;
 /*
 ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
 ** Lua - A Scripting Language
@@ -165,7 +165,7 @@ pub struct lua_State {
     pub next: *mut GCObject,
     pub tt: lu_byte,
     pub marked: lu_byte,
-    pub nci: libc::c_ushort,
+    pub nci: lua_ushort,
     pub status: lu_byte,
     pub top: StkId,
     pub l_G: *mut global_State,
@@ -180,11 +180,11 @@ pub struct lua_State {
     pub base_ci: CallInfo,
     pub hook: lua_Hook,
     pub errfunc: ptrdiff_t,
-    pub stacksize: libc::c_int,
-    pub basehookcount: libc::c_int,
-    pub hookcount: libc::c_int,
-    pub nny: libc::c_ushort,
-    pub nCcalls: libc::c_ushort,
+    pub stacksize: lua_int,
+    pub basehookcount: lua_int,
+    pub hookcount: lua_int,
+    pub nny: lua_ushort,
+    pub nCcalls: lua_ushort,
     pub hookmask: sig_atomic_t,
     pub allowhook: lu_byte,
 }
@@ -192,7 +192,7 @@ pub struct lua_State {
 /* }{ */
 /* } */
 /* chars used as small naturals (so that 'char' is reserved for characters) */
-pub type lu_byte = libc::c_uchar;
+pub type lu_byte = lua_uchar;
 pub type sig_atomic_t = __sig_atomic_t;
 /* Functions to be called by the debugger in specific events */
 pub type lua_Hook = Option<unsafe extern "C" fn(_: *mut lua_State, _: *mut lua_Debug) -> ()>;
@@ -222,19 +222,19 @@ pub type lua_Hook = Option<unsafe extern "C" fn(_: *mut lua_State, _: *mut lua_D
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct lua_Debug {
-    pub event: libc::c_int,
-    pub name: *const libc::c_char,
-    pub namewhat: *const libc::c_char,
-    pub what: *const libc::c_char,
-    pub source: *const libc::c_char,
-    pub currentline: libc::c_int,
-    pub linedefined: libc::c_int,
-    pub lastlinedefined: libc::c_int,
-    pub nups: libc::c_uchar,
-    pub nparams: libc::c_uchar,
-    pub isvararg: libc::c_char,
-    pub istailcall: libc::c_char,
-    pub short_src: [libc::c_char; 60],
+    pub event: lua_int,
+    pub name: *const lua_char,
+    pub namewhat: *const lua_char,
+    pub what: *const lua_char,
+    pub source: *const lua_char,
+    pub currentline: lua_int,
+    pub linedefined: lua_int,
+    pub lastlinedefined: lua_int,
+    pub nups: lua_uchar,
+    pub nparams: lua_uchar,
+    pub isvararg: lua_char,
+    pub istailcall: lua_char,
+    pub short_src: [lua_char; 60],
     pub i_ci: *mut CallInfo,
 }
 /* private part */
@@ -247,8 +247,8 @@ pub struct CallInfo {
     pub next: *mut CallInfo,
     pub u: unnamed,
     pub extra: ptrdiff_t,
-    pub nresults: libc::c_short,
-    pub callstatus: libc::c_ushort,
+    pub nresults: lua_short,
+    pub callstatus: lua_ushort,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -270,7 +270,7 @@ pub type lua_KContext = intptr_t;
 ** Type for continuation functions
 */
 pub type lua_KFunction =
-    Option<unsafe extern "C" fn(_: *mut lua_State, _: libc::c_int, _: lua_KContext) -> libc::c_int>;
+    Option<unsafe extern "C" fn(_: *mut lua_State, _: lua_int, _: lua_KContext) -> lua_int>;
 /* only for Lua functions */
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -301,7 +301,7 @@ pub struct unnamed_1 {
 ** type for virtual-machine instructions;
 ** must be an unsigned with (at least) 4 bytes (see details in lopcodes.h)
 */
-pub type Instruction = libc::c_uint;
+pub type Instruction = lua_uint;
 /* macro defining a nil value */
 /* raw type tag of a TValue */
 /* tag with no variants (bits 0-3) */
@@ -332,7 +332,7 @@ pub type TValue = lua_TValue;
 #[repr(C)]
 pub struct lua_TValue {
     pub value_: Value,
-    pub tt_: libc::c_int,
+    pub tt_: lua_int,
 }
 /*
 ** Tagged Values. This is the basic representation of values in Lua,
@@ -345,8 +345,8 @@ pub struct lua_TValue {
 #[repr(C)]
 pub union Value {
     pub gc: *mut GCObject,
-    pub p: *mut libc::c_void,
-    pub b: libc::c_int,
+    pub p: *mut lua_void,
+    pub b: lua_int,
     pub f: lua_CFunction,
     pub i: lua_Integer,
     pub n: lua_Number,
@@ -357,13 +357,13 @@ pub union Value {
 /* minimum Lua stack available to a C function */
 /* predefined values in the registry */
 /* type of numbers in Lua */
-pub type lua_Number = libc::c_double;
+pub type lua_Number = lua_double;
 /* type for integer functions */
-pub type lua_Integer = libc::c_longlong;
+pub type lua_Integer = lua_longlong;
 /*
 ** Type for C functions registered with Lua
 */
-pub type lua_CFunction = Option<unsafe extern "C" fn(_: *mut lua_State) -> libc::c_int>;
+pub type lua_CFunction = Option<unsafe extern "C" fn(_: *mut lua_State) -> lua_int>;
 /*
 ** $Id: lobject.h,v 2.117.1.1 2017/04/19 17:39:34 roberto Exp $
 ** Type definitions for Lua objects
@@ -432,14 +432,14 @@ of luaV_execute */
 #[repr(C)]
 pub struct global_State {
     pub frealloc: lua_Alloc,
-    pub ud: *mut libc::c_void,
+    pub ud: *mut lua_void,
     pub totalbytes: l_mem,
     pub GCdebt: l_mem,
     pub GCmemtrav: lu_mem,
     pub GCestimate: lu_mem,
     pub strt: stringtable,
     pub l_registry: TValue,
-    pub seed: libc::c_uint,
+    pub seed: lua_uint,
     pub currentwhite: lu_byte,
     pub gcstate: lu_byte,
     pub gckind: lu_byte,
@@ -455,9 +455,9 @@ pub struct global_State {
     pub tobefnz: *mut GCObject,
     pub fixedgc: *mut GCObject,
     pub twups: *mut lua_State,
-    pub gcfinnum: libc::c_uint,
-    pub gcpause: libc::c_int,
-    pub gcstepmul: libc::c_int,
+    pub gcfinnum: lua_uint,
+    pub gcpause: lua_int,
+    pub gcstepmul: lua_int,
     pub panic: lua_CFunction,
     pub mainthread: *mut lua_State,
     pub version: *const lua_Number,
@@ -478,7 +478,7 @@ pub struct TString {
     pub marked: lu_byte,
     pub extra: lu_byte,
     pub shrlen: lu_byte,
-    pub hash: libc::c_uint,
+    pub hash: lua_uint,
     pub u: unnamed_2,
 }
 #[derive(Copy, Clone)]
@@ -495,7 +495,7 @@ pub struct Table {
     pub marked: lu_byte,
     pub flags: lu_byte,
     pub lsizenode: lu_byte,
-    pub sizearray: libc::c_uint,
+    pub sizearray: lua_uint,
     pub array: *mut TValue,
     pub node: *mut Node,
     pub lastfree: *mut Node,
@@ -522,8 +522,8 @@ pub union TKey {
 #[repr(C)]
 pub struct unnamed_3 {
     pub value_: Value,
-    pub tt_: libc::c_int,
-    pub next: libc::c_int,
+    pub tt_: lua_int,
+    pub next: lua_int,
 }
 /*
 ** Atomic type (relative to signals) to better ensure that 'lua_sethook'
@@ -536,8 +536,8 @@ pub struct unnamed_3 {
 #[repr(C)]
 pub struct stringtable {
     pub hash: *mut *mut TString,
-    pub nuse: libc::c_int,
-    pub size: libc::c_int,
+    pub nuse: lua_int,
+    pub size: lua_int,
 }
 /*
 ** $Id: llimits.h,v 1.141.1.1 2017/04/19 17:20:42 roberto Exp $
@@ -557,8 +557,8 @@ pub type l_mem = ptrdiff_t;
 ** Type for memory-allocation functions
 */
 pub type lua_Alloc = Option<
-    unsafe extern "C" fn(_: *mut libc::c_void, _: *mut libc::c_void, _: size_t, _: size_t)
-        -> *mut libc::c_void,
+    unsafe extern "C" fn(_: *mut lua_void, _: *mut lua_void, _: size_t, _: size_t)
+        -> *mut lua_void,
 >;
 /* maximum value for size_t */
 /* maximum size visible for Lua (must be representable in a lua_Integer */
@@ -573,10 +573,10 @@ pub type lua_Alloc = Option<
 #[repr(C)]
 pub union L_Umaxalign {
     pub n: lua_Number,
-    pub u: libc::c_double,
-    pub s: *mut libc::c_void,
+    pub u: lua_double,
+    pub s: *mut lua_void,
     pub i: lua_Integer,
-    pub l: libc::c_long,
+    pub l: lua_long,
 }
 /*
 ** Ensures that address after this type is always fully aligned.
@@ -640,8 +640,8 @@ pub struct Upvaldesc {
 #[repr(C)]
 pub struct LocVar {
     pub varname: *mut TString,
-    pub startpc: libc::c_int,
-    pub endpc: libc::c_int,
+    pub startpc: lua_int,
+    pub endpc: lua_int,
 }
 /*
 ** Function Prototypes
@@ -655,18 +655,18 @@ pub struct Proto {
     pub numparams: lu_byte,
     pub is_vararg: lu_byte,
     pub maxstacksize: lu_byte,
-    pub sizeupvalues: libc::c_int,
-    pub sizek: libc::c_int,
-    pub sizecode: libc::c_int,
-    pub sizelineinfo: libc::c_int,
-    pub sizep: libc::c_int,
-    pub sizelocvars: libc::c_int,
-    pub linedefined: libc::c_int,
-    pub lastlinedefined: libc::c_int,
+    pub sizeupvalues: lua_int,
+    pub sizek: lua_int,
+    pub sizecode: lua_int,
+    pub sizelineinfo: lua_int,
+    pub sizep: lua_int,
+    pub sizelocvars: lua_int,
+    pub linedefined: lua_int,
+    pub lastlinedefined: lua_int,
     pub k: *mut TValue,
     pub code: *mut Instruction,
     pub p: *mut *mut Proto,
-    pub lineinfo: *mut libc::c_int,
+    pub lineinfo: *mut lua_int,
     pub locvars: *mut LocVar,
     pub upvalues: *mut Upvaldesc,
     pub cache: *mut LClosure,
@@ -731,27 +731,27 @@ pub union GCUnion {
 */
 #[no_mangle]
 pub unsafe extern "C" fn luaS_hash(
-    mut str: *const libc::c_char,
+    mut str: *const lua_char,
     mut l: size_t,
-    mut seed: libc::c_uint,
-) -> libc::c_uint {
-    let mut h: libc::c_uint = seed ^ l as libc::c_uint;
-    let mut step: size_t = (l >> 5i32).wrapping_add(1i32 as libc::c_ulong);
+    mut seed: lua_uint,
+) -> lua_uint {
+    let mut h: lua_uint = seed ^ l as lua_uint;
+    let mut step: size_t = (l >> 5i32).wrapping_add(1i32 as lua_ulong);
     while l >= step {
         h ^= (h << 5i32).wrapping_add(h >> 2i32).wrapping_add(
-            *str.offset(l.wrapping_sub(1i32 as libc::c_ulong) as isize) as lu_byte as libc::c_uint,
+            *str.offset(l.wrapping_sub(1i32 as lua_ulong) as isize) as lu_byte as lua_uint,
         );
-        l = (l as libc::c_ulong).wrapping_sub(step) as size_t as size_t
+        l = (l as lua_ulong).wrapping_sub(step) as size_t as size_t
     }
     return h;
 }
 #[no_mangle]
-pub unsafe extern "C" fn luaS_hashlongstr(mut ts: *mut TString) -> libc::c_uint {
-    if (*ts).extra as libc::c_int == 0i32 {
+pub unsafe extern "C" fn luaS_hashlongstr(mut ts: *mut TString) -> lua_uint {
+    if (*ts).extra as lua_int == 0i32 {
         /* no hash? */
         (*ts).hash = luaS_hash(
-            (ts as *mut libc::c_char)
-                .offset(::std::mem::size_of::<UTString>() as libc::c_ulong as isize),
+            (ts as *mut lua_char)
+                .offset(::std::mem::size_of::<UTString>() as lua_ulong as isize),
             (*ts).u.lnglen,
             (*ts).hash,
         );
@@ -761,43 +761,43 @@ pub unsafe extern "C" fn luaS_hashlongstr(mut ts: *mut TString) -> libc::c_uint 
     return (*ts).hash;
 }
 #[no_mangle]
-pub unsafe extern "C" fn luaS_eqlngstr(mut a: *mut TString, mut b: *mut TString) -> libc::c_int {
+pub unsafe extern "C" fn luaS_eqlngstr(mut a: *mut TString, mut b: *mut TString) -> lua_int {
     let mut len: size_t = (*a).u.lnglen;
     /* same instance or... */
     return (a == b
         || len == (*b).u.lnglen
             && memcmp(
-                (a as *mut libc::c_char)
-                    .offset(::std::mem::size_of::<UTString>() as libc::c_ulong as isize)
-                    as *const libc::c_void,
-                (b as *mut libc::c_char)
-                    .offset(::std::mem::size_of::<UTString>() as libc::c_ulong as isize)
-                    as *const libc::c_void,
+                (a as *mut lua_char)
+                    .offset(::std::mem::size_of::<UTString>() as lua_ulong as isize)
+                    as *const lua_void,
+                (b as *mut lua_char)
+                    .offset(::std::mem::size_of::<UTString>() as lua_ulong as isize)
+                    as *const lua_void,
                 len,
-            ) == 0i32) as libc::c_int;
+            ) == 0i32) as lua_int;
 }
 #[no_mangle]
-pub unsafe extern "C" fn luaS_resize(mut L: *mut lua_State, mut newsize: libc::c_int) -> () {
-    let mut i: libc::c_int = 0;
+pub unsafe extern "C" fn luaS_resize(mut L: *mut lua_State, mut newsize: lua_int) -> () {
+    let mut i: lua_int = 0;
     let mut tb: *mut stringtable = &mut (*(*L).l_G).strt;
     if newsize > (*tb).size {
         /* grow table if needed */
-        if ::std::mem::size_of::<libc::c_int>() as libc::c_ulong
-            >= ::std::mem::size_of::<size_t>() as libc::c_ulong
-            && (newsize as size_t).wrapping_add(1i32 as libc::c_ulong)
+        if ::std::mem::size_of::<lua_int>() as lua_ulong
+            >= ::std::mem::size_of::<size_t>() as lua_ulong
+            && (newsize as size_t).wrapping_add(1i32 as lua_ulong)
                 > (!(0i32 as size_t))
-                    .wrapping_div(::std::mem::size_of::<*mut TString>() as libc::c_ulong)
+                    .wrapping_div(::std::mem::size_of::<*mut TString>() as lua_ulong)
         {
             luaM_toobig(L);
         } else {
         };
         (*tb).hash = luaM_realloc_(
             L,
-            (*tb).hash as *mut libc::c_void,
-            ((*tb).size as libc::c_ulong)
-                .wrapping_mul(::std::mem::size_of::<*mut TString>() as libc::c_ulong),
-            (newsize as libc::c_ulong)
-                .wrapping_mul(::std::mem::size_of::<*mut TString>() as libc::c_ulong),
+            (*tb).hash as *mut lua_void,
+            ((*tb).size as lua_ulong)
+                .wrapping_mul(::std::mem::size_of::<*mut TString>() as lua_ulong),
+            (newsize as lua_ulong)
+                .wrapping_mul(::std::mem::size_of::<*mut TString>() as lua_ulong),
         ) as *mut *mut TString;
         i = (*tb).size;
         while i < newsize {
@@ -817,8 +817,8 @@ pub unsafe extern "C" fn luaS_resize(mut L: *mut lua_State, mut newsize: libc::c
             /* save next */
             let mut hnext: *mut TString = (*p).u.hnext;
             /* new position */
-            let mut h: libc::c_uint =
-                ((*p).hash & (newsize - 1i32) as libc::c_uint) as libc::c_int as libc::c_uint;
+            let mut h: lua_uint =
+                ((*p).hash & (newsize - 1i32) as lua_uint) as lua_int as lua_uint;
             /* chain it */
             (*p).u.hnext = *(*tb).hash.offset(h as isize);
             let ref mut fresh2 = *(*tb).hash.offset(h as isize);
@@ -830,36 +830,36 @@ pub unsafe extern "C" fn luaS_resize(mut L: *mut lua_State, mut newsize: libc::c
     if newsize < (*tb).size {
         /* shrink table if needed */
         /* vanishing slice should be empty */
-        if ::std::mem::size_of::<libc::c_int>() as libc::c_ulong
-            >= ::std::mem::size_of::<size_t>() as libc::c_ulong
-            && (newsize as size_t).wrapping_add(1i32 as libc::c_ulong)
+        if ::std::mem::size_of::<lua_int>() as lua_ulong
+            >= ::std::mem::size_of::<size_t>() as lua_ulong
+            && (newsize as size_t).wrapping_add(1i32 as lua_ulong)
                 > (!(0i32 as size_t))
-                    .wrapping_div(::std::mem::size_of::<*mut TString>() as libc::c_ulong)
+                    .wrapping_div(::std::mem::size_of::<*mut TString>() as lua_ulong)
         {
             luaM_toobig(L);
         } else {
         };
         (*tb).hash = luaM_realloc_(
             L,
-            (*tb).hash as *mut libc::c_void,
-            ((*tb).size as libc::c_ulong)
-                .wrapping_mul(::std::mem::size_of::<*mut TString>() as libc::c_ulong),
-            (newsize as libc::c_ulong)
-                .wrapping_mul(::std::mem::size_of::<*mut TString>() as libc::c_ulong),
+            (*tb).hash as *mut lua_void,
+            ((*tb).size as lua_ulong)
+                .wrapping_mul(::std::mem::size_of::<*mut TString>() as lua_ulong),
+            (newsize as lua_ulong)
+                .wrapping_mul(::std::mem::size_of::<*mut TString>() as lua_ulong),
         ) as *mut *mut TString
     }
     (*tb).size = newsize;
 }
 #[no_mangle]
 pub unsafe extern "C" fn luaS_clearcache(mut g: *mut global_State) -> () {
-    let mut i: libc::c_int = 0;
-    let mut j: libc::c_int = 0;
+    let mut i: lua_int = 0;
+    let mut j: lua_int = 0;
     i = 0i32;
     while i < 53i32 {
         j = 0i32;
         while j < 2i32 {
             /* will entry be collected? */
-            if 0 != (*(*g).strcache[i as usize][j as usize]).marked as libc::c_int
+            if 0 != (*(*g).strcache[i as usize][j as usize]).marked as lua_int
                 & (1i32 << 0i32 | 1i32 << 1i32)
             {
                 /* replace it with something fixed */
@@ -873,17 +873,17 @@ pub unsafe extern "C" fn luaS_clearcache(mut g: *mut global_State) -> () {
 #[no_mangle]
 pub unsafe extern "C" fn luaS_init(mut L: *mut lua_State) -> () {
     let mut g: *mut global_State = (*L).l_G;
-    let mut i: libc::c_int = 0;
-    let mut j: libc::c_int = 0;
+    let mut i: lua_int = 0;
+    let mut j: lua_int = 0;
     /* initial size of string table */
     luaS_resize(L, 128i32);
     /* pre-create memory-error message */
     (*g).memerrmsg = luaS_newlstr(
         L,
         s!(b"not enough memory\x00"),
-        (::std::mem::size_of::<[libc::c_char; 18]>() as libc::c_ulong)
-            .wrapping_div(::std::mem::size_of::<libc::c_char>() as libc::c_ulong)
-            .wrapping_sub(1i32 as libc::c_ulong),
+        (::std::mem::size_of::<[lua_char; 18]>() as lua_ulong)
+            .wrapping_div(::std::mem::size_of::<lua_char>() as lua_ulong)
+            .wrapping_sub(1i32 as lua_ulong),
     );
     /* it should never be collected */
     luaC_fix(L, &mut (*((*g).memerrmsg as *mut GCUnion)).gc);
@@ -901,33 +901,33 @@ pub unsafe extern "C" fn luaS_init(mut L: *mut lua_State) -> () {
 #[no_mangle]
 pub unsafe extern "C" fn luaS_newlstr(
     mut L: *mut lua_State,
-    mut str: *const libc::c_char,
+    mut str: *const lua_char,
     mut l: size_t,
 ) -> *mut TString {
     /* short string? */
-    if l <= 40i32 as libc::c_ulong {
+    if l <= 40i32 as lua_ulong {
         return internshrstr(L, str, l);
     } else {
         let mut ts: *mut TString = 0 as *mut TString;
-        if l >= if (::std::mem::size_of::<size_t>() as libc::c_ulong)
-            < ::std::mem::size_of::<lua_Integer>() as libc::c_ulong
+        if l >= if (::std::mem::size_of::<size_t>() as lua_ulong)
+            < ::std::mem::size_of::<lua_Integer>() as lua_ulong
         {
             !(0i32 as size_t)
         } else {
             9223372036854775807i64 as size_t
         }
-        .wrapping_sub(::std::mem::size_of::<TString>() as libc::c_ulong)
-        .wrapping_div(::std::mem::size_of::<libc::c_char>() as libc::c_ulong)
+        .wrapping_sub(::std::mem::size_of::<TString>() as lua_ulong)
+        .wrapping_div(::std::mem::size_of::<lua_char>() as lua_ulong)
         {
             luaM_toobig(L);
         } else {
             ts = luaS_createlngstrobj(L, l);
             memcpy(
-                (ts as *mut libc::c_char)
-                    .offset(::std::mem::size_of::<UTString>() as libc::c_ulong as isize)
-                    as *mut libc::c_void,
-                str as *const libc::c_void,
-                l.wrapping_mul(::std::mem::size_of::<libc::c_char>() as libc::c_ulong),
+                (ts as *mut lua_char)
+                    .offset(::std::mem::size_of::<UTString>() as lua_ulong as isize)
+                    as *mut lua_void,
+                str as *const lua_void,
+                l.wrapping_mul(::std::mem::size_of::<lua_char>() as lua_ulong),
             );
             return ts;
         }
@@ -948,25 +948,25 @@ pub unsafe extern "C" fn luaS_createlngstrobj(
 unsafe extern "C" fn createstrobj(
     mut L: *mut lua_State,
     mut l: size_t,
-    mut tag: libc::c_int,
-    mut h: libc::c_uint,
+    mut tag: lua_int,
+    mut h: lua_uint,
 ) -> *mut TString {
     let mut ts: *mut TString = 0 as *mut TString;
     let mut o: *mut GCObject = 0 as *mut GCObject;
     /* total size of TString object */
     let mut totalsize: size_t = 0;
-    totalsize = (::std::mem::size_of::<UTString>() as libc::c_ulong).wrapping_add(
-        l.wrapping_add(1i32 as libc::c_ulong)
-            .wrapping_mul(::std::mem::size_of::<libc::c_char>() as libc::c_ulong),
+    totalsize = (::std::mem::size_of::<UTString>() as lua_ulong).wrapping_add(
+        l.wrapping_add(1i32 as lua_ulong)
+            .wrapping_mul(::std::mem::size_of::<lua_char>() as lua_ulong),
     );
     o = luaC_newobj(L, tag, totalsize);
     ts = &mut (*(o as *mut GCUnion)).ts;
     (*ts).hash = h;
     (*ts).extra = 0i32 as lu_byte;
     /* ending 0 */
-    *(ts as *mut libc::c_char)
-        .offset(::std::mem::size_of::<UTString>() as libc::c_ulong as isize)
-        .offset(l as isize) = '\u{0}' as i32 as libc::c_char;
+    *(ts as *mut lua_char)
+        .offset(::std::mem::size_of::<UTString>() as lua_ulong as isize)
+        .offset(l as isize) = '\u{0}' as i32 as lua_char;
     return ts;
 }
 /*
@@ -974,37 +974,37 @@ unsafe extern "C" fn createstrobj(
 */
 unsafe extern "C" fn internshrstr(
     mut L: *mut lua_State,
-    mut str: *const libc::c_char,
+    mut str: *const lua_char,
     mut l: size_t,
 ) -> *mut TString {
     let mut ts: *mut TString = 0 as *mut TString;
     let mut g: *mut global_State = (*L).l_G;
-    let mut h: libc::c_uint = luaS_hash(str, l, (*g).seed);
+    let mut h: lua_uint = luaS_hash(str, l, (*g).seed);
     let mut list: *mut *mut TString = &mut *(*g)
         .strt
         .hash
-        .offset((h & ((*g).strt.size - 1i32) as libc::c_uint) as libc::c_int as isize)
+        .offset((h & ((*g).strt.size - 1i32) as lua_uint) as lua_int as isize)
         as *mut *mut TString;
     /* otherwise 'memcmp'/'memcpy' are undefined */
     ts = *list;
     while !ts.is_null() {
-        if l == (*ts).shrlen as libc::c_ulong
+        if l == (*ts).shrlen as lua_ulong
             && memcmp(
-                str as *const libc::c_void,
-                (ts as *mut libc::c_char)
-                    .offset(::std::mem::size_of::<UTString>() as libc::c_ulong as isize)
-                    as *const libc::c_void,
-                l.wrapping_mul(::std::mem::size_of::<libc::c_char>() as libc::c_ulong),
+                str as *const lua_void,
+                (ts as *mut lua_char)
+                    .offset(::std::mem::size_of::<UTString>() as lua_ulong as isize)
+                    as *const lua_void,
+                l.wrapping_mul(::std::mem::size_of::<lua_char>() as lua_ulong),
             ) == 0i32
         {
             /* found! */
             /* dead (but not collected yet)? */
-            if 0 == ((*ts).marked as libc::c_int ^ (1i32 << 0i32 | 1i32 << 1i32))
-                & ((*g).currentwhite as libc::c_int ^ (1i32 << 0i32 | 1i32 << 1i32))
+            if 0 == ((*ts).marked as lua_int ^ (1i32 << 0i32 | 1i32 << 1i32))
+                & ((*g).currentwhite as lua_int ^ (1i32 << 0i32 | 1i32 << 1i32))
             {
                 /* resurrect it */
                 (*ts).marked =
-                    ((*ts).marked as libc::c_int ^ (1i32 << 0i32 | 1i32 << 1i32)) as lu_byte
+                    ((*ts).marked as lua_int ^ (1i32 << 0i32 | 1i32 << 1i32)) as lu_byte
             }
             return ts;
         } else {
@@ -1017,16 +1017,16 @@ unsafe extern "C" fn internshrstr(
         list = &mut *(*g)
             .strt
             .hash
-            .offset((h & ((*g).strt.size - 1i32) as libc::c_uint) as libc::c_int as isize)
+            .offset((h & ((*g).strt.size - 1i32) as lua_uint) as lua_int as isize)
             as *mut *mut TString
     }
     ts = createstrobj(L, l, 4i32 | 0i32 << 4i32, h);
     memcpy(
-        (ts as *mut libc::c_char)
-            .offset(::std::mem::size_of::<UTString>() as libc::c_ulong as isize)
-            as *mut libc::c_void,
-        str as *const libc::c_void,
-        l.wrapping_mul(::std::mem::size_of::<libc::c_char>() as libc::c_ulong),
+        (ts as *mut lua_char)
+            .offset(::std::mem::size_of::<UTString>() as lua_ulong as isize)
+            as *mut lua_void,
+        str as *const lua_void,
+        l.wrapping_mul(::std::mem::size_of::<lua_char>() as lua_ulong),
     );
     (*ts).shrlen = l as lu_byte;
     (*ts).u.hnext = *list;
@@ -1039,7 +1039,7 @@ pub unsafe extern "C" fn luaS_remove(mut L: *mut lua_State, mut ts: *mut TString
     let mut tb: *mut stringtable = &mut (*(*L).l_G).strt;
     let mut p: *mut *mut TString = &mut *(*tb)
         .hash
-        .offset(((*ts).hash & ((*tb).size - 1i32) as libc::c_uint) as libc::c_int as isize)
+        .offset(((*ts).hash & ((*tb).size - 1i32) as lua_uint) as lua_int as isize)
         as *mut *mut TString;
     /* find previous element */
     while *p != ts {
@@ -1053,21 +1053,21 @@ pub unsafe extern "C" fn luaS_remove(mut L: *mut lua_State, mut ts: *mut TString
 pub unsafe extern "C" fn luaS_newudata(mut L: *mut lua_State, mut s: size_t) -> *mut Udata {
     let mut u: *mut Udata = 0 as *mut Udata;
     let mut o: *mut GCObject = 0 as *mut GCObject;
-    if s > if (::std::mem::size_of::<size_t>() as libc::c_ulong)
-        < ::std::mem::size_of::<lua_Integer>() as libc::c_ulong
+    if s > if (::std::mem::size_of::<size_t>() as lua_ulong)
+        < ::std::mem::size_of::<lua_Integer>() as lua_ulong
     {
         !(0i32 as size_t)
     } else {
         9223372036854775807i64 as size_t
     }
-    .wrapping_sub(::std::mem::size_of::<Udata>() as libc::c_ulong)
+    .wrapping_sub(::std::mem::size_of::<Udata>() as lua_ulong)
     {
         luaM_toobig(L);
     } else {
         o = luaC_newobj(
             L,
             7i32,
-            (::std::mem::size_of::<UUdata>() as libc::c_ulong).wrapping_add(s),
+            (::std::mem::size_of::<UUdata>() as lua_ulong).wrapping_add(s),
         );
         u = &mut (*(o as *mut GCUnion)).u;
         (*u).len = s;
@@ -1082,23 +1082,23 @@ pub unsafe extern "C" fn luaS_newudata(mut L: *mut lua_State, mut s: size_t) -> 
 #[no_mangle]
 pub unsafe extern "C" fn luaS_new(
     mut L: *mut lua_State,
-    mut str: *const libc::c_char,
+    mut str: *const lua_char,
 ) -> *mut TString {
     /* hash */
-    let mut i: libc::c_uint = ((str as size_t
-        & (2147483647i32 as libc::c_uint)
+    let mut i: lua_uint = ((str as size_t
+        & (2147483647i32 as lua_uint)
             .wrapping_mul(2u32)
-            .wrapping_add(1u32) as libc::c_ulong) as libc::c_uint)
-        .wrapping_rem(53i32 as libc::c_uint);
-    let mut j: libc::c_int = 0;
+            .wrapping_add(1u32) as lua_ulong) as lua_uint)
+        .wrapping_rem(53i32 as lua_uint);
+    let mut j: lua_int = 0;
     let mut p: *mut *mut TString = (*(*L).l_G).strcache[i as usize].as_mut_ptr();
     j = 0i32;
     while j < 2i32 {
         /* hit? */
         if strcmp(
             str,
-            (*p.offset(j as isize) as *mut libc::c_char)
-                .offset(::std::mem::size_of::<UTString>() as libc::c_ulong as isize),
+            (*p.offset(j as isize) as *mut lua_char)
+                .offset(::std::mem::size_of::<UTString>() as lua_ulong as isize),
         ) == 0i32
         {
             /* that is it */

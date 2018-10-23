@@ -1,4 +1,4 @@
-use libc;
+use types::*;
 extern "C" {
     /*
      ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
@@ -16,7 +16,7 @@ extern "C" {
     /* thread status */
     pub type lua_State;
     #[no_mangle]
-    fn lua_settop(L: *mut lua_State, idx: libc::c_int) -> ();
+    fn lua_settop(L: *mut lua_State, idx: lua_int) -> ();
     /*
      ** $Id: lualib.h,v 1.45.1.1 2017/04/19 17:20:42 roberto Exp $
      ** Lua standard libraries
@@ -24,39 +24,39 @@ extern "C" {
      */
     /* version suffix for environment variable names */
     #[no_mangle]
-    fn luaopen_base(L: *mut lua_State) -> libc::c_int;
+    fn luaopen_base(L: *mut lua_State) -> lua_int;
     #[no_mangle]
-    fn luaopen_coroutine(L: *mut lua_State) -> libc::c_int;
+    fn luaopen_coroutine(L: *mut lua_State) -> lua_int;
     #[no_mangle]
-    fn luaopen_table(L: *mut lua_State) -> libc::c_int;
+    fn luaopen_table(L: *mut lua_State) -> lua_int;
     #[no_mangle]
-    fn luaopen_io(L: *mut lua_State) -> libc::c_int;
+    fn luaopen_io(L: *mut lua_State) -> lua_int;
     #[no_mangle]
-    fn luaopen_os(L: *mut lua_State) -> libc::c_int;
+    fn luaopen_os(L: *mut lua_State) -> lua_int;
     #[no_mangle]
-    fn luaopen_string(L: *mut lua_State) -> libc::c_int;
+    fn luaopen_string(L: *mut lua_State) -> lua_int;
     #[no_mangle]
-    fn luaopen_utf8(L: *mut lua_State) -> libc::c_int;
+    fn luaopen_utf8(L: *mut lua_State) -> lua_int;
     #[no_mangle]
-    fn luaopen_bit32(L: *mut lua_State) -> libc::c_int;
+    fn luaopen_bit32(L: *mut lua_State) -> lua_int;
     #[no_mangle]
-    fn luaopen_math(L: *mut lua_State) -> libc::c_int;
+    fn luaopen_math(L: *mut lua_State) -> lua_int;
     #[no_mangle]
-    fn luaopen_debug(L: *mut lua_State) -> libc::c_int;
+    fn luaopen_debug(L: *mut lua_State) -> lua_int;
     #[no_mangle]
-    fn luaopen_package(L: *mut lua_State) -> libc::c_int;
+    fn luaopen_package(L: *mut lua_State) -> lua_int;
     #[no_mangle]
     fn luaL_requiref(
         L: *mut lua_State,
-        modname: *const libc::c_char,
+        modname: *const lua_char,
         openf: lua_CFunction,
-        glb: libc::c_int,
+        glb: lua_int,
     ) -> ();
 }
 /*
 ** Type for C functions registered with Lua
 */
-pub type lua_CFunction = Option<unsafe extern "C" fn(_: *mut lua_State) -> libc::c_int>;
+pub type lua_CFunction = Option<unsafe extern "C" fn(_: *mut lua_State) -> lua_int>;
 /*
 ** $Id: lauxlib.h,v 1.131.1.1 2017/04/19 17:20:42 roberto Exp $
 ** Auxiliary functions for building Lua libraries
@@ -68,7 +68,7 @@ pub type lua_CFunction = Option<unsafe extern "C" fn(_: *mut lua_State) -> libc:
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct luaL_Reg {
-    pub name: *const libc::c_char,
+    pub name: *const lua_char,
     pub func: lua_CFunction,
 }
 /* open all previous libraries */

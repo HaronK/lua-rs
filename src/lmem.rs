@@ -1,4 +1,4 @@
-use libc;
+use types::*;
 extern "C" {
     /*
      ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
@@ -44,16 +44,16 @@ extern "C" {
      */
     pub type UpVal;
     #[no_mangle]
-    fn luaG_runerror(L: *mut lua_State, fmt: *const libc::c_char, ...) -> !;
+    fn luaG_runerror(L: *mut lua_State, fmt: *const lua_char, ...) -> !;
     #[no_mangle]
-    fn luaD_throw(L: *mut lua_State, errcode: libc::c_int) -> !;
+    fn luaD_throw(L: *mut lua_State, errcode: lua_int) -> !;
     #[no_mangle]
-    fn luaC_fullgc(L: *mut lua_State, isemergency: libc::c_int) -> ();
+    fn luaC_fullgc(L: *mut lua_State, isemergency: lua_int) -> ();
 }
-pub type ptrdiff_t = libc::c_long;
-pub type size_t = libc::c_ulong;
-pub type __sig_atomic_t = libc::c_int;
-pub type intptr_t = libc::c_long;
+pub type ptrdiff_t = lua_long;
+pub type size_t = lua_ulong;
+pub type __sig_atomic_t = lua_int;
+pub type intptr_t = lua_long;
 /*
 ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
 ** Lua - A Scripting Language
@@ -74,7 +74,7 @@ pub struct lua_State {
     pub next: *mut GCObject,
     pub tt: lu_byte,
     pub marked: lu_byte,
-    pub nci: libc::c_ushort,
+    pub nci: lua_ushort,
     pub status: lu_byte,
     pub top: StkId,
     pub l_G: *mut global_State,
@@ -89,11 +89,11 @@ pub struct lua_State {
     pub base_ci: CallInfo,
     pub hook: lua_Hook,
     pub errfunc: ptrdiff_t,
-    pub stacksize: libc::c_int,
-    pub basehookcount: libc::c_int,
-    pub hookcount: libc::c_int,
-    pub nny: libc::c_ushort,
-    pub nCcalls: libc::c_ushort,
+    pub stacksize: lua_int,
+    pub basehookcount: lua_int,
+    pub hookcount: lua_int,
+    pub nny: lua_ushort,
+    pub nCcalls: lua_ushort,
     pub hookmask: sig_atomic_t,
     pub allowhook: lu_byte,
 }
@@ -101,7 +101,7 @@ pub struct lua_State {
 /* }{ */
 /* } */
 /* chars used as small naturals (so that 'char' is reserved for characters) */
-pub type lu_byte = libc::c_uchar;
+pub type lu_byte = lua_uchar;
 pub type sig_atomic_t = __sig_atomic_t;
 /* Functions to be called by the debugger in specific events */
 pub type lua_Hook = Option<unsafe extern "C" fn(_: *mut lua_State, _: *mut lua_Debug) -> ()>;
@@ -131,19 +131,19 @@ pub type lua_Hook = Option<unsafe extern "C" fn(_: *mut lua_State, _: *mut lua_D
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct lua_Debug {
-    pub event: libc::c_int,
-    pub name: *const libc::c_char,
-    pub namewhat: *const libc::c_char,
-    pub what: *const libc::c_char,
-    pub source: *const libc::c_char,
-    pub currentline: libc::c_int,
-    pub linedefined: libc::c_int,
-    pub lastlinedefined: libc::c_int,
-    pub nups: libc::c_uchar,
-    pub nparams: libc::c_uchar,
-    pub isvararg: libc::c_char,
-    pub istailcall: libc::c_char,
-    pub short_src: [libc::c_char; 60],
+    pub event: lua_int,
+    pub name: *const lua_char,
+    pub namewhat: *const lua_char,
+    pub what: *const lua_char,
+    pub source: *const lua_char,
+    pub currentline: lua_int,
+    pub linedefined: lua_int,
+    pub lastlinedefined: lua_int,
+    pub nups: lua_uchar,
+    pub nparams: lua_uchar,
+    pub isvararg: lua_char,
+    pub istailcall: lua_char,
+    pub short_src: [lua_char; 60],
     pub i_ci: *mut CallInfo,
 }
 /* private part */
@@ -156,8 +156,8 @@ pub struct CallInfo {
     pub next: *mut CallInfo,
     pub u: unnamed,
     pub extra: ptrdiff_t,
-    pub nresults: libc::c_short,
-    pub callstatus: libc::c_ushort,
+    pub nresults: lua_short,
+    pub callstatus: lua_ushort,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -179,7 +179,7 @@ pub type lua_KContext = intptr_t;
 ** Type for continuation functions
 */
 pub type lua_KFunction =
-    Option<unsafe extern "C" fn(_: *mut lua_State, _: libc::c_int, _: lua_KContext) -> libc::c_int>;
+    Option<unsafe extern "C" fn(_: *mut lua_State, _: lua_int, _: lua_KContext) -> lua_int>;
 /* only for Lua functions */
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -210,7 +210,7 @@ pub struct unnamed_1 {
 ** type for virtual-machine instructions;
 ** must be an unsigned with (at least) 4 bytes (see details in lopcodes.h)
 */
-pub type Instruction = libc::c_uint;
+pub type Instruction = lua_uint;
 /* macro defining a nil value */
 /* raw type tag of a TValue */
 /* tag with no variants (bits 0-3) */
@@ -241,7 +241,7 @@ pub type TValue = lua_TValue;
 #[repr(C)]
 pub struct lua_TValue {
     pub value_: Value,
-    pub tt_: libc::c_int,
+    pub tt_: lua_int,
 }
 /*
 ** Tagged Values. This is the basic representation of values in Lua,
@@ -254,8 +254,8 @@ pub struct lua_TValue {
 #[repr(C)]
 pub union Value {
     pub gc: *mut GCObject,
-    pub p: *mut libc::c_void,
-    pub b: libc::c_int,
+    pub p: *mut lua_void,
+    pub b: lua_int,
     pub f: lua_CFunction,
     pub i: lua_Integer,
     pub n: lua_Number,
@@ -266,13 +266,13 @@ pub union Value {
 /* minimum Lua stack available to a C function */
 /* predefined values in the registry */
 /* type of numbers in Lua */
-pub type lua_Number = libc::c_double;
+pub type lua_Number = lua_double;
 /* type for integer functions */
-pub type lua_Integer = libc::c_longlong;
+pub type lua_Integer = lua_longlong;
 /*
 ** Type for C functions registered with Lua
 */
-pub type lua_CFunction = Option<unsafe extern "C" fn(_: *mut lua_State) -> libc::c_int>;
+pub type lua_CFunction = Option<unsafe extern "C" fn(_: *mut lua_State) -> lua_int>;
 /*
 ** $Id: lobject.h,v 2.117.1.1 2017/04/19 17:39:34 roberto Exp $
 ** Type definitions for Lua objects
@@ -341,14 +341,14 @@ of luaV_execute */
 #[repr(C)]
 pub struct global_State {
     pub frealloc: lua_Alloc,
-    pub ud: *mut libc::c_void,
+    pub ud: *mut lua_void,
     pub totalbytes: l_mem,
     pub GCdebt: l_mem,
     pub GCmemtrav: lu_mem,
     pub GCestimate: lu_mem,
     pub strt: stringtable,
     pub l_registry: TValue,
-    pub seed: libc::c_uint,
+    pub seed: lua_uint,
     pub currentwhite: lu_byte,
     pub gcstate: lu_byte,
     pub gckind: lu_byte,
@@ -364,9 +364,9 @@ pub struct global_State {
     pub tobefnz: *mut GCObject,
     pub fixedgc: *mut GCObject,
     pub twups: *mut lua_State,
-    pub gcfinnum: libc::c_uint,
-    pub gcpause: libc::c_int,
-    pub gcstepmul: libc::c_int,
+    pub gcfinnum: lua_uint,
+    pub gcpause: lua_int,
+    pub gcstepmul: lua_int,
     pub panic: lua_CFunction,
     pub mainthread: *mut lua_State,
     pub version: *const lua_Number,
@@ -387,7 +387,7 @@ pub struct TString {
     pub marked: lu_byte,
     pub extra: lu_byte,
     pub shrlen: lu_byte,
-    pub hash: libc::c_uint,
+    pub hash: lua_uint,
     pub u: unnamed_2,
 }
 #[derive(Copy, Clone)]
@@ -404,7 +404,7 @@ pub struct Table {
     pub marked: lu_byte,
     pub flags: lu_byte,
     pub lsizenode: lu_byte,
-    pub sizearray: libc::c_uint,
+    pub sizearray: lua_uint,
     pub array: *mut TValue,
     pub node: *mut Node,
     pub lastfree: *mut Node,
@@ -431,8 +431,8 @@ pub union TKey {
 #[repr(C)]
 pub struct unnamed_3 {
     pub value_: Value,
-    pub tt_: libc::c_int,
-    pub next: libc::c_int,
+    pub tt_: lua_int,
+    pub next: lua_int,
 }
 /*
 ** Atomic type (relative to signals) to better ensure that 'lua_sethook'
@@ -445,8 +445,8 @@ pub struct unnamed_3 {
 #[repr(C)]
 pub struct stringtable {
     pub hash: *mut *mut TString,
-    pub nuse: libc::c_int,
-    pub size: libc::c_int,
+    pub nuse: lua_int,
+    pub size: lua_int,
 }
 /*
 ** $Id: llimits.h,v 1.141.1.1 2017/04/19 17:20:42 roberto Exp $
@@ -466,8 +466,8 @@ pub type l_mem = ptrdiff_t;
 ** Type for memory-allocation functions
 */
 pub type lua_Alloc = Option<
-    unsafe extern "C" fn(_: *mut libc::c_void, _: *mut libc::c_void, _: size_t, _: size_t)
-        -> *mut libc::c_void,
+    unsafe extern "C" fn(_: *mut lua_void, _: *mut lua_void, _: size_t, _: size_t)
+        -> *mut lua_void,
 >;
 /*
 ** $Id: lmem.h,v 1.43.1.1 2017/04/19 17:20:42 roberto Exp $
@@ -498,19 +498,19 @@ pub unsafe extern "C" fn luaM_toobig(mut L: *mut lua_State) -> ! {
 #[no_mangle]
 pub unsafe extern "C" fn luaM_realloc_(
     mut L: *mut lua_State,
-    mut block: *mut libc::c_void,
+    mut block: *mut lua_void,
     mut osize: size_t,
     mut nsize: size_t,
-) -> *mut libc::c_void {
-    let mut newblock: *mut libc::c_void = 0 as *mut libc::c_void;
+) -> *mut lua_void {
+    let mut newblock: *mut lua_void = 0 as *mut lua_void;
     let mut g: *mut global_State = (*L).l_G;
     let mut realosize: size_t = if !block.is_null() {
         osize
     } else {
-        0i32 as libc::c_ulong
+        0i32 as lua_ulong
     };
     newblock = (*g).frealloc.expect("non-null function pointer")((*g).ud, block, osize, nsize);
-    if newblock.is_null() && nsize > 0i32 as libc::c_ulong {
+    if newblock.is_null() && nsize > 0i32 as lua_ulong {
         /* cannot fail when shrinking a block */
         if !(*g).version.is_null() {
             /* is state fully built? */
@@ -524,7 +524,7 @@ pub unsafe extern "C" fn luaM_realloc_(
             luaD_throw(L, 4i32);
         }
     }
-    (*g).GCdebt = ((*g).GCdebt as libc::c_ulong)
+    (*g).GCdebt = ((*g).GCdebt as lua_ulong)
         .wrapping_add(nsize)
         .wrapping_sub(realosize) as l_mem;
     return newblock;
@@ -532,14 +532,14 @@ pub unsafe extern "C" fn luaM_realloc_(
 #[no_mangle]
 pub unsafe extern "C" fn luaM_growaux_(
     mut L: *mut lua_State,
-    mut block: *mut libc::c_void,
-    mut size: *mut libc::c_int,
+    mut block: *mut lua_void,
+    mut size: *mut lua_int,
     mut size_elems: size_t,
-    mut limit: libc::c_int,
-    mut what: *const libc::c_char,
-) -> *mut libc::c_void {
-    let mut newblock: *mut libc::c_void = 0 as *mut libc::c_void;
-    let mut newsize: libc::c_int = 0;
+    mut limit: lua_int,
+    mut what: *const lua_char,
+) -> *mut lua_void {
+    let mut newblock: *mut lua_void = 0 as *mut lua_void;
+    let mut newsize: lua_int = 0;
     if *size >= limit / 2i32 {
         /* cannot double it? */
         /* cannot grow even a little? */
@@ -555,9 +555,9 @@ pub unsafe extern "C" fn luaM_growaux_(
             newsize = 4i32
         }
     }
-    if ::std::mem::size_of::<libc::c_int>() as libc::c_ulong
-        >= ::std::mem::size_of::<size_t>() as libc::c_ulong
-        && (newsize as size_t).wrapping_add(1i32 as libc::c_ulong)
+    if ::std::mem::size_of::<lua_int>() as lua_ulong
+        >= ::std::mem::size_of::<size_t>() as lua_ulong
+        && (newsize as size_t).wrapping_add(1i32 as lua_ulong)
             > (!(0i32 as size_t)).wrapping_div(size_elems)
     {
         luaM_toobig(L);
@@ -566,8 +566,8 @@ pub unsafe extern "C" fn luaM_growaux_(
     newblock = luaM_realloc_(
         L,
         block,
-        (*size as libc::c_ulong).wrapping_mul(size_elems),
-        (newsize as libc::c_ulong).wrapping_mul(size_elems),
+        (*size as lua_ulong).wrapping_mul(size_elems),
+        (newsize as lua_ulong).wrapping_mul(size_elems),
     );
     /* update only when everything else is OK */
     *size = newsize;

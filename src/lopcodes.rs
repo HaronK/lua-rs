@@ -1,9 +1,9 @@
-use libc;
+use types::*;
 /* 16-bit ints */
 /* }{ */
 /* } */
 /* chars used as small naturals (so that 'char' is reserved for characters) */
-pub type lu_byte = libc::c_uchar;
+pub type lu_byte = lua_uchar;
 /*
 ** $Id: lopcodes.h,v 1.149.1.1 2017/04/19 17:20:42 roberto Exp $
 ** Opcodes for Lua virtual machine
@@ -26,7 +26,7 @@ pub type lu_byte = libc::c_uchar;
   represented by 2*max), which is half the maximum for the corresponding
   unsigned argument.
 ===========================================================================*/
-pub type OpMode = libc::c_uint;
+pub type OpMode = lua_uint;
 /* basic instruction format */
 pub const iAx: OpMode = 3;
 pub const iAsBx: OpMode = 2;
@@ -62,7 +62,7 @@ pub const iABC: OpMode = 0;
 ** bit 6: instruction set register A
 ** bit 7: operator is a test (next instruction must be a jump)
 */
-pub type OpArgMask = libc::c_uint;
+pub type OpArgMask = lua_uint;
 /* argument is a constant or register/constant */
 pub const OpArgK: OpArgMask = 3;
 /* argument is a register or a jump offset */
@@ -75,243 +75,243 @@ pub const OpArgN: OpArgMask = 0;
 pub static mut luaP_opmodes: [lu_byte; 47] = [
     (0i32 << 7i32
         | 1i32 << 6i32
-        | (OpArgR as libc::c_int) << 4i32
-        | (OpArgN as libc::c_int) << 2i32
-        | iABC as libc::c_int) as lu_byte,
+        | (OpArgR as lua_int) << 4i32
+        | (OpArgN as lua_int) << 2i32
+        | iABC as lua_int) as lu_byte,
     (0i32 << 7i32
         | 1i32 << 6i32
-        | (OpArgK as libc::c_int) << 4i32
-        | (OpArgN as libc::c_int) << 2i32
-        | iABx as libc::c_int) as lu_byte,
+        | (OpArgK as lua_int) << 4i32
+        | (OpArgN as lua_int) << 2i32
+        | iABx as lua_int) as lu_byte,
     (0i32 << 7i32
         | 1i32 << 6i32
-        | (OpArgN as libc::c_int) << 4i32
-        | (OpArgN as libc::c_int) << 2i32
-        | iABx as libc::c_int) as lu_byte,
+        | (OpArgN as lua_int) << 4i32
+        | (OpArgN as lua_int) << 2i32
+        | iABx as lua_int) as lu_byte,
     (0i32 << 7i32
         | 1i32 << 6i32
-        | (OpArgU as libc::c_int) << 4i32
-        | (OpArgU as libc::c_int) << 2i32
-        | iABC as libc::c_int) as lu_byte,
+        | (OpArgU as lua_int) << 4i32
+        | (OpArgU as lua_int) << 2i32
+        | iABC as lua_int) as lu_byte,
     (0i32 << 7i32
         | 1i32 << 6i32
-        | (OpArgU as libc::c_int) << 4i32
-        | (OpArgN as libc::c_int) << 2i32
-        | iABC as libc::c_int) as lu_byte,
+        | (OpArgU as lua_int) << 4i32
+        | (OpArgN as lua_int) << 2i32
+        | iABC as lua_int) as lu_byte,
     (0i32 << 7i32
         | 1i32 << 6i32
-        | (OpArgU as libc::c_int) << 4i32
-        | (OpArgN as libc::c_int) << 2i32
-        | iABC as libc::c_int) as lu_byte,
+        | (OpArgU as lua_int) << 4i32
+        | (OpArgN as lua_int) << 2i32
+        | iABC as lua_int) as lu_byte,
     (0i32 << 7i32
         | 1i32 << 6i32
-        | (OpArgU as libc::c_int) << 4i32
-        | (OpArgK as libc::c_int) << 2i32
-        | iABC as libc::c_int) as lu_byte,
+        | (OpArgU as lua_int) << 4i32
+        | (OpArgK as lua_int) << 2i32
+        | iABC as lua_int) as lu_byte,
     (0i32 << 7i32
         | 1i32 << 6i32
-        | (OpArgR as libc::c_int) << 4i32
-        | (OpArgK as libc::c_int) << 2i32
-        | iABC as libc::c_int) as lu_byte,
+        | (OpArgR as lua_int) << 4i32
+        | (OpArgK as lua_int) << 2i32
+        | iABC as lua_int) as lu_byte,
     (0i32 << 7i32
         | 0i32 << 6i32
-        | (OpArgK as libc::c_int) << 4i32
-        | (OpArgK as libc::c_int) << 2i32
-        | iABC as libc::c_int) as lu_byte,
+        | (OpArgK as lua_int) << 4i32
+        | (OpArgK as lua_int) << 2i32
+        | iABC as lua_int) as lu_byte,
     (0i32 << 7i32
         | 0i32 << 6i32
-        | (OpArgU as libc::c_int) << 4i32
-        | (OpArgN as libc::c_int) << 2i32
-        | iABC as libc::c_int) as lu_byte,
+        | (OpArgU as lua_int) << 4i32
+        | (OpArgN as lua_int) << 2i32
+        | iABC as lua_int) as lu_byte,
     (0i32 << 7i32
         | 0i32 << 6i32
-        | (OpArgK as libc::c_int) << 4i32
-        | (OpArgK as libc::c_int) << 2i32
-        | iABC as libc::c_int) as lu_byte,
+        | (OpArgK as lua_int) << 4i32
+        | (OpArgK as lua_int) << 2i32
+        | iABC as lua_int) as lu_byte,
     (0i32 << 7i32
         | 1i32 << 6i32
-        | (OpArgU as libc::c_int) << 4i32
-        | (OpArgU as libc::c_int) << 2i32
-        | iABC as libc::c_int) as lu_byte,
+        | (OpArgU as lua_int) << 4i32
+        | (OpArgU as lua_int) << 2i32
+        | iABC as lua_int) as lu_byte,
     (0i32 << 7i32
         | 1i32 << 6i32
-        | (OpArgR as libc::c_int) << 4i32
-        | (OpArgK as libc::c_int) << 2i32
-        | iABC as libc::c_int) as lu_byte,
+        | (OpArgR as lua_int) << 4i32
+        | (OpArgK as lua_int) << 2i32
+        | iABC as lua_int) as lu_byte,
     (0i32 << 7i32
         | 1i32 << 6i32
-        | (OpArgK as libc::c_int) << 4i32
-        | (OpArgK as libc::c_int) << 2i32
-        | iABC as libc::c_int) as lu_byte,
+        | (OpArgK as lua_int) << 4i32
+        | (OpArgK as lua_int) << 2i32
+        | iABC as lua_int) as lu_byte,
     (0i32 << 7i32
         | 1i32 << 6i32
-        | (OpArgK as libc::c_int) << 4i32
-        | (OpArgK as libc::c_int) << 2i32
-        | iABC as libc::c_int) as lu_byte,
+        | (OpArgK as lua_int) << 4i32
+        | (OpArgK as lua_int) << 2i32
+        | iABC as lua_int) as lu_byte,
     (0i32 << 7i32
         | 1i32 << 6i32
-        | (OpArgK as libc::c_int) << 4i32
-        | (OpArgK as libc::c_int) << 2i32
-        | iABC as libc::c_int) as lu_byte,
+        | (OpArgK as lua_int) << 4i32
+        | (OpArgK as lua_int) << 2i32
+        | iABC as lua_int) as lu_byte,
     (0i32 << 7i32
         | 1i32 << 6i32
-        | (OpArgK as libc::c_int) << 4i32
-        | (OpArgK as libc::c_int) << 2i32
-        | iABC as libc::c_int) as lu_byte,
+        | (OpArgK as lua_int) << 4i32
+        | (OpArgK as lua_int) << 2i32
+        | iABC as lua_int) as lu_byte,
     (0i32 << 7i32
         | 1i32 << 6i32
-        | (OpArgK as libc::c_int) << 4i32
-        | (OpArgK as libc::c_int) << 2i32
-        | iABC as libc::c_int) as lu_byte,
+        | (OpArgK as lua_int) << 4i32
+        | (OpArgK as lua_int) << 2i32
+        | iABC as lua_int) as lu_byte,
     (0i32 << 7i32
         | 1i32 << 6i32
-        | (OpArgK as libc::c_int) << 4i32
-        | (OpArgK as libc::c_int) << 2i32
-        | iABC as libc::c_int) as lu_byte,
+        | (OpArgK as lua_int) << 4i32
+        | (OpArgK as lua_int) << 2i32
+        | iABC as lua_int) as lu_byte,
     (0i32 << 7i32
         | 1i32 << 6i32
-        | (OpArgK as libc::c_int) << 4i32
-        | (OpArgK as libc::c_int) << 2i32
-        | iABC as libc::c_int) as lu_byte,
+        | (OpArgK as lua_int) << 4i32
+        | (OpArgK as lua_int) << 2i32
+        | iABC as lua_int) as lu_byte,
     (0i32 << 7i32
         | 1i32 << 6i32
-        | (OpArgK as libc::c_int) << 4i32
-        | (OpArgK as libc::c_int) << 2i32
-        | iABC as libc::c_int) as lu_byte,
+        | (OpArgK as lua_int) << 4i32
+        | (OpArgK as lua_int) << 2i32
+        | iABC as lua_int) as lu_byte,
     (0i32 << 7i32
         | 1i32 << 6i32
-        | (OpArgK as libc::c_int) << 4i32
-        | (OpArgK as libc::c_int) << 2i32
-        | iABC as libc::c_int) as lu_byte,
+        | (OpArgK as lua_int) << 4i32
+        | (OpArgK as lua_int) << 2i32
+        | iABC as lua_int) as lu_byte,
     (0i32 << 7i32
         | 1i32 << 6i32
-        | (OpArgK as libc::c_int) << 4i32
-        | (OpArgK as libc::c_int) << 2i32
-        | iABC as libc::c_int) as lu_byte,
+        | (OpArgK as lua_int) << 4i32
+        | (OpArgK as lua_int) << 2i32
+        | iABC as lua_int) as lu_byte,
     (0i32 << 7i32
         | 1i32 << 6i32
-        | (OpArgK as libc::c_int) << 4i32
-        | (OpArgK as libc::c_int) << 2i32
-        | iABC as libc::c_int) as lu_byte,
+        | (OpArgK as lua_int) << 4i32
+        | (OpArgK as lua_int) << 2i32
+        | iABC as lua_int) as lu_byte,
     (0i32 << 7i32
         | 1i32 << 6i32
-        | (OpArgK as libc::c_int) << 4i32
-        | (OpArgK as libc::c_int) << 2i32
-        | iABC as libc::c_int) as lu_byte,
+        | (OpArgK as lua_int) << 4i32
+        | (OpArgK as lua_int) << 2i32
+        | iABC as lua_int) as lu_byte,
     (0i32 << 7i32
         | 1i32 << 6i32
-        | (OpArgR as libc::c_int) << 4i32
-        | (OpArgN as libc::c_int) << 2i32
-        | iABC as libc::c_int) as lu_byte,
+        | (OpArgR as lua_int) << 4i32
+        | (OpArgN as lua_int) << 2i32
+        | iABC as lua_int) as lu_byte,
     (0i32 << 7i32
         | 1i32 << 6i32
-        | (OpArgR as libc::c_int) << 4i32
-        | (OpArgN as libc::c_int) << 2i32
-        | iABC as libc::c_int) as lu_byte,
+        | (OpArgR as lua_int) << 4i32
+        | (OpArgN as lua_int) << 2i32
+        | iABC as lua_int) as lu_byte,
     (0i32 << 7i32
         | 1i32 << 6i32
-        | (OpArgR as libc::c_int) << 4i32
-        | (OpArgN as libc::c_int) << 2i32
-        | iABC as libc::c_int) as lu_byte,
+        | (OpArgR as lua_int) << 4i32
+        | (OpArgN as lua_int) << 2i32
+        | iABC as lua_int) as lu_byte,
     (0i32 << 7i32
         | 1i32 << 6i32
-        | (OpArgR as libc::c_int) << 4i32
-        | (OpArgN as libc::c_int) << 2i32
-        | iABC as libc::c_int) as lu_byte,
+        | (OpArgR as lua_int) << 4i32
+        | (OpArgN as lua_int) << 2i32
+        | iABC as lua_int) as lu_byte,
     (0i32 << 7i32
         | 1i32 << 6i32
-        | (OpArgR as libc::c_int) << 4i32
-        | (OpArgR as libc::c_int) << 2i32
-        | iABC as libc::c_int) as lu_byte,
+        | (OpArgR as lua_int) << 4i32
+        | (OpArgR as lua_int) << 2i32
+        | iABC as lua_int) as lu_byte,
     (0i32 << 7i32
         | 0i32 << 6i32
-        | (OpArgR as libc::c_int) << 4i32
-        | (OpArgN as libc::c_int) << 2i32
-        | iAsBx as libc::c_int) as lu_byte,
+        | (OpArgR as lua_int) << 4i32
+        | (OpArgN as lua_int) << 2i32
+        | iAsBx as lua_int) as lu_byte,
     (1i32 << 7i32
         | 0i32 << 6i32
-        | (OpArgK as libc::c_int) << 4i32
-        | (OpArgK as libc::c_int) << 2i32
-        | iABC as libc::c_int) as lu_byte,
+        | (OpArgK as lua_int) << 4i32
+        | (OpArgK as lua_int) << 2i32
+        | iABC as lua_int) as lu_byte,
     (1i32 << 7i32
         | 0i32 << 6i32
-        | (OpArgK as libc::c_int) << 4i32
-        | (OpArgK as libc::c_int) << 2i32
-        | iABC as libc::c_int) as lu_byte,
+        | (OpArgK as lua_int) << 4i32
+        | (OpArgK as lua_int) << 2i32
+        | iABC as lua_int) as lu_byte,
     (1i32 << 7i32
         | 0i32 << 6i32
-        | (OpArgK as libc::c_int) << 4i32
-        | (OpArgK as libc::c_int) << 2i32
-        | iABC as libc::c_int) as lu_byte,
+        | (OpArgK as lua_int) << 4i32
+        | (OpArgK as lua_int) << 2i32
+        | iABC as lua_int) as lu_byte,
     (1i32 << 7i32
         | 0i32 << 6i32
-        | (OpArgN as libc::c_int) << 4i32
-        | (OpArgU as libc::c_int) << 2i32
-        | iABC as libc::c_int) as lu_byte,
+        | (OpArgN as lua_int) << 4i32
+        | (OpArgU as lua_int) << 2i32
+        | iABC as lua_int) as lu_byte,
     (1i32 << 7i32
         | 1i32 << 6i32
-        | (OpArgR as libc::c_int) << 4i32
-        | (OpArgU as libc::c_int) << 2i32
-        | iABC as libc::c_int) as lu_byte,
+        | (OpArgR as lua_int) << 4i32
+        | (OpArgU as lua_int) << 2i32
+        | iABC as lua_int) as lu_byte,
     (0i32 << 7i32
         | 1i32 << 6i32
-        | (OpArgU as libc::c_int) << 4i32
-        | (OpArgU as libc::c_int) << 2i32
-        | iABC as libc::c_int) as lu_byte,
+        | (OpArgU as lua_int) << 4i32
+        | (OpArgU as lua_int) << 2i32
+        | iABC as lua_int) as lu_byte,
     (0i32 << 7i32
         | 1i32 << 6i32
-        | (OpArgU as libc::c_int) << 4i32
-        | (OpArgU as libc::c_int) << 2i32
-        | iABC as libc::c_int) as lu_byte,
+        | (OpArgU as lua_int) << 4i32
+        | (OpArgU as lua_int) << 2i32
+        | iABC as lua_int) as lu_byte,
     (0i32 << 7i32
         | 0i32 << 6i32
-        | (OpArgU as libc::c_int) << 4i32
-        | (OpArgN as libc::c_int) << 2i32
-        | iABC as libc::c_int) as lu_byte,
+        | (OpArgU as lua_int) << 4i32
+        | (OpArgN as lua_int) << 2i32
+        | iABC as lua_int) as lu_byte,
     (0i32 << 7i32
         | 1i32 << 6i32
-        | (OpArgR as libc::c_int) << 4i32
-        | (OpArgN as libc::c_int) << 2i32
-        | iAsBx as libc::c_int) as lu_byte,
+        | (OpArgR as lua_int) << 4i32
+        | (OpArgN as lua_int) << 2i32
+        | iAsBx as lua_int) as lu_byte,
     (0i32 << 7i32
         | 1i32 << 6i32
-        | (OpArgR as libc::c_int) << 4i32
-        | (OpArgN as libc::c_int) << 2i32
-        | iAsBx as libc::c_int) as lu_byte,
+        | (OpArgR as lua_int) << 4i32
+        | (OpArgN as lua_int) << 2i32
+        | iAsBx as lua_int) as lu_byte,
     (0i32 << 7i32
         | 0i32 << 6i32
-        | (OpArgN as libc::c_int) << 4i32
-        | (OpArgU as libc::c_int) << 2i32
-        | iABC as libc::c_int) as lu_byte,
+        | (OpArgN as lua_int) << 4i32
+        | (OpArgU as lua_int) << 2i32
+        | iABC as lua_int) as lu_byte,
     (0i32 << 7i32
         | 1i32 << 6i32
-        | (OpArgR as libc::c_int) << 4i32
-        | (OpArgN as libc::c_int) << 2i32
-        | iAsBx as libc::c_int) as lu_byte,
+        | (OpArgR as lua_int) << 4i32
+        | (OpArgN as lua_int) << 2i32
+        | iAsBx as lua_int) as lu_byte,
     (0i32 << 7i32
         | 0i32 << 6i32
-        | (OpArgU as libc::c_int) << 4i32
-        | (OpArgU as libc::c_int) << 2i32
-        | iABC as libc::c_int) as lu_byte,
+        | (OpArgU as lua_int) << 4i32
+        | (OpArgU as lua_int) << 2i32
+        | iABC as lua_int) as lu_byte,
     (0i32 << 7i32
         | 1i32 << 6i32
-        | (OpArgU as libc::c_int) << 4i32
-        | (OpArgN as libc::c_int) << 2i32
-        | iABx as libc::c_int) as lu_byte,
+        | (OpArgU as lua_int) << 4i32
+        | (OpArgN as lua_int) << 2i32
+        | iABx as lua_int) as lu_byte,
     (0i32 << 7i32
         | 1i32 << 6i32
-        | (OpArgU as libc::c_int) << 4i32
-        | (OpArgN as libc::c_int) << 2i32
-        | iABC as libc::c_int) as lu_byte,
+        | (OpArgU as lua_int) << 4i32
+        | (OpArgN as lua_int) << 2i32
+        | iABC as lua_int) as lu_byte,
     (0i32 << 7i32
         | 0i32 << 6i32
-        | (OpArgU as libc::c_int) << 4i32
-        | (OpArgU as libc::c_int) << 2i32
-        | iAx as libc::c_int) as lu_byte,
+        | (OpArgU as lua_int) << 4i32
+        | (OpArgU as lua_int) << 2i32
+        | iAx as lua_int) as lu_byte,
 ];
 /* opcode names */
 #[no_mangle]
-pub static mut luaP_opnames: [*const libc::c_char; 48] = [
+pub static mut luaP_opnames: [*const lua_char; 48] = [
     s!(b"MOVE\x00"),
     s!(b"LOADK\x00"),
     s!(b"LOADKX\x00"),
@@ -359,5 +359,5 @@ pub static mut luaP_opnames: [*const libc::c_char; 48] = [
     s!(b"CLOSURE\x00"),
     s!(b"VARARG\x00"),
     s!(b"EXTRAARG\x00"),
-    0 as *const libc::c_char,
+    0 as *const lua_char,
 ];

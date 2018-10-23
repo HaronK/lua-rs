@@ -1,3 +1,5 @@
+use types::*;
+
 // stdlib constants
 pub const EXIT_FAILURE: i32 = 1; /* Failing exit status.  */
 pub const EXIT_SUCCESS: i32 = 0; /* Successful exit status.  */
@@ -117,7 +119,7 @@ pub_const_c_str!(LUA_DIRSEP, b"/\x00");
 
 /* The following definitions are good for most cases here */
 
-pub type LUA_NUMBER = libc::c_double;
+pub type LUA_NUMBER = lua_double;
 
 #[macro_export]
 macro_rules! l_mathlim {

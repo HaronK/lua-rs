@@ -1,4 +1,4 @@
-use libc;
+use types::*;
 extern "C" {
     /*
      ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
@@ -71,32 +71,32 @@ extern "C" {
     #[no_mangle]
     static luai_ctype_: [lu_byte; 257];
     #[no_mangle]
-    fn luaO_utf8esc(buff: *mut libc::c_char, x: libc::c_ulong) -> libc::c_int;
+    fn luaO_utf8esc(buff: *mut lua_char, x: lua_ulong) -> lua_int;
     #[no_mangle]
-    fn luaO_str2num(s: *const libc::c_char, o: *mut TValue) -> size_t;
+    fn luaO_str2num(s: *const lua_char, o: *mut TValue) -> size_t;
     #[no_mangle]
-    fn luaO_hexavalue(c: libc::c_int) -> libc::c_int;
+    fn luaO_hexavalue(c: lua_int) -> lua_int;
     #[no_mangle]
-    fn luaO_pushfstring(L: *mut lua_State, fmt: *const libc::c_char, ...) -> *const libc::c_char;
+    fn luaO_pushfstring(L: *mut lua_State, fmt: *const lua_char, ...) -> *const lua_char;
     /* not to be called directly */
     #[no_mangle]
     fn luaM_realloc_(
         L: *mut lua_State,
-        block: *mut libc::c_void,
+        block: *mut lua_void,
         oldsize: size_t,
         size: size_t,
-    ) -> *mut libc::c_void;
+    ) -> *mut lua_void;
     #[no_mangle]
-    fn luaZ_fill(z: *mut ZIO) -> libc::c_int;
+    fn luaZ_fill(z: *mut ZIO) -> lua_int;
     #[no_mangle]
     fn luaG_addinfo(
         L: *mut lua_State,
-        msg: *const libc::c_char,
+        msg: *const lua_char,
         src: *mut TString,
-        line: libc::c_int,
-    ) -> *const libc::c_char;
+        line: lua_int,
+    ) -> *const lua_char;
     #[no_mangle]
-    fn luaD_throw(L: *mut lua_State, errcode: libc::c_int) -> !;
+    fn luaD_throw(L: *mut lua_State, errcode: lua_int) -> !;
     /*
      ** $Id: lgc.h,v 2.91.1.1 2017/04/19 17:39:34 roberto Exp $
      ** Garbage Collector
@@ -148,16 +148,16 @@ extern "C" {
     #[no_mangle]
     fn luaC_step(L: *mut lua_State) -> ();
     #[no_mangle]
-    fn luaS_new(L: *mut lua_State, str: *const libc::c_char) -> *mut TString;
+    fn luaS_new(L: *mut lua_State, str: *const lua_char) -> *mut TString;
     #[no_mangle]
-    fn luaS_newlstr(L: *mut lua_State, str: *const libc::c_char, l: size_t) -> *mut TString;
+    fn luaS_newlstr(L: *mut lua_State, str: *const lua_char, l: size_t) -> *mut TString;
     #[no_mangle]
     fn luaH_set(L: *mut lua_State, t: *mut Table, key: *const TValue) -> *mut TValue;
 }
-pub type size_t = libc::c_ulong;
-pub type ptrdiff_t = libc::c_long;
-pub type __sig_atomic_t = libc::c_int;
-pub type intptr_t = libc::c_long;
+pub type size_t = lua_ulong;
+pub type ptrdiff_t = lua_long;
+pub type __sig_atomic_t = lua_int;
+pub type intptr_t = lua_long;
 /*
 ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
 ** Lua - A Scripting Language
@@ -178,7 +178,7 @@ pub struct lua_State {
     pub next: *mut GCObject,
     pub tt: lu_byte,
     pub marked: lu_byte,
-    pub nci: libc::c_ushort,
+    pub nci: lua_ushort,
     pub status: lu_byte,
     pub top: StkId,
     pub l_G: *mut global_State,
@@ -193,11 +193,11 @@ pub struct lua_State {
     pub base_ci: CallInfo,
     pub hook: lua_Hook,
     pub errfunc: ptrdiff_t,
-    pub stacksize: libc::c_int,
-    pub basehookcount: libc::c_int,
-    pub hookcount: libc::c_int,
-    pub nny: libc::c_ushort,
-    pub nCcalls: libc::c_ushort,
+    pub stacksize: lua_int,
+    pub basehookcount: lua_int,
+    pub hookcount: lua_int,
+    pub nny: lua_ushort,
+    pub nCcalls: lua_ushort,
     pub hookmask: sig_atomic_t,
     pub allowhook: lu_byte,
 }
@@ -205,7 +205,7 @@ pub struct lua_State {
 /* }{ */
 /* } */
 /* chars used as small naturals (so that 'char' is reserved for characters) */
-pub type lu_byte = libc::c_uchar;
+pub type lu_byte = lua_uchar;
 pub type sig_atomic_t = __sig_atomic_t;
 /* Functions to be called by the debugger in specific events */
 pub type lua_Hook = Option<unsafe extern "C" fn(_: *mut lua_State, _: *mut lua_Debug) -> ()>;
@@ -235,19 +235,19 @@ pub type lua_Hook = Option<unsafe extern "C" fn(_: *mut lua_State, _: *mut lua_D
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct lua_Debug {
-    pub event: libc::c_int,
-    pub name: *const libc::c_char,
-    pub namewhat: *const libc::c_char,
-    pub what: *const libc::c_char,
-    pub source: *const libc::c_char,
-    pub currentline: libc::c_int,
-    pub linedefined: libc::c_int,
-    pub lastlinedefined: libc::c_int,
-    pub nups: libc::c_uchar,
-    pub nparams: libc::c_uchar,
-    pub isvararg: libc::c_char,
-    pub istailcall: libc::c_char,
-    pub short_src: [libc::c_char; 60],
+    pub event: lua_int,
+    pub name: *const lua_char,
+    pub namewhat: *const lua_char,
+    pub what: *const lua_char,
+    pub source: *const lua_char,
+    pub currentline: lua_int,
+    pub linedefined: lua_int,
+    pub lastlinedefined: lua_int,
+    pub nups: lua_uchar,
+    pub nparams: lua_uchar,
+    pub isvararg: lua_char,
+    pub istailcall: lua_char,
+    pub short_src: [lua_char; 60],
     pub i_ci: *mut CallInfo,
 }
 /* private part */
@@ -260,8 +260,8 @@ pub struct CallInfo {
     pub next: *mut CallInfo,
     pub u: unnamed,
     pub extra: ptrdiff_t,
-    pub nresults: libc::c_short,
-    pub callstatus: libc::c_ushort,
+    pub nresults: lua_short,
+    pub callstatus: lua_ushort,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -283,7 +283,7 @@ pub type lua_KContext = intptr_t;
 ** Type for continuation functions
 */
 pub type lua_KFunction =
-    Option<unsafe extern "C" fn(_: *mut lua_State, _: libc::c_int, _: lua_KContext) -> libc::c_int>;
+    Option<unsafe extern "C" fn(_: *mut lua_State, _: lua_int, _: lua_KContext) -> lua_int>;
 /* only for Lua functions */
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -314,7 +314,7 @@ pub struct unnamed_1 {
 ** type for virtual-machine instructions;
 ** must be an unsigned with (at least) 4 bytes (see details in lopcodes.h)
 */
-pub type Instruction = libc::c_uint;
+pub type Instruction = lua_uint;
 /* macro defining a nil value */
 /* raw type tag of a TValue */
 /* tag with no variants (bits 0-3) */
@@ -345,7 +345,7 @@ pub type TValue = lua_TValue;
 #[repr(C)]
 pub struct lua_TValue {
     pub value_: Value,
-    pub tt_: libc::c_int,
+    pub tt_: lua_int,
 }
 /*
 ** Tagged Values. This is the basic representation of values in Lua,
@@ -358,8 +358,8 @@ pub struct lua_TValue {
 #[repr(C)]
 pub union Value {
     pub gc: *mut GCObject,
-    pub p: *mut libc::c_void,
-    pub b: libc::c_int,
+    pub p: *mut lua_void,
+    pub b: lua_int,
     pub f: lua_CFunction,
     pub i: lua_Integer,
     pub n: lua_Number,
@@ -370,13 +370,13 @@ pub union Value {
 /* minimum Lua stack available to a C function */
 /* predefined values in the registry */
 /* type of numbers in Lua */
-pub type lua_Number = libc::c_double;
+pub type lua_Number = lua_double;
 /* type for integer functions */
-pub type lua_Integer = libc::c_longlong;
+pub type lua_Integer = lua_longlong;
 /*
 ** Type for C functions registered with Lua
 */
-pub type lua_CFunction = Option<unsafe extern "C" fn(_: *mut lua_State) -> libc::c_int>;
+pub type lua_CFunction = Option<unsafe extern "C" fn(_: *mut lua_State) -> lua_int>;
 /*
 ** $Id: lobject.h,v 2.117.1.1 2017/04/19 17:39:34 roberto Exp $
 ** Type definitions for Lua objects
@@ -445,14 +445,14 @@ of luaV_execute */
 #[repr(C)]
 pub struct global_State {
     pub frealloc: lua_Alloc,
-    pub ud: *mut libc::c_void,
+    pub ud: *mut lua_void,
     pub totalbytes: l_mem,
     pub GCdebt: l_mem,
     pub GCmemtrav: lu_mem,
     pub GCestimate: lu_mem,
     pub strt: stringtable,
     pub l_registry: TValue,
-    pub seed: libc::c_uint,
+    pub seed: lua_uint,
     pub currentwhite: lu_byte,
     pub gcstate: lu_byte,
     pub gckind: lu_byte,
@@ -468,9 +468,9 @@ pub struct global_State {
     pub tobefnz: *mut GCObject,
     pub fixedgc: *mut GCObject,
     pub twups: *mut lua_State,
-    pub gcfinnum: libc::c_uint,
-    pub gcpause: libc::c_int,
-    pub gcstepmul: libc::c_int,
+    pub gcfinnum: lua_uint,
+    pub gcpause: lua_int,
+    pub gcstepmul: lua_int,
     pub panic: lua_CFunction,
     pub mainthread: *mut lua_State,
     pub version: *const lua_Number,
@@ -491,7 +491,7 @@ pub struct TString {
     pub marked: lu_byte,
     pub extra: lu_byte,
     pub shrlen: lu_byte,
-    pub hash: libc::c_uint,
+    pub hash: lua_uint,
     pub u: unnamed_2,
 }
 #[derive(Copy, Clone)]
@@ -508,7 +508,7 @@ pub struct Table {
     pub marked: lu_byte,
     pub flags: lu_byte,
     pub lsizenode: lu_byte,
-    pub sizearray: libc::c_uint,
+    pub sizearray: lua_uint,
     pub array: *mut TValue,
     pub node: *mut Node,
     pub lastfree: *mut Node,
@@ -535,8 +535,8 @@ pub union TKey {
 #[repr(C)]
 pub struct unnamed_3 {
     pub value_: Value,
-    pub tt_: libc::c_int,
-    pub next: libc::c_int,
+    pub tt_: lua_int,
+    pub next: lua_int,
 }
 /*
 ** Atomic type (relative to signals) to better ensure that 'lua_sethook'
@@ -549,8 +549,8 @@ pub struct unnamed_3 {
 #[repr(C)]
 pub struct stringtable {
     pub hash: *mut *mut TString,
-    pub nuse: libc::c_int,
-    pub size: libc::c_int,
+    pub nuse: lua_int,
+    pub size: lua_int,
 }
 /*
 ** $Id: llimits.h,v 1.141.1.1 2017/04/19 17:20:42 roberto Exp $
@@ -570,15 +570,15 @@ pub type l_mem = ptrdiff_t;
 ** Type for memory-allocation functions
 */
 pub type lua_Alloc = Option<
-    unsafe extern "C" fn(_: *mut libc::c_void, _: *mut libc::c_void, _: size_t, _: size_t)
-        -> *mut libc::c_void,
+    unsafe extern "C" fn(_: *mut lua_void, _: *mut lua_void, _: size_t, _: size_t)
+        -> *mut lua_void,
 >;
 /*
 ** Type for functions that read/write blocks when loading/dumping Lua chunks
 */
 pub type lua_Reader = Option<
-    unsafe extern "C" fn(_: *mut lua_State, _: *mut libc::c_void, _: *mut size_t)
-        -> *const libc::c_char,
+    unsafe extern "C" fn(_: *mut lua_State, _: *mut lua_void, _: *mut size_t)
+        -> *const lua_char,
 >;
 /*
 ** Get the actual string (array of bytes) from a 'TString'.
@@ -624,8 +624,8 @@ pub struct Upvaldesc {
 #[repr(C)]
 pub struct LocVar {
     pub varname: *mut TString,
-    pub startpc: libc::c_int,
-    pub endpc: libc::c_int,
+    pub startpc: lua_int,
+    pub endpc: lua_int,
 }
 /*
 ** Function Prototypes
@@ -639,18 +639,18 @@ pub struct Proto {
     pub numparams: lu_byte,
     pub is_vararg: lu_byte,
     pub maxstacksize: lu_byte,
-    pub sizeupvalues: libc::c_int,
-    pub sizek: libc::c_int,
-    pub sizecode: libc::c_int,
-    pub sizelineinfo: libc::c_int,
-    pub sizep: libc::c_int,
-    pub sizelocvars: libc::c_int,
-    pub linedefined: libc::c_int,
-    pub lastlinedefined: libc::c_int,
+    pub sizeupvalues: lua_int,
+    pub sizek: lua_int,
+    pub sizecode: lua_int,
+    pub sizelineinfo: lua_int,
+    pub sizep: lua_int,
+    pub sizelocvars: lua_int,
+    pub linedefined: lua_int,
+    pub lastlinedefined: lua_int,
     pub k: *mut TValue,
     pub code: *mut Instruction,
     pub p: *mut *mut Proto,
-    pub lineinfo: *mut libc::c_int,
+    pub lineinfo: *mut lua_int,
     pub locvars: *mut LocVar,
     pub upvalues: *mut Upvaldesc,
     pub cache: *mut LClosure,
@@ -698,16 +698,16 @@ pub union Closure {
 #[repr(C)]
 pub struct Zio {
     pub n: size_t,
-    pub p: *const libc::c_char,
+    pub p: *const lua_char,
     pub reader: lua_Reader,
-    pub data: *mut libc::c_void,
+    pub data: *mut lua_void,
     pub L: *mut lua_State,
 }
 pub type ZIO = Zio;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct Mbuffer {
-    pub buffer: *mut libc::c_char,
+    pub buffer: *mut lua_char,
     pub n: size_t,
     pub buffsize: size_t,
 }
@@ -734,7 +734,7 @@ pub union GCUnion {
 * WARNING: if you change the order of this enumeration,
 * grep "ORDER RESERVED"
 */
-pub type RESERVED = libc::c_uint;
+pub type RESERVED = lua_uint;
 pub const TK_STRING: RESERVED = 293;
 pub const TK_NAME: RESERVED = 292;
 pub const TK_INT: RESERVED = 291;
@@ -785,7 +785,7 @@ pub union SemInfo {
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct Token {
-    pub token: libc::c_int,
+    pub token: lua_int,
     pub seminfo: SemInfo,
 }
 /* state of the lexer plus state of the parser when shared by all
@@ -793,9 +793,9 @@ functions */
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct LexState {
-    pub current: libc::c_int,
-    pub linenumber: libc::c_int,
-    pub lastline: libc::c_int,
+    pub current: lua_int,
+    pub linenumber: lua_int,
+    pub lastline: lua_int,
     pub t: Token,
     pub lookahead: Token,
     pub fs: *mut FuncState,
@@ -819,16 +819,16 @@ pub struct Dyndata {
 #[repr(C)]
 pub struct Labellist {
     pub arr: *mut Labeldesc,
-    pub n: libc::c_int,
-    pub size: libc::c_int,
+    pub n: lua_int,
+    pub size: lua_int,
 }
 /* description of pending goto statements and label statements */
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct Labeldesc {
     pub name: *mut TString,
-    pub pc: libc::c_int,
-    pub line: libc::c_int,
+    pub pc: lua_int,
+    pub line: lua_int,
     pub nactvar: lu_byte,
 }
 /* dynamic structures used by the parser */
@@ -837,14 +837,14 @@ pub struct Labeldesc {
 #[repr(C)]
 pub struct unnamed_4 {
     pub arr: *mut Vardesc,
-    pub n: libc::c_int,
-    pub size: libc::c_int,
+    pub n: lua_int,
+    pub size: lua_int,
 }
 /* description of active local variable */
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct Vardesc {
-    pub idx: libc::c_short,
+    pub idx: lua_short,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -853,32 +853,32 @@ pub struct FuncState {
     pub prev: *mut FuncState,
     pub ls: *mut LexState,
     pub bl: *mut BlockCnt,
-    pub pc: libc::c_int,
-    pub lasttarget: libc::c_int,
-    pub jpc: libc::c_int,
-    pub nk: libc::c_int,
-    pub np: libc::c_int,
-    pub firstlocal: libc::c_int,
-    pub nlocvars: libc::c_short,
+    pub pc: lua_int,
+    pub lasttarget: lua_int,
+    pub jpc: lua_int,
+    pub nk: lua_int,
+    pub np: lua_int,
+    pub firstlocal: lua_int,
+    pub nlocvars: lua_short,
     pub nactvar: lu_byte,
     pub nups: lu_byte,
     pub freereg: lu_byte,
 }
 #[no_mangle]
 pub unsafe extern "C" fn luaX_init(mut L: *mut lua_State) -> () {
-    let mut i: libc::c_int = 0;
+    let mut i: lua_int = 0;
     /* create env name */
     let mut e: *mut TString = luaS_newlstr(
         L,
         s!(b"_ENV\x00"),
-        (::std::mem::size_of::<[libc::c_char; 5]>() as libc::c_ulong)
-            .wrapping_div(::std::mem::size_of::<libc::c_char>() as libc::c_ulong)
-            .wrapping_sub(1i32 as libc::c_ulong),
+        (::std::mem::size_of::<[lua_char; 5]>() as lua_ulong)
+            .wrapping_div(::std::mem::size_of::<lua_char>() as lua_ulong)
+            .wrapping_sub(1i32 as lua_ulong),
     );
     /* never collect this name */
     luaC_fix(L, &mut (*(e as *mut GCUnion)).gc);
     i = 0i32;
-    while i < TK_WHILE as libc::c_int - 257i32 + 1i32 {
+    while i < TK_WHILE as lua_int - 257i32 + 1i32 {
         let mut ts: *mut TString = luaS_new(L, luaX_tokens[i as usize]);
         /* reserved words are never collected */
         luaC_fix(L, &mut (*(ts as *mut GCUnion)).gc);
@@ -893,7 +893,7 @@ pub unsafe extern "C" fn luaX_init(mut L: *mut lua_State) -> () {
 ** See Copyright Notice in lua.h
 */
 /* ORDER RESERVED */
-static mut luaX_tokens: [*const libc::c_char; 37] = [
+static mut luaX_tokens: [*const lua_char; 37] = [
     s!(b"and\x00"),
     s!(b"break\x00"),
     s!(b"do\x00"),
@@ -938,13 +938,13 @@ pub unsafe extern "C" fn luaX_setinput(
     mut ls: *mut LexState,
     mut z: *mut ZIO,
     mut source: *mut TString,
-    mut firstchar: libc::c_int,
+    mut firstchar: lua_int,
 ) -> () {
     (*ls).t.token = 0i32;
     (*ls).L = L;
     (*ls).current = firstchar;
     /* no look-ahead token */
-    (*ls).lookahead.token = TK_EOS as libc::c_int;
+    (*ls).lookahead.token = TK_EOS as lua_int;
     (*ls).z = z;
     (*ls).fs = 0 as *mut FuncState;
     (*ls).linenumber = 1i32;
@@ -954,26 +954,26 @@ pub unsafe extern "C" fn luaX_setinput(
     (*ls).envn = luaS_newlstr(
         L,
         s!(b"_ENV\x00"),
-        (::std::mem::size_of::<[libc::c_char; 5]>() as libc::c_ulong)
-            .wrapping_div(::std::mem::size_of::<libc::c_char>() as libc::c_ulong)
-            .wrapping_sub(1i32 as libc::c_ulong),
+        (::std::mem::size_of::<[lua_char; 5]>() as lua_ulong)
+            .wrapping_div(::std::mem::size_of::<lua_char>() as lua_ulong)
+            .wrapping_sub(1i32 as lua_ulong),
     );
     /* initialize buffer */
     (*(*ls).buff).buffer = luaM_realloc_(
         (*ls).L,
-        (*(*ls).buff).buffer as *mut libc::c_void,
+        (*(*ls).buff).buffer as *mut lua_void,
         (*(*ls).buff)
             .buffsize
-            .wrapping_mul(::std::mem::size_of::<libc::c_char>() as libc::c_ulong),
-        (32i32 as libc::c_ulong)
-            .wrapping_mul(::std::mem::size_of::<libc::c_char>() as libc::c_ulong),
-    ) as *mut libc::c_char;
+            .wrapping_mul(::std::mem::size_of::<lua_char>() as lua_ulong),
+        (32i32 as lua_ulong)
+            .wrapping_mul(::std::mem::size_of::<lua_char>() as lua_ulong),
+    ) as *mut lua_char;
     (*(*ls).buff).buffsize = 32i32 as size_t;
 }
 #[no_mangle]
 pub unsafe extern "C" fn luaX_newstring(
     mut ls: *mut LexState,
-    mut str: *const libc::c_char,
+    mut str: *const lua_char,
     mut l: size_t,
 ) -> *mut TString {
     let mut L: *mut lua_State = (*ls).L;
@@ -987,7 +987,7 @@ pub unsafe extern "C" fn luaX_newstring(
     let mut io: *mut TValue = fresh0;
     let mut x_: *mut TString = ts;
     (*io).value_.gc = &mut (*(x_ as *mut GCUnion)).gc;
-    (*io).tt_ = (*x_).tt as libc::c_int | 1i32 << 6i32;
+    (*io).tt_ = (*x_).tt as lua_int | 1i32 << 6i32;
     o = luaH_set(L, (*ls).h, (*L).top.offset(-1isize) as *const TValue);
     if (*o).tt_ == 0i32 {
         /* not in use yet? */
@@ -997,11 +997,11 @@ pub unsafe extern "C" fn luaX_newstring(
         let mut io_0: *mut TValue = o;
         (*io_0).value_.b = 1i32;
         (*io_0).tt_ = 1i32;
-        if (*(*L).l_G).GCdebt > 0i32 as libc::c_long {
+        if (*(*L).l_G).GCdebt > 0i32 as lua_long {
             luaC_step(L);
         }
     } else {
-        ts = &mut (*((*(&mut (*((o as *mut libc::c_char).offset(-0isize) as *mut Node))
+        ts = &mut (*((*(&mut (*((o as *mut lua_char).offset(-0isize) as *mut Node))
             .i_key
             .tvk as *mut TValue as *const TValue))
             .value_
@@ -1015,17 +1015,17 @@ pub unsafe extern "C" fn luaX_newstring(
 #[no_mangle]
 pub unsafe extern "C" fn luaX_next(mut ls: *mut LexState) -> () {
     (*ls).lastline = (*ls).linenumber;
-    if (*ls).lookahead.token != TK_EOS as libc::c_int {
+    if (*ls).lookahead.token != TK_EOS as lua_int {
         /* is there a look-ahead token? */
         /* use this one */
         (*ls).t = (*ls).lookahead;
         /* and discharge it */
-        (*ls).lookahead.token = TK_EOS as libc::c_int
+        (*ls).lookahead.token = TK_EOS as lua_int
     } else {
         (*ls).t.token = llex(ls, &mut (*ls).t.seminfo)
     };
 }
-unsafe extern "C" fn llex(mut ls: *mut LexState, mut seminfo: *mut SemInfo) -> libc::c_int {
+unsafe extern "C" fn llex(mut ls: *mut LexState, mut seminfo: *mut SemInfo) -> lua_int {
     (*(*ls).buff).n = 0i32 as size_t;
     loop {
         match (*ls).current {
@@ -1037,10 +1037,10 @@ unsafe extern "C" fn llex(mut ls: *mut LexState, mut seminfo: *mut SemInfo) -> l
                 /* spaces */
                 let fresh1 = (*(*ls).z).n;
                 (*(*ls).z).n = (*(*ls).z).n.wrapping_sub(1);
-                (*ls).current = if fresh1 > 0i32 as libc::c_ulong {
+                (*ls).current = if fresh1 > 0i32 as lua_ulong {
                     let fresh2 = (*(*ls).z).p;
                     (*(*ls).z).p = (*(*ls).z).p.offset(1);
-                    *fresh2 as libc::c_uchar as libc::c_int
+                    *fresh2 as lua_uchar as lua_int
                 } else {
                     luaZ_fill((*ls).z)
                 }
@@ -1049,10 +1049,10 @@ unsafe extern "C" fn llex(mut ls: *mut LexState, mut seminfo: *mut SemInfo) -> l
                 /* '-' or '--' (comment) */
                 let fresh3 = (*(*ls).z).n;
                 (*(*ls).z).n = (*(*ls).z).n.wrapping_sub(1);
-                (*ls).current = if fresh3 > 0i32 as libc::c_ulong {
+                (*ls).current = if fresh3 > 0i32 as lua_ulong {
                     let fresh4 = (*(*ls).z).p;
                     (*(*ls).z).p = (*(*ls).z).p.offset(1);
-                    *fresh4 as libc::c_uchar as libc::c_int
+                    *fresh4 as lua_uchar as lua_int
                 } else {
                     luaZ_fill((*ls).z)
                 };
@@ -1062,16 +1062,16 @@ unsafe extern "C" fn llex(mut ls: *mut LexState, mut seminfo: *mut SemInfo) -> l
                     /* else is a comment */
                     let fresh5 = (*(*ls).z).n;
                     (*(*ls).z).n = (*(*ls).z).n.wrapping_sub(1);
-                    (*ls).current = if fresh5 > 0i32 as libc::c_ulong {
+                    (*ls).current = if fresh5 > 0i32 as lua_ulong {
                         let fresh6 = (*(*ls).z).p;
                         (*(*ls).z).p = (*(*ls).z).p.offset(1);
-                        *fresh6 as libc::c_uchar as libc::c_int
+                        *fresh6 as lua_uchar as lua_int
                     } else {
                         luaZ_fill((*ls).z)
                     };
                     if (*ls).current == '[' as i32 {
                         /* long comment? */
-                        let mut sep: libc::c_int = skip_sep(ls);
+                        let mut sep: lua_int = skip_sep(ls);
                         /* 'skip_sep' may dirty the buffer */
                         (*(*ls).buff).n = 0i32 as size_t;
                         if sep >= 0i32 {
@@ -1089,10 +1089,10 @@ unsafe extern "C" fn llex(mut ls: *mut LexState, mut seminfo: *mut SemInfo) -> l
                         /* skip until end of line (or end of file) */
                         let fresh7 = (*(*ls).z).n;
                         (*(*ls).z).n = (*(*ls).z).n.wrapping_sub(1);
-                        (*ls).current = if fresh7 > 0i32 as libc::c_ulong {
+                        (*ls).current = if fresh7 > 0i32 as lua_ulong {
                             let fresh8 = (*(*ls).z).p;
                             (*(*ls).z).p = (*(*ls).z).p.offset(1);
-                            *fresh8 as libc::c_uchar as libc::c_int
+                            *fresh8 as lua_uchar as lua_int
                         } else {
                             luaZ_fill((*ls).z)
                         }
@@ -1101,15 +1101,15 @@ unsafe extern "C" fn llex(mut ls: *mut LexState, mut seminfo: *mut SemInfo) -> l
             }
             91 => {
                 /* long string or simply '[' */
-                let mut sep_0: libc::c_int = skip_sep(ls);
+                let mut sep_0: lua_int = skip_sep(ls);
                 if sep_0 >= 0i32 {
                     read_long_string(ls, seminfo, sep_0);
-                    return TK_STRING as libc::c_int;
+                    return TK_STRING as lua_int;
                 } else if sep_0 != -1i32 {
                     lexerror(
                         ls,
                         s!(b"invalid long string delimiter\x00"),
-                        TK_STRING as libc::c_int,
+                        TK_STRING as lua_int,
                     );
                 } else {
                     return '[' as i32;
@@ -1118,15 +1118,15 @@ unsafe extern "C" fn llex(mut ls: *mut LexState, mut seminfo: *mut SemInfo) -> l
             61 => {
                 let fresh9 = (*(*ls).z).n;
                 (*(*ls).z).n = (*(*ls).z).n.wrapping_sub(1);
-                (*ls).current = if fresh9 > 0i32 as libc::c_ulong {
+                (*ls).current = if fresh9 > 0i32 as lua_ulong {
                     let fresh10 = (*(*ls).z).p;
                     (*(*ls).z).p = (*(*ls).z).p.offset(1);
-                    *fresh10 as libc::c_uchar as libc::c_int
+                    *fresh10 as lua_uchar as lua_int
                 } else {
                     luaZ_fill((*ls).z)
                 };
                 if 0 != check_next1(ls, '=' as i32) {
-                    return TK_EQ as libc::c_int;
+                    return TK_EQ as lua_int;
                 } else {
                     return '=' as i32;
                 }
@@ -1134,17 +1134,17 @@ unsafe extern "C" fn llex(mut ls: *mut LexState, mut seminfo: *mut SemInfo) -> l
             60 => {
                 let fresh11 = (*(*ls).z).n;
                 (*(*ls).z).n = (*(*ls).z).n.wrapping_sub(1);
-                (*ls).current = if fresh11 > 0i32 as libc::c_ulong {
+                (*ls).current = if fresh11 > 0i32 as lua_ulong {
                     let fresh12 = (*(*ls).z).p;
                     (*(*ls).z).p = (*(*ls).z).p.offset(1);
-                    *fresh12 as libc::c_uchar as libc::c_int
+                    *fresh12 as lua_uchar as lua_int
                 } else {
                     luaZ_fill((*ls).z)
                 };
                 if 0 != check_next1(ls, '=' as i32) {
-                    return TK_LE as libc::c_int;
+                    return TK_LE as lua_int;
                 } else if 0 != check_next1(ls, '<' as i32) {
-                    return TK_SHL as libc::c_int;
+                    return TK_SHL as lua_int;
                 } else {
                     return '<' as i32;
                 }
@@ -1152,17 +1152,17 @@ unsafe extern "C" fn llex(mut ls: *mut LexState, mut seminfo: *mut SemInfo) -> l
             62 => {
                 let fresh13 = (*(*ls).z).n;
                 (*(*ls).z).n = (*(*ls).z).n.wrapping_sub(1);
-                (*ls).current = if fresh13 > 0i32 as libc::c_ulong {
+                (*ls).current = if fresh13 > 0i32 as lua_ulong {
                     let fresh14 = (*(*ls).z).p;
                     (*(*ls).z).p = (*(*ls).z).p.offset(1);
-                    *fresh14 as libc::c_uchar as libc::c_int
+                    *fresh14 as lua_uchar as lua_int
                 } else {
                     luaZ_fill((*ls).z)
                 };
                 if 0 != check_next1(ls, '=' as i32) {
-                    return TK_GE as libc::c_int;
+                    return TK_GE as lua_int;
                 } else if 0 != check_next1(ls, '>' as i32) {
-                    return TK_SHR as libc::c_int;
+                    return TK_SHR as lua_int;
                 } else {
                     return '>' as i32;
                 }
@@ -1170,15 +1170,15 @@ unsafe extern "C" fn llex(mut ls: *mut LexState, mut seminfo: *mut SemInfo) -> l
             47 => {
                 let fresh15 = (*(*ls).z).n;
                 (*(*ls).z).n = (*(*ls).z).n.wrapping_sub(1);
-                (*ls).current = if fresh15 > 0i32 as libc::c_ulong {
+                (*ls).current = if fresh15 > 0i32 as lua_ulong {
                     let fresh16 = (*(*ls).z).p;
                     (*(*ls).z).p = (*(*ls).z).p.offset(1);
-                    *fresh16 as libc::c_uchar as libc::c_int
+                    *fresh16 as lua_uchar as lua_int
                 } else {
                     luaZ_fill((*ls).z)
                 };
                 if 0 != check_next1(ls, '/' as i32) {
-                    return TK_IDIV as libc::c_int;
+                    return TK_IDIV as lua_int;
                 } else {
                     return '/' as i32;
                 }
@@ -1186,15 +1186,15 @@ unsafe extern "C" fn llex(mut ls: *mut LexState, mut seminfo: *mut SemInfo) -> l
             126 => {
                 let fresh17 = (*(*ls).z).n;
                 (*(*ls).z).n = (*(*ls).z).n.wrapping_sub(1);
-                (*ls).current = if fresh17 > 0i32 as libc::c_ulong {
+                (*ls).current = if fresh17 > 0i32 as lua_ulong {
                     let fresh18 = (*(*ls).z).p;
                     (*(*ls).z).p = (*(*ls).z).p.offset(1);
-                    *fresh18 as libc::c_uchar as libc::c_int
+                    *fresh18 as lua_uchar as lua_int
                 } else {
                     luaZ_fill((*ls).z)
                 };
                 if 0 != check_next1(ls, '=' as i32) {
-                    return TK_NE as libc::c_int;
+                    return TK_NE as lua_int;
                 } else {
                     return '~' as i32;
                 }
@@ -1202,15 +1202,15 @@ unsafe extern "C" fn llex(mut ls: *mut LexState, mut seminfo: *mut SemInfo) -> l
             58 => {
                 let fresh19 = (*(*ls).z).n;
                 (*(*ls).z).n = (*(*ls).z).n.wrapping_sub(1);
-                (*ls).current = if fresh19 > 0i32 as libc::c_ulong {
+                (*ls).current = if fresh19 > 0i32 as lua_ulong {
                     let fresh20 = (*(*ls).z).p;
                     (*(*ls).z).p = (*(*ls).z).p.offset(1);
-                    *fresh20 as libc::c_uchar as libc::c_int
+                    *fresh20 as lua_uchar as lua_int
                 } else {
                     luaZ_fill((*ls).z)
                 };
                 if 0 != check_next1(ls, ':' as i32) {
-                    return TK_DBCOLON as libc::c_int;
+                    return TK_DBCOLON as lua_int;
                 } else {
                     return ':' as i32;
                 }
@@ -1218,29 +1218,29 @@ unsafe extern "C" fn llex(mut ls: *mut LexState, mut seminfo: *mut SemInfo) -> l
             34 | 39 => {
                 /* short literal strings */
                 read_string(ls, (*ls).current, seminfo);
-                return TK_STRING as libc::c_int;
+                return TK_STRING as lua_int;
             }
             46 => {
                 /* '.', '..', '...', or number */
                 save(ls, (*ls).current);
                 let fresh21 = (*(*ls).z).n;
                 (*(*ls).z).n = (*(*ls).z).n.wrapping_sub(1);
-                (*ls).current = if fresh21 > 0i32 as libc::c_ulong {
+                (*ls).current = if fresh21 > 0i32 as lua_ulong {
                     let fresh22 = (*(*ls).z).p;
                     (*(*ls).z).p = (*(*ls).z).p.offset(1);
-                    *fresh22 as libc::c_uchar as libc::c_int
+                    *fresh22 as lua_uchar as lua_int
                 } else {
                     luaZ_fill((*ls).z)
                 };
                 if 0 != check_next1(ls, '.' as i32) {
                     if 0 != check_next1(ls, '.' as i32) {
                         /* '...' */
-                        return TK_DOTS as libc::c_int;
+                        return TK_DOTS as lua_int;
                     } else {
-                        return TK_CONCAT as libc::c_int;
+                        return TK_CONCAT as lua_int;
                     }
                 } else if 0
-                    == luai_ctype_[((*ls).current + 1i32) as usize] as libc::c_int & 1i32 << 1i32
+                    == luai_ctype_[((*ls).current + 1i32) as usize] as lua_int & 1i32 << 1i32
                 {
                     return '.' as i32;
                 } else {
@@ -1248,24 +1248,24 @@ unsafe extern "C" fn llex(mut ls: *mut LexState, mut seminfo: *mut SemInfo) -> l
                 }
             }
             48 | 49 | 50 | 51 | 52 | 53 | 54 | 55 | 56 | 57 => return read_numeral(ls, seminfo),
-            -1 => return TK_EOS as libc::c_int,
+            -1 => return TK_EOS as lua_int,
             _ => {
-                if 0 != luai_ctype_[((*ls).current + 1i32) as usize] as libc::c_int & 1i32 << 0i32 {
+                if 0 != luai_ctype_[((*ls).current + 1i32) as usize] as lua_int & 1i32 << 0i32 {
                     /* identifier or reserved word? */
                     let mut ts: *mut TString = 0 as *mut TString;
                     loop {
                         save(ls, (*ls).current);
                         let fresh23 = (*(*ls).z).n;
                         (*(*ls).z).n = (*(*ls).z).n.wrapping_sub(1);
-                        (*ls).current = if fresh23 > 0i32 as libc::c_ulong {
+                        (*ls).current = if fresh23 > 0i32 as lua_ulong {
                             let fresh24 = (*(*ls).z).p;
                             (*(*ls).z).p = (*(*ls).z).p.offset(1);
-                            *fresh24 as libc::c_uchar as libc::c_int
+                            *fresh24 as lua_uchar as lua_int
                         } else {
                             luaZ_fill((*ls).z)
                         };
                         if !(0
-                            != luai_ctype_[((*ls).current + 1i32) as usize] as libc::c_int
+                            != luai_ctype_[((*ls).current + 1i32) as usize] as lua_int
                                 & (1i32 << 0i32 | 1i32 << 1i32))
                         {
                             break;
@@ -1274,22 +1274,22 @@ unsafe extern "C" fn llex(mut ls: *mut LexState, mut seminfo: *mut SemInfo) -> l
                     ts = luaX_newstring(ls, (*(*ls).buff).buffer, (*(*ls).buff).n);
                     (*seminfo).ts = ts;
                     /* reserved word? */
-                    if (*ts).tt as libc::c_int == 4i32 | 0i32 << 4i32
-                        && (*ts).extra as libc::c_int > 0i32
+                    if (*ts).tt as lua_int == 4i32 | 0i32 << 4i32
+                        && (*ts).extra as lua_int > 0i32
                     {
-                        return (*ts).extra as libc::c_int - 1i32 + 257i32;
+                        return (*ts).extra as lua_int - 1i32 + 257i32;
                     } else {
-                        return TK_NAME as libc::c_int;
+                        return TK_NAME as lua_int;
                     }
                 } else {
                     /* single-char tokens (+ - / ...) */
-                    let mut c: libc::c_int = (*ls).current;
+                    let mut c: lua_int = (*ls).current;
                     let fresh25 = (*(*ls).z).n;
                     (*(*ls).z).n = (*(*ls).z).n.wrapping_sub(1);
-                    (*ls).current = if fresh25 > 0i32 as libc::c_ulong {
+                    (*ls).current = if fresh25 > 0i32 as lua_ulong {
                         let fresh26 = (*(*ls).z).p;
                         (*(*ls).z).p = (*(*ls).z).p.offset(1);
-                        *fresh26 as libc::c_uchar as libc::c_int
+                        *fresh26 as lua_uchar as lua_int
                     } else {
                         luaZ_fill((*ls).z)
                     };
@@ -1299,40 +1299,40 @@ unsafe extern "C" fn llex(mut ls: *mut LexState, mut seminfo: *mut SemInfo) -> l
         }
     }
 }
-unsafe extern "C" fn save(mut ls: *mut LexState, mut c: libc::c_int) -> () {
+unsafe extern "C" fn save(mut ls: *mut LexState, mut c: lua_int) -> () {
     let mut b: *mut Mbuffer = (*ls).buff;
-    if (*b).n.wrapping_add(1i32 as libc::c_ulong) > (*b).buffsize {
+    if (*b).n.wrapping_add(1i32 as lua_ulong) > (*b).buffsize {
         let mut newsize: size_t = 0;
-        if (*b).buffsize >= if (::std::mem::size_of::<size_t>() as libc::c_ulong)
-            < ::std::mem::size_of::<lua_Integer>() as libc::c_ulong
+        if (*b).buffsize >= if (::std::mem::size_of::<size_t>() as lua_ulong)
+            < ::std::mem::size_of::<lua_Integer>() as lua_ulong
         {
             !(0i32 as size_t)
         } else {
             9223372036854775807i64 as size_t
         }
-        .wrapping_div(2i32 as libc::c_ulong)
+        .wrapping_div(2i32 as lua_ulong)
         {
             lexerror(ls, s!(b"lexical element too long\x00"), 0i32);
         } else {
-            newsize = (*b).buffsize.wrapping_mul(2i32 as libc::c_ulong);
+            newsize = (*b).buffsize.wrapping_mul(2i32 as lua_ulong);
             (*b).buffer = luaM_realloc_(
                 (*ls).L,
-                (*b).buffer as *mut libc::c_void,
+                (*b).buffer as *mut lua_void,
                 (*b).buffsize
-                    .wrapping_mul(::std::mem::size_of::<libc::c_char>() as libc::c_ulong),
-                newsize.wrapping_mul(::std::mem::size_of::<libc::c_char>() as libc::c_ulong),
-            ) as *mut libc::c_char;
+                    .wrapping_mul(::std::mem::size_of::<lua_char>() as lua_ulong),
+                newsize.wrapping_mul(::std::mem::size_of::<lua_char>() as lua_ulong),
+            ) as *mut lua_char;
             (*b).buffsize = newsize
         }
     }
     let fresh27 = (*b).n;
     (*b).n = (*b).n.wrapping_add(1);
-    *(*b).buffer.offset(fresh27 as isize) = c as libc::c_char;
+    *(*b).buffer.offset(fresh27 as isize) = c as lua_char;
 }
 unsafe extern "C" fn lexerror(
     mut ls: *mut LexState,
-    mut msg: *const libc::c_char,
-    mut token: libc::c_int,
+    mut msg: *const lua_char,
+    mut token: lua_int,
 ) -> ! {
     msg = luaG_addinfo((*ls).L, msg, (*ls).source, (*ls).linenumber);
     if 0 != token {
@@ -1342,8 +1342,8 @@ unsafe extern "C" fn lexerror(
 }
 unsafe extern "C" fn txtToken(
     mut ls: *mut LexState,
-    mut token: libc::c_int,
-) -> *const libc::c_char {
+    mut token: lua_int,
+) -> *const lua_char {
     match token {
         292 | 293 | 290 | 291 => {
             save(ls, '\u{0}' as i32);
@@ -1355,15 +1355,15 @@ unsafe extern "C" fn txtToken(
 #[no_mangle]
 pub unsafe extern "C" fn luaX_token2str(
     mut ls: *mut LexState,
-    mut token: libc::c_int,
-) -> *const libc::c_char {
+    mut token: lua_int,
+) -> *const lua_char {
     if token < 257i32 {
         /* single-byte symbols? */
         return luaO_pushfstring!((*ls).L, s!(b"\'%c\'\x00"), token,);
     } else {
-        let mut s: *const libc::c_char = luaX_tokens[(token - 257i32) as usize];
+        let mut s: *const lua_char = luaX_tokens[(token - 257i32) as usize];
         /* fixed format (symbols and reserved words)? */
-        if token < TK_EOS as libc::c_int {
+        if token < TK_EOS as lua_int {
             return luaO_pushfstring!((*ls).L, s!(b"\'%s\'\x00"), s,);
         } else {
             return s;
@@ -1375,22 +1375,22 @@ pub unsafe extern "C" fn luaX_token2str(
 ** this function is quite liberal in what it accepts, as 'luaO_str2num'
 ** will reject ill-formed numerals.
 */
-unsafe extern "C" fn read_numeral(mut ls: *mut LexState, mut seminfo: *mut SemInfo) -> libc::c_int {
+unsafe extern "C" fn read_numeral(mut ls: *mut LexState, mut seminfo: *mut SemInfo) -> lua_int {
     let mut obj: TValue = lua_TValue {
         value_: Value {
             gc: 0 as *mut GCObject,
         },
         tt_: 0,
     };
-    let mut expo: *const libc::c_char = s!(b"Ee\x00");
-    let mut first: libc::c_int = (*ls).current;
+    let mut expo: *const lua_char = s!(b"Ee\x00");
+    let mut first: lua_int = (*ls).current;
     save(ls, (*ls).current);
     let fresh28 = (*(*ls).z).n;
     (*(*ls).z).n = (*(*ls).z).n.wrapping_sub(1);
-    (*ls).current = if fresh28 > 0i32 as libc::c_ulong {
+    (*ls).current = if fresh28 > 0i32 as lua_ulong {
         let fresh29 = (*(*ls).z).p;
         (*(*ls).z).p = (*(*ls).z).p.offset(1);
-        *fresh29 as libc::c_uchar as libc::c_int
+        *fresh29 as lua_uchar as lua_int
     } else {
         luaZ_fill((*ls).z)
     };
@@ -1404,14 +1404,14 @@ unsafe extern "C" fn read_numeral(mut ls: *mut LexState, mut seminfo: *mut SemIn
             /* optional exponent sign */
             check_next2(ls, s!(b"-+\x00"));
         }
-        if 0 != luai_ctype_[((*ls).current + 1i32) as usize] as libc::c_int & 1i32 << 4i32 {
+        if 0 != luai_ctype_[((*ls).current + 1i32) as usize] as lua_int & 1i32 << 4i32 {
             save(ls, (*ls).current);
             let fresh30 = (*(*ls).z).n;
             (*(*ls).z).n = (*(*ls).z).n.wrapping_sub(1);
-            (*ls).current = if fresh30 > 0i32 as libc::c_ulong {
+            (*ls).current = if fresh30 > 0i32 as lua_ulong {
                 let fresh31 = (*(*ls).z).p;
                 (*(*ls).z).p = (*(*ls).z).p.offset(1);
-                *fresh31 as libc::c_uchar as libc::c_int
+                *fresh31 as lua_uchar as lua_int
             } else {
                 luaZ_fill((*ls).z)
             }
@@ -1422,10 +1422,10 @@ unsafe extern "C" fn read_numeral(mut ls: *mut LexState, mut seminfo: *mut SemIn
             save(ls, (*ls).current);
             let fresh32 = (*(*ls).z).n;
             (*(*ls).z).n = (*(*ls).z).n.wrapping_sub(1);
-            (*ls).current = if fresh32 > 0i32 as libc::c_ulong {
+            (*ls).current = if fresh32 > 0i32 as lua_ulong {
                 let fresh33 = (*(*ls).z).p;
                 (*(*ls).z).p = (*(*ls).z).p.offset(1);
-                *fresh33 as libc::c_uchar as libc::c_int
+                *fresh33 as lua_uchar as lua_int
             } else {
                 luaZ_fill((*ls).z)
             }
@@ -1433,14 +1433,14 @@ unsafe extern "C" fn read_numeral(mut ls: *mut LexState, mut seminfo: *mut SemIn
     }
     save(ls, '\u{0}' as i32);
     /* format error? */
-    if luaO_str2num((*(*ls).buff).buffer, &mut obj) == 0i32 as libc::c_ulong {
-        lexerror(ls, s!(b"malformed number\x00"), TK_FLT as libc::c_int);
+    if luaO_str2num((*(*ls).buff).buffer, &mut obj) == 0i32 as lua_ulong {
+        lexerror(ls, s!(b"malformed number\x00"), TK_FLT as lua_int);
     } else if obj.tt_ == 3i32 | 1i32 << 4i32 {
         (*seminfo).i = obj.value_.i;
-        return TK_INT as libc::c_int;
+        return TK_INT as lua_int;
     } else {
         (*seminfo).r = obj.value_.n;
-        return TK_FLT as libc::c_int;
+        return TK_FLT as lua_int;
     };
 }
 /*
@@ -1449,18 +1449,18 @@ unsafe extern "C" fn read_numeral(mut ls: *mut LexState, mut seminfo: *mut SemIn
 */
 unsafe extern "C" fn check_next2(
     mut ls: *mut LexState,
-    mut set: *const libc::c_char,
-) -> libc::c_int {
-    if (*ls).current == *set.offset(0isize) as libc::c_int
-        || (*ls).current == *set.offset(1isize) as libc::c_int
+    mut set: *const lua_char,
+) -> lua_int {
+    if (*ls).current == *set.offset(0isize) as lua_int
+        || (*ls).current == *set.offset(1isize) as lua_int
     {
         save(ls, (*ls).current);
         let fresh34 = (*(*ls).z).n;
         (*(*ls).z).n = (*(*ls).z).n.wrapping_sub(1);
-        (*ls).current = if fresh34 > 0i32 as libc::c_ulong {
+        (*ls).current = if fresh34 > 0i32 as lua_ulong {
             let fresh35 = (*(*ls).z).p;
             (*(*ls).z).p = (*(*ls).z).p.offset(1);
-            *fresh35 as libc::c_uchar as libc::c_int
+            *fresh35 as lua_uchar as lua_int
         } else {
             luaZ_fill((*ls).z)
         };
@@ -1474,14 +1474,14 @@ unsafe extern "C" fn check_next2(
 ** LEXICAL ANALYZER
 ** =======================================================
 */
-unsafe extern "C" fn check_next1(mut ls: *mut LexState, mut c: libc::c_int) -> libc::c_int {
+unsafe extern "C" fn check_next1(mut ls: *mut LexState, mut c: lua_int) -> lua_int {
     if (*ls).current == c {
         let fresh36 = (*(*ls).z).n;
         (*(*ls).z).n = (*(*ls).z).n.wrapping_sub(1);
-        (*ls).current = if fresh36 > 0i32 as libc::c_ulong {
+        (*ls).current = if fresh36 > 0i32 as lua_ulong {
             let fresh37 = (*(*ls).z).p;
             (*(*ls).z).p = (*(*ls).z).p.offset(1);
-            *fresh37 as libc::c_uchar as libc::c_int
+            *fresh37 as lua_uchar as lua_int
         } else {
             luaZ_fill((*ls).z)
         };
@@ -1492,7 +1492,7 @@ unsafe extern "C" fn check_next1(mut ls: *mut LexState, mut c: libc::c_int) -> l
 }
 unsafe extern "C" fn read_string(
     mut ls: *mut LexState,
-    mut del: libc::c_int,
+    mut del: lua_int,
     mut seminfo: *mut SemInfo,
 ) -> () {
     let mut current_block: u64;
@@ -1500,33 +1500,33 @@ unsafe extern "C" fn read_string(
     save(ls, (*ls).current);
     let fresh38 = (*(*ls).z).n;
     (*(*ls).z).n = (*(*ls).z).n.wrapping_sub(1);
-    (*ls).current = if fresh38 > 0i32 as libc::c_ulong {
+    (*ls).current = if fresh38 > 0i32 as lua_ulong {
         let fresh39 = (*(*ls).z).p;
         (*(*ls).z).p = (*(*ls).z).p.offset(1);
-        *fresh39 as libc::c_uchar as libc::c_int
+        *fresh39 as lua_uchar as lua_int
     } else {
         luaZ_fill((*ls).z)
     };
     's_4: while (*ls).current != del {
         match (*ls).current {
             -1 => {
-                lexerror(ls, s!(b"unfinished string\x00"), TK_EOS as libc::c_int);
+                lexerror(ls, s!(b"unfinished string\x00"), TK_EOS as lua_int);
             }
             10 | 13 => {
-                lexerror(ls, s!(b"unfinished string\x00"), TK_STRING as libc::c_int);
+                lexerror(ls, s!(b"unfinished string\x00"), TK_STRING as lua_int);
             }
             92 => {
                 /* escape sequences */
                 /* final character to be saved */
-                let mut c: libc::c_int = 0;
+                let mut c: lua_int = 0;
                 /* keep '\\' for error messages */
                 save(ls, (*ls).current);
                 let fresh40 = (*(*ls).z).n;
                 (*(*ls).z).n = (*(*ls).z).n.wrapping_sub(1);
-                (*ls).current = if fresh40 > 0i32 as libc::c_ulong {
+                (*ls).current = if fresh40 > 0i32 as lua_ulong {
                     let fresh41 = (*(*ls).z).p;
                     (*(*ls).z).p = (*(*ls).z).p.offset(1);
-                    *fresh41 as libc::c_uchar as libc::c_int
+                    *fresh41 as lua_uchar as lua_int
                 } else {
                     luaZ_fill((*ls).z)
                 };
@@ -1583,22 +1583,22 @@ unsafe extern "C" fn read_string(
                     122 => {
                         /* zap following span of spaces */
                         /* remove '\\' */
-                        (*(*ls).buff).n = ((*(*ls).buff).n as libc::c_ulong)
-                            .wrapping_sub(1i32 as libc::c_ulong)
+                        (*(*ls).buff).n = ((*(*ls).buff).n as lua_ulong)
+                            .wrapping_sub(1i32 as lua_ulong)
                             as size_t as size_t;
                         /* skip the 'z' */
                         let fresh42 = (*(*ls).z).n;
                         (*(*ls).z).n = (*(*ls).z).n.wrapping_sub(1);
-                        (*ls).current = if fresh42 > 0i32 as libc::c_ulong {
+                        (*ls).current = if fresh42 > 0i32 as lua_ulong {
                             let fresh43 = (*(*ls).z).p;
                             (*(*ls).z).p = (*(*ls).z).p.offset(1);
-                            *fresh43 as libc::c_uchar as libc::c_int
+                            *fresh43 as lua_uchar as lua_int
                         } else {
                             luaZ_fill((*ls).z)
                         };
                         loop {
                             if !(0
-                                != luai_ctype_[((*ls).current + 1i32) as usize] as libc::c_int
+                                != luai_ctype_[((*ls).current + 1i32) as usize] as lua_int
                                     & 1i32 << 3i32)
                             {
                                 continue 's_4;
@@ -1608,10 +1608,10 @@ unsafe extern "C" fn read_string(
                             } else {
                                 let fresh44 = (*(*ls).z).n;
                                 (*(*ls).z).n = (*(*ls).z).n.wrapping_sub(1);
-                                (*ls).current = if fresh44 > 0i32 as libc::c_ulong {
+                                (*ls).current = if fresh44 > 0i32 as lua_ulong {
                                     let fresh45 = (*(*ls).z).p;
                                     (*(*ls).z).p = (*(*ls).z).p.offset(1);
-                                    *fresh45 as libc::c_uchar as libc::c_int
+                                    *fresh45 as lua_uchar as lua_int
                                 } else {
                                     luaZ_fill((*ls).z)
                                 }
@@ -1621,7 +1621,7 @@ unsafe extern "C" fn read_string(
                     _ => {
                         esccheck(
                             ls,
-                            luai_ctype_[((*ls).current + 1i32) as usize] as libc::c_int
+                            luai_ctype_[((*ls).current + 1i32) as usize] as lua_int
                                 & 1i32 << 1i32,
                             s!(b"invalid escape sequence\x00"),
                         );
@@ -1634,10 +1634,10 @@ unsafe extern "C" fn read_string(
                     12992004776645797882 => {
                         let fresh46 = (*(*ls).z).n;
                         (*(*ls).z).n = (*(*ls).z).n.wrapping_sub(1);
-                        (*ls).current = if fresh46 > 0i32 as libc::c_ulong {
+                        (*ls).current = if fresh46 > 0i32 as lua_ulong {
                             let fresh47 = (*(*ls).z).p;
                             (*(*ls).z).p = (*(*ls).z).p.offset(1);
-                            *fresh47 as libc::c_uchar as libc::c_int
+                            *fresh47 as lua_uchar as lua_int
                         } else {
                             luaZ_fill((*ls).z)
                         }
@@ -1646,8 +1646,8 @@ unsafe extern "C" fn read_string(
                 }
                 /* go through */
                 /* remove '\\' */
-                (*(*ls).buff).n = ((*(*ls).buff).n as libc::c_ulong)
-                    .wrapping_sub(1i32 as libc::c_ulong) as size_t
+                (*(*ls).buff).n = ((*(*ls).buff).n as lua_ulong)
+                    .wrapping_sub(1i32 as lua_ulong) as size_t
                     as size_t;
                 save(ls, c);
             }
@@ -1656,10 +1656,10 @@ unsafe extern "C" fn read_string(
                 save(ls, (*ls).current);
                 let fresh48 = (*(*ls).z).n;
                 (*(*ls).z).n = (*(*ls).z).n.wrapping_sub(1);
-                (*ls).current = if fresh48 > 0i32 as libc::c_ulong {
+                (*ls).current = if fresh48 > 0i32 as lua_ulong {
                     let fresh49 = (*(*ls).z).p;
                     (*(*ls).z).p = (*(*ls).z).p.offset(1);
-                    *fresh49 as libc::c_uchar as libc::c_int
+                    *fresh49 as lua_uchar as lua_int
                 } else {
                     luaZ_fill((*ls).z)
                 }
@@ -1670,36 +1670,36 @@ unsafe extern "C" fn read_string(
     save(ls, (*ls).current);
     let fresh50 = (*(*ls).z).n;
     (*(*ls).z).n = (*(*ls).z).n.wrapping_sub(1);
-    (*ls).current = if fresh50 > 0i32 as libc::c_ulong {
+    (*ls).current = if fresh50 > 0i32 as lua_ulong {
         let fresh51 = (*(*ls).z).p;
         (*(*ls).z).p = (*(*ls).z).p.offset(1);
-        *fresh51 as libc::c_uchar as libc::c_int
+        *fresh51 as lua_uchar as lua_int
     } else {
         luaZ_fill((*ls).z)
     };
     (*seminfo).ts = luaX_newstring(
         ls,
         (*(*ls).buff).buffer.offset(1isize),
-        (*(*ls).buff).n.wrapping_sub(2i32 as libc::c_ulong),
+        (*(*ls).buff).n.wrapping_sub(2i32 as lua_ulong),
     );
 }
-unsafe extern "C" fn readdecesc(mut ls: *mut LexState) -> libc::c_int {
-    let mut i: libc::c_int = 0;
+unsafe extern "C" fn readdecesc(mut ls: *mut LexState) -> lua_int {
+    let mut i: lua_int = 0;
     /* result accumulator */
-    let mut r: libc::c_int = 0i32;
+    let mut r: lua_int = 0i32;
     i = 0i32;
     while i < 3i32
-        && 0 != luai_ctype_[((*ls).current + 1i32) as usize] as libc::c_int & 1i32 << 1i32
+        && 0 != luai_ctype_[((*ls).current + 1i32) as usize] as lua_int & 1i32 << 1i32
     {
         /* read up to 3 digits */
         r = 10i32 * r + (*ls).current - '0' as i32;
         save(ls, (*ls).current);
         let fresh52 = (*(*ls).z).n;
         (*(*ls).z).n = (*(*ls).z).n.wrapping_sub(1);
-        (*ls).current = if fresh52 > 0i32 as libc::c_ulong {
+        (*ls).current = if fresh52 > 0i32 as lua_ulong {
             let fresh53 = (*(*ls).z).p;
             (*(*ls).z).p = (*(*ls).z).p.offset(1);
-            *fresh53 as libc::c_uchar as libc::c_int
+            *fresh53 as lua_uchar as lua_int
         } else {
             luaZ_fill((*ls).z)
         };
@@ -1707,18 +1707,18 @@ unsafe extern "C" fn readdecesc(mut ls: *mut LexState) -> libc::c_int {
     }
     esccheck(
         ls,
-        (r <= 127i32 * 2i32 + 1i32) as libc::c_int,
+        (r <= 127i32 * 2i32 + 1i32) as lua_int,
         s!(b"decimal escape too large\x00"),
     );
     /* remove read digits from buffer */
     (*(*ls).buff).n =
-        ((*(*ls).buff).n as libc::c_ulong).wrapping_sub(i as libc::c_ulong) as size_t as size_t;
+        ((*(*ls).buff).n as lua_ulong).wrapping_sub(i as lua_ulong) as size_t as size_t;
     return r;
 }
 unsafe extern "C" fn esccheck(
     mut ls: *mut LexState,
-    mut c: libc::c_int,
-    mut msg: *const libc::c_char,
+    mut c: lua_int,
+    mut msg: *const lua_char,
 ) -> () {
     if 0 == c {
         if (*ls).current != -1i32 {
@@ -1726,15 +1726,15 @@ unsafe extern "C" fn esccheck(
             save(ls, (*ls).current);
             let fresh54 = (*(*ls).z).n;
             (*(*ls).z).n = (*(*ls).z).n.wrapping_sub(1);
-            (*ls).current = if fresh54 > 0i32 as libc::c_ulong {
+            (*ls).current = if fresh54 > 0i32 as lua_ulong {
                 let fresh55 = (*(*ls).z).p;
                 (*(*ls).z).p = (*(*ls).z).p.offset(1);
-                *fresh55 as libc::c_uchar as libc::c_int
+                *fresh55 as lua_uchar as lua_int
             } else {
                 luaZ_fill((*ls).z)
             }
         }
-        lexerror(ls, msg, TK_STRING as libc::c_int);
+        lexerror(ls, msg, TK_STRING as lua_int);
     } else {
         return;
     };
@@ -1744,14 +1744,14 @@ unsafe extern "C" fn esccheck(
 ** \n, \r, \n\r, or \r\n)
 */
 unsafe extern "C" fn inclinenumber(mut ls: *mut LexState) -> () {
-    let mut old: libc::c_int = (*ls).current;
+    let mut old: lua_int = (*ls).current;
     /* skip '\n' or '\r' */
     let fresh56 = (*(*ls).z).n;
     (*(*ls).z).n = (*(*ls).z).n.wrapping_sub(1);
-    (*ls).current = if fresh56 > 0i32 as libc::c_ulong {
+    (*ls).current = if fresh56 > 0i32 as lua_ulong {
         let fresh57 = (*(*ls).z).p;
         (*(*ls).z).p = (*(*ls).z).p.offset(1);
-        *fresh57 as libc::c_uchar as libc::c_int
+        *fresh57 as lua_uchar as lua_int
     } else {
         luaZ_fill((*ls).z)
     };
@@ -1759,10 +1759,10 @@ unsafe extern "C" fn inclinenumber(mut ls: *mut LexState) -> () {
         /* skip '\n\r' or '\r\n' */
         let fresh58 = (*(*ls).z).n;
         (*(*ls).z).n = (*(*ls).z).n.wrapping_sub(1);
-        (*ls).current = if fresh58 > 0i32 as libc::c_ulong {
+        (*ls).current = if fresh58 > 0i32 as lua_ulong {
             let fresh59 = (*(*ls).z).p;
             (*(*ls).z).p = (*(*ls).z).p.offset(1);
-            *fresh59 as libc::c_uchar as libc::c_int
+            *fresh59 as lua_uchar as lua_int
         } else {
             luaZ_fill((*ls).z)
         }
@@ -1775,102 +1775,102 @@ unsafe extern "C" fn inclinenumber(mut ls: *mut LexState) -> () {
     };
 }
 unsafe extern "C" fn utf8esc(mut ls: *mut LexState) -> () {
-    let mut buff: [libc::c_char; 8] = [0; 8];
-    let mut n: libc::c_int = luaO_utf8esc(buff.as_mut_ptr(), readutf8esc(ls));
+    let mut buff: [lua_char; 8] = [0; 8];
+    let mut n: lua_int = luaO_utf8esc(buff.as_mut_ptr(), readutf8esc(ls));
     /* add 'buff' to string */
     while n > 0i32 {
-        save(ls, buff[(8i32 - n) as usize] as libc::c_int);
+        save(ls, buff[(8i32 - n) as usize] as lua_int);
         n -= 1
     }
 }
-unsafe extern "C" fn readutf8esc(mut ls: *mut LexState) -> libc::c_ulong {
-    let mut r: libc::c_ulong = 0;
+unsafe extern "C" fn readutf8esc(mut ls: *mut LexState) -> lua_ulong {
+    let mut r: lua_ulong = 0;
     /* chars to be removed: '\', 'u', '{', and first digit */
-    let mut i: libc::c_int = 4i32;
+    let mut i: lua_int = 4i32;
     /* skip 'u' */
     save(ls, (*ls).current);
     let fresh60 = (*(*ls).z).n;
     (*(*ls).z).n = (*(*ls).z).n.wrapping_sub(1);
-    (*ls).current = if fresh60 > 0i32 as libc::c_ulong {
+    (*ls).current = if fresh60 > 0i32 as lua_ulong {
         let fresh61 = (*(*ls).z).p;
         (*(*ls).z).p = (*(*ls).z).p.offset(1);
-        *fresh61 as libc::c_uchar as libc::c_int
+        *fresh61 as lua_uchar as lua_int
     } else {
         luaZ_fill((*ls).z)
     };
     esccheck(
         ls,
-        ((*ls).current == '{' as i32) as libc::c_int,
+        ((*ls).current == '{' as i32) as lua_int,
         s!(b"missing \'{\'\x00"),
     );
     /* must have at least one digit */
-    r = gethexa(ls) as libc::c_ulong;
+    r = gethexa(ls) as lua_ulong;
     loop {
         save(ls, (*ls).current);
         let fresh62 = (*(*ls).z).n;
         (*(*ls).z).n = (*(*ls).z).n.wrapping_sub(1);
-        (*ls).current = if fresh62 > 0i32 as libc::c_ulong {
+        (*ls).current = if fresh62 > 0i32 as lua_ulong {
             let fresh63 = (*(*ls).z).p;
             (*(*ls).z).p = (*(*ls).z).p.offset(1);
-            *fresh63 as libc::c_uchar as libc::c_int
+            *fresh63 as lua_uchar as lua_int
         } else {
             luaZ_fill((*ls).z)
         };
-        if !(0 != luai_ctype_[((*ls).current + 1i32) as usize] as libc::c_int & 1i32 << 4i32) {
+        if !(0 != luai_ctype_[((*ls).current + 1i32) as usize] as lua_int & 1i32 << 4i32) {
             break;
         }
         i += 1;
-        r = (r << 4i32).wrapping_add(luaO_hexavalue((*ls).current) as libc::c_ulong);
+        r = (r << 4i32).wrapping_add(luaO_hexavalue((*ls).current) as lua_ulong);
         esccheck(
             ls,
-            (r <= 0x10ffffi32 as libc::c_ulong) as libc::c_int,
+            (r <= 0x10ffffi32 as lua_ulong) as lua_int,
             s!(b"UTF-8 value too large\x00"),
         );
     }
     esccheck(
         ls,
-        ((*ls).current == '}' as i32) as libc::c_int,
+        ((*ls).current == '}' as i32) as lua_int,
         s!(b"missing \'}\'\x00"),
     );
     /* skip '}' */
     let fresh64 = (*(*ls).z).n;
     (*(*ls).z).n = (*(*ls).z).n.wrapping_sub(1);
-    (*ls).current = if fresh64 > 0i32 as libc::c_ulong {
+    (*ls).current = if fresh64 > 0i32 as lua_ulong {
         let fresh65 = (*(*ls).z).p;
         (*(*ls).z).p = (*(*ls).z).p.offset(1);
-        *fresh65 as libc::c_uchar as libc::c_int
+        *fresh65 as lua_uchar as lua_int
     } else {
         luaZ_fill((*ls).z)
     };
     /* remove saved chars from buffer */
     (*(*ls).buff).n =
-        ((*(*ls).buff).n as libc::c_ulong).wrapping_sub(i as libc::c_ulong) as size_t as size_t;
+        ((*(*ls).buff).n as lua_ulong).wrapping_sub(i as lua_ulong) as size_t as size_t;
     return r;
 }
-unsafe extern "C" fn gethexa(mut ls: *mut LexState) -> libc::c_int {
+unsafe extern "C" fn gethexa(mut ls: *mut LexState) -> lua_int {
     save(ls, (*ls).current);
     let fresh66 = (*(*ls).z).n;
     (*(*ls).z).n = (*(*ls).z).n.wrapping_sub(1);
-    (*ls).current = if fresh66 > 0i32 as libc::c_ulong {
+    (*ls).current = if fresh66 > 0i32 as lua_ulong {
         let fresh67 = (*(*ls).z).p;
         (*(*ls).z).p = (*(*ls).z).p.offset(1);
-        *fresh67 as libc::c_uchar as libc::c_int
+        *fresh67 as lua_uchar as lua_int
     } else {
         luaZ_fill((*ls).z)
     };
     esccheck(
         ls,
-        luai_ctype_[((*ls).current + 1i32) as usize] as libc::c_int & 1i32 << 4i32,
+        luai_ctype_[((*ls).current + 1i32) as usize] as lua_int & 1i32 << 4i32,
         s!(b"hexadecimal digit expected\x00"),
     );
     return luaO_hexavalue((*ls).current);
 }
-unsafe extern "C" fn readhexaesc(mut ls: *mut LexState) -> libc::c_int {
-    let mut r: libc::c_int = gethexa(ls);
+unsafe extern "C" fn readhexaesc(mut ls: *mut LexState) -> lua_int {
+    let mut r: lua_int = gethexa(ls);
     r = (r << 4i32) + gethexa(ls);
     /* remove saved chars from buffer */
     (*(*ls).buff).n =
-        ((*(*ls).buff).n as libc::c_ulong).wrapping_sub(2i32 as libc::c_ulong) as size_t as size_t;
+        ((*(*ls).buff).n as lua_ulong).wrapping_sub(2i32 as lua_ulong) as size_t as size_t;
     return r;
 }
 /*
@@ -1878,16 +1878,16 @@ unsafe extern "C" fn readhexaesc(mut ls: *mut LexState) -> libc::c_int {
 ** its number of '='s; otherwise, return a negative number (-1 iff there
 ** are no '='s after initial bracket)
 */
-unsafe extern "C" fn skip_sep(mut ls: *mut LexState) -> libc::c_int {
-    let mut count: libc::c_int = 0i32;
-    let mut s: libc::c_int = (*ls).current;
+unsafe extern "C" fn skip_sep(mut ls: *mut LexState) -> lua_int {
+    let mut count: lua_int = 0i32;
+    let mut s: lua_int = (*ls).current;
     save(ls, (*ls).current);
     let fresh68 = (*(*ls).z).n;
     (*(*ls).z).n = (*(*ls).z).n.wrapping_sub(1);
-    (*ls).current = if fresh68 > 0i32 as libc::c_ulong {
+    (*ls).current = if fresh68 > 0i32 as lua_ulong {
         let fresh69 = (*(*ls).z).p;
         (*(*ls).z).p = (*(*ls).z).p.offset(1);
-        *fresh69 as libc::c_uchar as libc::c_int
+        *fresh69 as lua_uchar as lua_int
     } else {
         luaZ_fill((*ls).z)
     };
@@ -1895,10 +1895,10 @@ unsafe extern "C" fn skip_sep(mut ls: *mut LexState) -> libc::c_int {
         save(ls, (*ls).current);
         let fresh70 = (*(*ls).z).n;
         (*(*ls).z).n = (*(*ls).z).n.wrapping_sub(1);
-        (*ls).current = if fresh70 > 0i32 as libc::c_ulong {
+        (*ls).current = if fresh70 > 0i32 as lua_ulong {
             let fresh71 = (*(*ls).z).p;
             (*(*ls).z).p = (*(*ls).z).p.offset(1);
-            *fresh71 as libc::c_uchar as libc::c_int
+            *fresh71 as lua_uchar as lua_int
         } else {
             luaZ_fill((*ls).z)
         };
@@ -1913,18 +1913,18 @@ unsafe extern "C" fn skip_sep(mut ls: *mut LexState) -> libc::c_int {
 unsafe extern "C" fn read_long_string(
     mut ls: *mut LexState,
     mut seminfo: *mut SemInfo,
-    mut sep: libc::c_int,
+    mut sep: lua_int,
 ) -> () {
     /* initial line (for error message) */
-    let mut line: libc::c_int = (*ls).linenumber;
+    let mut line: lua_int = (*ls).linenumber;
     /* skip 2nd '[' */
     save(ls, (*ls).current);
     let fresh72 = (*(*ls).z).n;
     (*(*ls).z).n = (*(*ls).z).n.wrapping_sub(1);
-    (*ls).current = if fresh72 > 0i32 as libc::c_ulong {
+    (*ls).current = if fresh72 > 0i32 as lua_ulong {
         let fresh73 = (*(*ls).z).p;
         (*(*ls).z).p = (*(*ls).z).p.offset(1);
-        *fresh73 as libc::c_uchar as libc::c_int
+        *fresh73 as lua_uchar as lua_int
     } else {
         luaZ_fill((*ls).z)
     };
@@ -1937,18 +1937,18 @@ unsafe extern "C" fn read_long_string(
         match (*ls).current {
             -1 => {
                 /* error */
-                let mut what: *const libc::c_char = if !seminfo.is_null() {
+                let mut what: *const lua_char = if !seminfo.is_null() {
                     s!(b"string\x00")
                 } else {
                     s!(b"comment\x00")
                 };
-                let mut msg: *const libc::c_char = luaO_pushfstring!(
+                let mut msg: *const lua_char = luaO_pushfstring!(
                     (*ls).L,
                     s!(b"unfinished long %s (starting at line %d)\x00"),
                     what,
                     line,
                 );
-                lexerror(ls, msg, TK_EOS as libc::c_int);
+                lexerror(ls, msg, TK_EOS as lua_int);
             }
             93 => {
                 if !(skip_sep(ls) == sep) {
@@ -1958,10 +1958,10 @@ unsafe extern "C" fn read_long_string(
                 save(ls, (*ls).current);
                 let fresh74 = (*(*ls).z).n;
                 (*(*ls).z).n = (*(*ls).z).n.wrapping_sub(1);
-                (*ls).current = if fresh74 > 0i32 as libc::c_ulong {
+                (*ls).current = if fresh74 > 0i32 as lua_ulong {
                     let fresh75 = (*(*ls).z).p;
                     (*(*ls).z).p = (*(*ls).z).p.offset(1);
-                    *fresh75 as libc::c_uchar as libc::c_int
+                    *fresh75 as lua_uchar as lua_int
                 } else {
                     luaZ_fill((*ls).z)
                 };
@@ -1981,20 +1981,20 @@ unsafe extern "C" fn read_long_string(
                     save(ls, (*ls).current);
                     let fresh76 = (*(*ls).z).n;
                     (*(*ls).z).n = (*(*ls).z).n.wrapping_sub(1);
-                    (*ls).current = if fresh76 > 0i32 as libc::c_ulong {
+                    (*ls).current = if fresh76 > 0i32 as lua_ulong {
                         let fresh77 = (*(*ls).z).p;
                         (*(*ls).z).p = (*(*ls).z).p.offset(1);
-                        *fresh77 as libc::c_uchar as libc::c_int
+                        *fresh77 as lua_uchar as lua_int
                     } else {
                         luaZ_fill((*ls).z)
                     }
                 } else {
                     let fresh78 = (*(*ls).z).n;
                     (*(*ls).z).n = (*(*ls).z).n.wrapping_sub(1);
-                    (*ls).current = if fresh78 > 0i32 as libc::c_ulong {
+                    (*ls).current = if fresh78 > 0i32 as lua_ulong {
                         let fresh79 = (*(*ls).z).p;
                         (*(*ls).z).p = (*(*ls).z).p.offset(1);
-                        *fresh79 as libc::c_uchar as libc::c_int
+                        *fresh79 as lua_uchar as lua_int
                     } else {
                         luaZ_fill((*ls).z)
                     }
@@ -2008,19 +2008,19 @@ unsafe extern "C" fn read_long_string(
             (*(*ls).buff).buffer.offset((2i32 + sep) as isize),
             (*(*ls).buff)
                 .n
-                .wrapping_sub((2i32 * (2i32 + sep)) as libc::c_ulong),
+                .wrapping_sub((2i32 * (2i32 + sep)) as lua_ulong),
         )
     };
 }
 #[no_mangle]
-pub unsafe extern "C" fn luaX_lookahead(mut ls: *mut LexState) -> libc::c_int {
+pub unsafe extern "C" fn luaX_lookahead(mut ls: *mut LexState) -> lua_int {
     (*ls).lookahead.token = llex(ls, &mut (*ls).lookahead.seminfo);
     return (*ls).lookahead.token;
 }
 #[no_mangle]
 pub unsafe extern "C" fn luaX_syntaxerror(
     mut ls: *mut LexState,
-    mut msg: *const libc::c_char,
+    mut msg: *const lua_char,
 ) -> ! {
     lexerror(ls, msg, (*ls).t.token);
 }

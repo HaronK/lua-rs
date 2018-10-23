@@ -1,4 +1,4 @@
-use libc;
+use types::*;
 extern "C" {
     /*
      ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
@@ -16,36 +16,36 @@ extern "C" {
     /* thread status */
     pub type lua_State;
     #[no_mangle]
-    fn setlocale(__category: libc::c_int, __locale: *const libc::c_char) -> *mut libc::c_char;
+    fn setlocale(__category: lua_int, __locale: *const lua_char) -> *mut lua_char;
     #[no_mangle]
-    fn exit(_: libc::c_int) -> !;
+    fn exit(_: lua_int) -> !;
     #[no_mangle]
-    fn getenv(__name: *const libc::c_char) -> *mut libc::c_char;
+    fn getenv(__name: *const lua_char) -> *mut lua_char;
     #[no_mangle]
-    fn mkstemp(__template: *mut libc::c_char) -> libc::c_int;
+    fn mkstemp(__template: *mut lua_char) -> lua_int;
     #[no_mangle]
-    fn system(__command: *const libc::c_char) -> libc::c_int;
+    fn system(__command: *const lua_char) -> lua_int;
     #[no_mangle]
-    fn memcpy(_: *mut libc::c_void, _: *const libc::c_void, _: libc::c_ulong) -> *mut libc::c_void;
+    fn memcpy(_: *mut lua_void, _: *const lua_void, _: lua_ulong) -> *mut lua_void;
     #[no_mangle]
-    fn memcmp(_: *const libc::c_void, _: *const libc::c_void, _: libc::c_ulong) -> libc::c_int;
+    fn memcmp(_: *const lua_void, _: *const lua_void, _: lua_ulong) -> lua_int;
     #[no_mangle]
-    fn strcpy(_: *mut libc::c_char, _: *const libc::c_char) -> *mut libc::c_char;
+    fn strcpy(_: *mut lua_char, _: *const lua_char) -> *mut lua_char;
     #[no_mangle]
-    fn strcmp(_: *const libc::c_char, _: *const libc::c_char) -> libc::c_int;
+    fn strcmp(_: *const lua_char, _: *const lua_char) -> lua_int;
     #[no_mangle]
     fn clock() -> clock_t;
     #[no_mangle]
     fn time(__timer: *mut time_t) -> time_t;
     #[no_mangle]
-    fn difftime(__time1: time_t, __time0: time_t) -> libc::c_double;
+    fn difftime(__time1: time_t, __time0: time_t) -> lua_double;
     #[no_mangle]
     fn mktime(__tp: *mut tm) -> time_t;
     #[no_mangle]
     fn strftime(
-        __s: *mut libc::c_char,
+        __s: *mut lua_char,
         __maxsize: size_t,
-        __format: *const libc::c_char,
+        __format: *const lua_char,
         __tp: *const tm,
     ) -> size_t;
     #[no_mangle]
@@ -55,122 +55,122 @@ extern "C" {
     #[no_mangle]
     fn lua_close(L: *mut lua_State) -> ();
     #[no_mangle]
-    fn lua_settop(L: *mut lua_State, idx: libc::c_int) -> ();
+    fn lua_settop(L: *mut lua_State, idx: lua_int) -> ();
     #[no_mangle]
-    fn lua_type(L: *mut lua_State, idx: libc::c_int) -> libc::c_int;
+    fn lua_type(L: *mut lua_State, idx: lua_int) -> lua_int;
     #[no_mangle]
-    fn lua_tointegerx(L: *mut lua_State, idx: libc::c_int, isnum: *mut libc::c_int) -> lua_Integer;
+    fn lua_tointegerx(L: *mut lua_State, idx: lua_int, isnum: *mut lua_int) -> lua_Integer;
     #[no_mangle]
-    fn lua_toboolean(L: *mut lua_State, idx: libc::c_int) -> libc::c_int;
+    fn lua_toboolean(L: *mut lua_State, idx: lua_int) -> lua_int;
     #[no_mangle]
     fn lua_pushnumber(L: *mut lua_State, n: lua_Number) -> ();
     #[no_mangle]
     fn lua_pushinteger(L: *mut lua_State, n: lua_Integer) -> ();
     #[no_mangle]
-    fn lua_pushstring(L: *mut lua_State, s: *const libc::c_char) -> *const libc::c_char;
+    fn lua_pushstring(L: *mut lua_State, s: *const lua_char) -> *const lua_char;
     #[no_mangle]
-    fn lua_pushfstring(L: *mut lua_State, fmt: *const libc::c_char, ...) -> *const libc::c_char;
+    fn lua_pushfstring(L: *mut lua_State, fmt: *const lua_char, ...) -> *const lua_char;
     #[no_mangle]
-    fn lua_pushboolean(L: *mut lua_State, b: libc::c_int) -> ();
+    fn lua_pushboolean(L: *mut lua_State, b: lua_int) -> ();
     #[no_mangle]
-    fn lua_getfield(L: *mut lua_State, idx: libc::c_int, k: *const libc::c_char) -> libc::c_int;
+    fn lua_getfield(L: *mut lua_State, idx: lua_int, k: *const lua_char) -> lua_int;
     #[no_mangle]
-    fn lua_createtable(L: *mut lua_State, narr: libc::c_int, nrec: libc::c_int) -> ();
+    fn lua_createtable(L: *mut lua_State, narr: lua_int, nrec: lua_int) -> ();
     #[no_mangle]
-    fn lua_setfield(L: *mut lua_State, idx: libc::c_int, k: *const libc::c_char) -> ();
+    fn lua_setfield(L: *mut lua_State, idx: lua_int, k: *const lua_char) -> ();
     #[no_mangle]
-    fn remove(__filename: *const libc::c_char) -> libc::c_int;
+    fn remove(__filename: *const lua_char) -> lua_int;
     #[no_mangle]
-    fn rename(__old: *const libc::c_char, __new: *const libc::c_char) -> libc::c_int;
+    fn rename(__old: *const lua_char, __new: *const lua_char) -> lua_int;
     #[no_mangle]
     fn luaL_checkversion_(L: *mut lua_State, ver: lua_Number, sz: size_t) -> ();
     #[no_mangle]
     fn luaL_argerror(
         L: *mut lua_State,
-        arg: libc::c_int,
-        extramsg: *const libc::c_char,
-    ) -> libc::c_int;
+        arg: lua_int,
+        extramsg: *const lua_char,
+    ) -> lua_int;
     #[no_mangle]
     fn luaL_checklstring(
         L: *mut lua_State,
-        arg: libc::c_int,
+        arg: lua_int,
         l: *mut size_t,
-    ) -> *const libc::c_char;
+    ) -> *const lua_char;
     #[no_mangle]
     fn luaL_optlstring(
         L: *mut lua_State,
-        arg: libc::c_int,
-        def: *const libc::c_char,
+        arg: lua_int,
+        def: *const lua_char,
         l: *mut size_t,
-    ) -> *const libc::c_char;
+    ) -> *const lua_char;
     #[no_mangle]
-    fn luaL_checkinteger(L: *mut lua_State, arg: libc::c_int) -> lua_Integer;
+    fn luaL_checkinteger(L: *mut lua_State, arg: lua_int) -> lua_Integer;
     #[no_mangle]
-    fn luaL_optinteger(L: *mut lua_State, arg: libc::c_int, def: lua_Integer) -> lua_Integer;
+    fn luaL_optinteger(L: *mut lua_State, arg: lua_int, def: lua_Integer) -> lua_Integer;
     #[no_mangle]
-    fn luaL_checktype(L: *mut lua_State, arg: libc::c_int, t: libc::c_int) -> ();
+    fn luaL_checktype(L: *mut lua_State, arg: lua_int, t: lua_int) -> ();
     #[no_mangle]
-    fn luaL_error(L: *mut lua_State, fmt: *const libc::c_char, ...) -> libc::c_int;
+    fn luaL_error(L: *mut lua_State, fmt: *const lua_char, ...) -> lua_int;
     #[no_mangle]
     fn luaL_checkoption(
         L: *mut lua_State,
-        arg: libc::c_int,
-        def: *const libc::c_char,
-        lst: *const *const libc::c_char,
-    ) -> libc::c_int;
+        arg: lua_int,
+        def: *const lua_char,
+        lst: *const *const lua_char,
+    ) -> lua_int;
     #[no_mangle]
     fn luaL_fileresult(
         L: *mut lua_State,
-        stat: libc::c_int,
-        fname: *const libc::c_char,
-    ) -> libc::c_int;
+        stat: lua_int,
+        fname: *const lua_char,
+    ) -> lua_int;
     #[no_mangle]
-    fn luaL_execresult(L: *mut lua_State, stat: libc::c_int) -> libc::c_int;
+    fn luaL_execresult(L: *mut lua_State, stat: lua_int) -> lua_int;
     #[no_mangle]
-    fn luaL_setfuncs(L: *mut lua_State, l: *const luaL_Reg, nup: libc::c_int) -> ();
+    fn luaL_setfuncs(L: *mut lua_State, l: *const luaL_Reg, nup: lua_int) -> ();
     #[no_mangle]
     fn luaL_buffinit(L: *mut lua_State, B: *mut luaL_Buffer) -> ();
     #[no_mangle]
-    fn luaL_prepbuffsize(B: *mut luaL_Buffer, sz: size_t) -> *mut libc::c_char;
+    fn luaL_prepbuffsize(B: *mut luaL_Buffer, sz: size_t) -> *mut lua_char;
     #[no_mangle]
     fn luaL_pushresult(B: *mut luaL_Buffer) -> ();
     #[no_mangle]
-    fn close(__fd: libc::c_int) -> libc::c_int;
+    fn close(__fd: lua_int) -> lua_int;
 }
-pub type size_t = libc::c_ulong;
-pub type __clock_t = libc::c_long;
-pub type __time_t = libc::c_long;
+pub type size_t = lua_ulong;
+pub type __clock_t = lua_long;
+pub type __time_t = lua_long;
 pub type clock_t = __clock_t;
 pub type time_t = __time_t;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct tm {
-    pub tm_sec: libc::c_int,
-    pub tm_min: libc::c_int,
-    pub tm_hour: libc::c_int,
-    pub tm_mday: libc::c_int,
-    pub tm_mon: libc::c_int,
-    pub tm_year: libc::c_int,
-    pub tm_wday: libc::c_int,
-    pub tm_yday: libc::c_int,
-    pub tm_isdst: libc::c_int,
-    pub __tm_gmtoff: libc::c_long,
-    pub __tm_zone: *const libc::c_char,
+    pub tm_sec: lua_int,
+    pub tm_min: lua_int,
+    pub tm_hour: lua_int,
+    pub tm_mday: lua_int,
+    pub tm_mon: lua_int,
+    pub tm_year: lua_int,
+    pub tm_wday: lua_int,
+    pub tm_yday: lua_int,
+    pub tm_isdst: lua_int,
+    pub __tm_gmtoff: lua_long,
+    pub __tm_zone: *const lua_char,
 }
-pub type ptrdiff_t = libc::c_long;
+pub type ptrdiff_t = lua_long;
 /*
 ** basic types
 */
 /* minimum Lua stack available to a C function */
 /* predefined values in the registry */
 /* type of numbers in Lua */
-pub type lua_Number = libc::c_double;
+pub type lua_Number = lua_double;
 /* type for integer functions */
-pub type lua_Integer = libc::c_longlong;
+pub type lua_Integer = lua_longlong;
 /*
 ** Type for C functions registered with Lua
 */
-pub type lua_CFunction = Option<unsafe extern "C" fn(_: *mut lua_State) -> libc::c_int>;
+pub type lua_CFunction = Option<unsafe extern "C" fn(_: *mut lua_State) -> lua_int>;
 /*
 ** $Id: lauxlib.h,v 1.131.1.1 2017/04/19 17:20:42 roberto Exp $
 ** Auxiliary functions for building Lua libraries
@@ -182,7 +182,7 @@ pub type lua_CFunction = Option<unsafe extern "C" fn(_: *mut lua_State) -> libc:
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct luaL_Reg {
-    pub name: *const libc::c_char,
+    pub name: *const lua_char,
     pub func: lua_CFunction,
 }
 /*
@@ -198,27 +198,27 @@ pub struct luaL_Reg {
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct luaL_Buffer {
-    pub b: *mut libc::c_char,
+    pub b: *mut lua_char,
     pub size: size_t,
     pub n: size_t,
     pub L: *mut lua_State,
-    pub initb: [libc::c_char; 8192],
+    pub initb: [lua_char; 8192],
 }
 #[no_mangle]
-pub unsafe extern "C" fn luaopen_os(mut L: *mut lua_State) -> libc::c_int {
+pub unsafe extern "C" fn luaopen_os(mut L: *mut lua_State) -> lua_int {
     luaL_checkversion_(
         L,
         503i32 as lua_Number,
-        (::std::mem::size_of::<lua_Integer>() as libc::c_ulong)
-            .wrapping_mul(16i32 as libc::c_ulong)
-            .wrapping_add(::std::mem::size_of::<lua_Number>() as libc::c_ulong),
+        (::std::mem::size_of::<lua_Integer>() as lua_ulong)
+            .wrapping_mul(16i32 as lua_ulong)
+            .wrapping_add(::std::mem::size_of::<lua_Number>() as lua_ulong),
     );
     lua_createtable(
         L,
         0i32,
-        (::std::mem::size_of::<[luaL_Reg; 12]>() as libc::c_ulong)
-            .wrapping_div(::std::mem::size_of::<luaL_Reg>() as libc::c_ulong)
-            .wrapping_sub(1i32 as libc::c_ulong) as libc::c_int,
+        (::std::mem::size_of::<[luaL_Reg; 12]>() as lua_ulong)
+            .wrapping_div(::std::mem::size_of::<luaL_Reg>() as lua_ulong)
+            .wrapping_sub(1i32 as lua_ulong) as lua_int,
     );
     luaL_setfuncs(L, syslib.as_ptr(), 0i32);
     return 1i32;
@@ -237,15 +237,15 @@ static mut syslib: [luaL_Reg; 12] = [
     lua_reg!(b"tmpname\x00", os_tmpname),
     lua_reg_none!(0),
 ];
-unsafe extern "C" fn os_tmpname(mut L: *mut lua_State) -> libc::c_int {
-    let mut buff: [libc::c_char; 32] = [0; 32];
-    let mut err: libc::c_int = 0;
+unsafe extern "C" fn os_tmpname(mut L: *mut lua_State) -> lua_int {
+    let mut buff: [lua_char; 32] = [0; 32];
+    let mut err: lua_int = 0;
     strcpy(buff.as_mut_ptr(), s!(b"/tmp/lua_XXXXXX\x00"));
     err = mkstemp(buff.as_mut_ptr());
     if err != -1i32 {
         close(err);
     }
-    err = (err == -1i32) as libc::c_int;
+    err = (err == -1i32) as lua_int;
     if 0 != err {
         return luaL_error(L, s!(b"unable to generate a unique filename\x00"));
     } else {
@@ -253,7 +253,7 @@ unsafe extern "C" fn os_tmpname(mut L: *mut lua_State) -> libc::c_int {
         return 1i32;
     };
 }
-unsafe extern "C" fn os_time(mut L: *mut lua_State) -> libc::c_int {
+unsafe extern "C" fn os_time(mut L: *mut lua_State) -> lua_int {
     let mut ts: tm = tm {
         tm_sec: 0,
         tm_min: 0,
@@ -265,7 +265,7 @@ unsafe extern "C" fn os_time(mut L: *mut lua_State) -> libc::c_int {
         tm_yday: 0,
         tm_isdst: 0,
         __tm_gmtoff: 0,
-        __tm_zone: 0 as *const libc::c_char,
+        __tm_zone: 0 as *const lua_char,
     };
     let mut t: time_t = 0;
     /* called without args? */
@@ -284,7 +284,7 @@ unsafe extern "C" fn os_time(mut L: *mut lua_State) -> libc::c_int {
             tm_yday: 0,
             tm_isdst: 0,
             __tm_gmtoff: 0,
-            __tm_zone: 0 as *const libc::c_char,
+            __tm_zone: 0 as *const lua_char,
         };
         luaL_checktype(L, 1i32, 5i32);
         /* make sure table is at the top */
@@ -326,8 +326,8 @@ unsafe extern "C" fn setallfields(mut L: *mut lua_State, mut stm: *mut tm) -> ()
 }
 unsafe extern "C" fn setboolfield(
     mut L: *mut lua_State,
-    mut key: *const libc::c_char,
-    mut value: libc::c_int,
+    mut key: *const lua_char,
+    mut value: lua_int,
 ) -> () {
     /* undefined? */
     if value < 0i32 {
@@ -348,17 +348,17 @@ unsafe extern "C" fn setboolfield(
 */
 unsafe extern "C" fn setfield(
     mut L: *mut lua_State,
-    mut key: *const libc::c_char,
-    mut value: libc::c_int,
+    mut key: *const lua_char,
+    mut value: lua_int,
 ) -> () {
     lua_pushinteger(L, value as lua_Integer);
     lua_setfield(L, -2i32, key);
 }
 unsafe extern "C" fn getboolfield(
     mut L: *mut lua_State,
-    mut key: *const libc::c_char,
-) -> libc::c_int {
-    let mut res: libc::c_int = 0;
+    mut key: *const lua_char,
+) -> lua_int {
+    let mut res: lua_int = 0;
     res = if lua_getfield(L, -1i32, key) == 0i32 {
         -1i32
     } else {
@@ -370,13 +370,13 @@ unsafe extern "C" fn getboolfield(
 /* maximum value for date fields (to avoid arithmetic overflows with 'int') */
 unsafe extern "C" fn getfield(
     mut L: *mut lua_State,
-    mut key: *const libc::c_char,
-    mut d: libc::c_int,
-    mut delta: libc::c_int,
-) -> libc::c_int {
-    let mut isnum: libc::c_int = 0;
+    mut key: *const lua_char,
+    mut d: lua_int,
+    mut delta: lua_int,
+) -> lua_int {
+    let mut isnum: lua_int = 0;
     /* get field and its type */
-    let mut t: libc::c_int = lua_getfield(L, -1i32, key);
+    let mut t: lua_int = lua_getfield(L, -1i32, key);
     let mut res: lua_Integer = lua_tointegerx(L, -1i32, &mut isnum);
     if 0 == isnum {
         /* field is not an integer? */
@@ -388,54 +388,54 @@ unsafe extern "C" fn getfield(
         } else {
             res = d as lua_Integer
         }
-    } else if !(-(2147483647i32 / 2i32) as libc::c_longlong <= res
-        && res <= (2147483647i32 / 2i32) as libc::c_longlong)
+    } else if !(-(2147483647i32 / 2i32) as lua_longlong <= res
+        && res <= (2147483647i32 / 2i32) as lua_longlong)
     {
         return luaL_error(L, s!(b"field \'%s\' is out-of-bound\x00"), key);
     } else {
-        res -= delta as libc::c_longlong
+        res -= delta as lua_longlong
     }
     lua_settop(L, -1i32 - 1i32);
-    return res as libc::c_int;
+    return res as lua_int;
 }
 /* }====================================================== */
-unsafe extern "C" fn os_setlocale(mut L: *mut lua_State) -> libc::c_int {
-    static mut cat: [libc::c_int; 6] = [6i32, 3i32, 0i32, 4i32, 1i32, 2i32];
-    static mut catnames: [*const libc::c_char; 7] = [
+unsafe extern "C" fn os_setlocale(mut L: *mut lua_State) -> lua_int {
+    static mut cat: [lua_int; 6] = [6i32, 3i32, 0i32, 4i32, 1i32, 2i32];
+    static mut catnames: [*const lua_char; 7] = [
         s!(b"all\x00"),
         s!(b"collate\x00"),
         s!(b"ctype\x00"),
         s!(b"monetary\x00"),
         s!(b"numeric\x00"),
         s!(b"time\x00"),
-        0 as *const libc::c_char,
+        0 as *const lua_char,
     ];
-    let mut l: *const libc::c_char =
-        luaL_optlstring(L, 1i32, 0 as *const libc::c_char, 0 as *mut size_t);
-    let mut op: libc::c_int = luaL_checkoption(L, 2i32, s!(b"all\x00"), catnames.as_ptr());
+    let mut l: *const lua_char =
+        luaL_optlstring(L, 1i32, 0 as *const lua_char, 0 as *mut size_t);
+    let mut op: lua_int = luaL_checkoption(L, 2i32, s!(b"all\x00"), catnames.as_ptr());
     lua_pushstring(L, setlocale(cat[op as usize], l));
     return 1i32;
 }
-unsafe extern "C" fn os_rename(mut L: *mut lua_State) -> libc::c_int {
-    let mut fromname: *const libc::c_char = luaL_checklstring(L, 1i32, 0 as *mut size_t);
-    let mut toname: *const libc::c_char = luaL_checklstring(L, 2i32, 0 as *mut size_t);
+unsafe extern "C" fn os_rename(mut L: *mut lua_State) -> lua_int {
+    let mut fromname: *const lua_char = luaL_checklstring(L, 1i32, 0 as *mut size_t);
+    let mut toname: *const lua_char = luaL_checklstring(L, 2i32, 0 as *mut size_t);
     return luaL_fileresult(
         L,
-        (rename(fromname, toname) == 0i32) as libc::c_int,
-        0 as *const libc::c_char,
+        (rename(fromname, toname) == 0i32) as lua_int,
+        0 as *const lua_char,
     );
 }
-unsafe extern "C" fn os_remove(mut L: *mut lua_State) -> libc::c_int {
-    let mut filename: *const libc::c_char = luaL_checklstring(L, 1i32, 0 as *mut size_t);
-    return luaL_fileresult(L, (remove(filename) == 0i32) as libc::c_int, filename);
+unsafe extern "C" fn os_remove(mut L: *mut lua_State) -> lua_int {
+    let mut filename: *const lua_char = luaL_checklstring(L, 1i32, 0 as *mut size_t);
+    return luaL_fileresult(L, (remove(filename) == 0i32) as lua_int, filename);
 }
-unsafe extern "C" fn os_getenv(mut L: *mut lua_State) -> libc::c_int {
+unsafe extern "C" fn os_getenv(mut L: *mut lua_State) -> lua_int {
     /* if NULL push nil */
     lua_pushstring(L, getenv(luaL_checklstring(L, 1i32, 0 as *mut size_t)));
     return 1i32;
 }
-unsafe extern "C" fn os_exit(mut L: *mut lua_State) -> libc::c_int {
-    let mut status: libc::c_int = 0;
+unsafe extern "C" fn os_exit(mut L: *mut lua_State) -> lua_int {
+    let mut status: lua_int = 0;
     if lua_type(L, 1i32) == 1i32 {
         status = if 0 != lua_toboolean(L, 1i32) {
             0i32
@@ -443,7 +443,7 @@ unsafe extern "C" fn os_exit(mut L: *mut lua_State) -> libc::c_int {
             1i32
         }
     } else {
-        status = luaL_optinteger(L, 1i32, 0i32 as lua_Integer) as libc::c_int
+        status = luaL_optinteger(L, 1i32, 0i32 as lua_Integer) as lua_int
     }
     if 0 != lua_toboolean(L, 2i32) {
         lua_close(L);
@@ -479,10 +479,10 @@ unsafe extern "C" fn os_exit(mut L: *mut lua_State) -> libc::c_int {
 /* } */
 /* } */
 /* }================================================================== */
-unsafe extern "C" fn os_execute(mut L: *mut lua_State) -> libc::c_int {
-    let mut cmd: *const libc::c_char =
-        luaL_optlstring(L, 1i32, 0 as *const libc::c_char, 0 as *mut size_t);
-    let mut stat: libc::c_int = system(cmd);
+unsafe extern "C" fn os_execute(mut L: *mut lua_State) -> lua_int {
+    let mut cmd: *const lua_char =
+        luaL_optlstring(L, 1i32, 0 as *const lua_char, 0 as *mut size_t);
+    let mut stat: lua_int = system(cmd);
     if !cmd.is_null() {
         return luaL_execresult(L, stat);
     } else {
@@ -491,7 +491,7 @@ unsafe extern "C" fn os_execute(mut L: *mut lua_State) -> libc::c_int {
         return 1i32;
     };
 }
-unsafe extern "C" fn os_difftime(mut L: *mut lua_State) -> libc::c_int {
+unsafe extern "C" fn os_difftime(mut L: *mut lua_State) -> lua_int {
     let mut t1: time_t = l_checktime(L, 1i32);
     let mut t2: time_t = l_checktime(L, 2i32);
     lua_pushnumber(L, difftime(t1, t2));
@@ -526,23 +526,23 @@ unsafe extern "C" fn os_difftime(mut L: *mut lua_State) -> libc::c_int {
 /*
 ** type to represent time_t in Lua
 */
-unsafe extern "C" fn l_checktime(mut L: *mut lua_State, mut arg: libc::c_int) -> time_t {
+unsafe extern "C" fn l_checktime(mut L: *mut lua_State, mut arg: lua_int) -> time_t {
     let mut t: lua_Integer = luaL_checkinteger(L, arg);
-    (t as time_t as libc::c_longlong == t
-        || 0 != luaL_argerror(L, arg, s!(b"time out-of-bounds\x00"))) as libc::c_int;
+    (t as time_t as lua_longlong == t
+        || 0 != luaL_argerror(L, arg, s!(b"time out-of-bounds\x00"))) as lua_int;
     return t as time_t;
 }
 /* maximum size for an individual 'strftime' item */
-unsafe extern "C" fn os_date(mut L: *mut lua_State) -> libc::c_int {
+unsafe extern "C" fn os_date(mut L: *mut lua_State) -> lua_int {
     let mut slen: size_t = 0;
-    let mut s: *const libc::c_char = luaL_optlstring(L, 1i32, s!(b"%c\x00"), &mut slen);
+    let mut s: *const lua_char = luaL_optlstring(L, 1i32, s!(b"%c\x00"), &mut slen);
     let mut t: time_t = if lua_type(L, 2i32) <= 0i32 {
         time(0 as *mut time_t)
     } else {
         l_checktime(L, 2i32)
     };
     /* 's' end */
-    let mut se: *const libc::c_char = s.offset(slen as isize);
+    let mut se: *const lua_char = s.offset(slen as isize);
     let mut tmr: tm = tm {
         tm_sec: 0,
         tm_min: 0,
@@ -554,10 +554,10 @@ unsafe extern "C" fn os_date(mut L: *mut lua_State) -> libc::c_int {
         tm_yday: 0,
         tm_isdst: 0,
         __tm_gmtoff: 0,
-        __tm_zone: 0 as *const libc::c_char,
+        __tm_zone: 0 as *const lua_char,
     };
     let mut stm: *mut tm = 0 as *mut tm;
-    if *s as libc::c_int == '!' as i32 {
+    if *s as lua_int == '!' as i32 {
         /* UTC? */
         stm = gmtime_r(&mut t, &mut tmr);
         /* skip '!' */
@@ -578,21 +578,21 @@ unsafe extern "C" fn os_date(mut L: *mut lua_State) -> libc::c_int {
             setallfields(L, stm);
         } else {
             /* buffer for individual conversion specifiers */
-            let mut cc: [libc::c_char; 4] = [0; 4];
+            let mut cc: [lua_char; 4] = [0; 4];
             let mut b: luaL_Buffer = luaL_Buffer {
-                b: 0 as *mut libc::c_char,
+                b: 0 as *mut lua_char,
                 size: 0,
                 n: 0,
                 L: 0 as *mut lua_State,
                 initb: [0; 8192],
             };
-            cc[0usize] = '%' as i32 as libc::c_char;
+            cc[0usize] = '%' as i32 as lua_char;
             luaL_buffinit(L, &mut b);
             while s < se {
                 /* not a conversion specifier? */
-                if *s as libc::c_int != '%' as i32 {
+                if *s as lua_int != '%' as i32 {
                     (b.n < b.size || !luaL_prepbuffsize(&mut b, 1i32 as size_t).is_null())
-                        as libc::c_int;
+                        as lua_int;
                     let fresh1 = b.n;
                     b.n = b.n.wrapping_add(1);
                     let fresh0 = s;
@@ -600,18 +600,18 @@ unsafe extern "C" fn os_date(mut L: *mut lua_State) -> libc::c_int {
                     *b.b.offset(fresh1 as isize) = *fresh0
                 } else {
                     let mut reslen: size_t = 0;
-                    let mut buff: *mut libc::c_char = luaL_prepbuffsize(&mut b, 250i32 as size_t);
+                    let mut buff: *mut lua_char = luaL_prepbuffsize(&mut b, 250i32 as size_t);
                     /* skip '%' */
                     s = s.offset(1isize);
                     /* copy specifier to 'cc' */
                     s = checkoption(
                         L,
                         s,
-                        se.wrapping_offset_from(s) as libc::c_long,
+                        se.wrapping_offset_from(s) as lua_long,
                         cc.as_mut_ptr().offset(1isize),
                     );
                     reslen = strftime(buff, 250i32 as size_t, cc.as_mut_ptr(), stm);
-                    b.n = (b.n as libc::c_ulong).wrapping_add(reslen) as size_t as size_t
+                    b.n = (b.n as lua_ulong).wrapping_add(reslen) as size_t as size_t
                 }
             }
             luaL_pushresult(&mut b);
@@ -621,34 +621,34 @@ unsafe extern "C" fn os_date(mut L: *mut lua_State) -> libc::c_int {
 }
 unsafe extern "C" fn checkoption(
     mut L: *mut lua_State,
-    mut conv: *const libc::c_char,
+    mut conv: *const lua_char,
     mut convlen: ptrdiff_t,
-    mut buff: *mut libc::c_char,
-) -> *const libc::c_char {
-    let mut option: *const libc::c_char =
+    mut buff: *mut lua_char,
+) -> *const lua_char {
+    let mut option: *const lua_char =
         b"aAbBcCdDeFgGhHIjmMnprRStTuUVwWxXyYzZ%||EcECExEXEyEYOdOeOHOIOmOMOSOuOUOVOwOWOy\x00"
-            as *const u8 as *const libc::c_char;
+            as *const u8 as *const lua_char;
     /* length of options being checked */
-    let mut oplen: libc::c_int = 1i32;
-    while *option as libc::c_int != '\u{0}' as i32 && oplen as libc::c_long <= convlen {
+    let mut oplen: lua_int = 1i32;
+    while *option as lua_int != '\u{0}' as i32 && oplen as lua_long <= convlen {
         /* next block? */
-        if *option as libc::c_int == '|' as i32 {
+        if *option as lua_int == '|' as i32 {
             /* will check options with next length (+1) */
             oplen += 1
         } else if memcmp(
-            conv as *const libc::c_void,
-            option as *const libc::c_void,
-            oplen as libc::c_ulong,
+            conv as *const lua_void,
+            option as *const lua_void,
+            oplen as lua_ulong,
         ) == 0i32
         {
             /* match? */
             /* copy valid option to buffer */
             memcpy(
-                buff as *mut libc::c_void,
-                conv as *const libc::c_void,
-                oplen as libc::c_ulong,
+                buff as *mut lua_void,
+                conv as *const lua_void,
+                oplen as lua_ulong,
             );
-            *buff.offset(oplen as isize) = '\u{0}' as i32 as libc::c_char;
+            *buff.offset(oplen as isize) = '\u{0}' as i32 as lua_char;
             /* return next item */
             return conv.offset(oplen as isize);
         }
@@ -662,7 +662,7 @@ unsafe extern "C" fn checkoption(
     /* to avoid warnings */
     return conv;
 }
-unsafe extern "C" fn os_clock(mut L: *mut lua_State) -> libc::c_int {
+unsafe extern "C" fn os_clock(mut L: *mut lua_State) -> lua_int {
     lua_pushnumber(
         L,
         clock() as lua_Number / 1000000i32 as __clock_t as lua_Number,

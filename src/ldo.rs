@@ -1,19 +1,19 @@
-use libc;
+use types::*;
 use llimits::*;
 use lua::*;
 extern "C" {
     #[no_mangle]
-    fn _setjmp(_: *mut __jmp_buf_tag) -> libc::c_int;
+    fn _setjmp(_: *mut __jmp_buf_tag) -> lua_int;
     #[no_mangle]
-    fn _longjmp(_: *mut __jmp_buf_tag, _: libc::c_int) -> !;
+    fn _longjmp(_: *mut __jmp_buf_tag, _: lua_int) -> !;
     #[no_mangle]
     fn abort() -> !;
     #[no_mangle]
-    fn strchr(_: *const libc::c_char, _: libc::c_int) -> *mut libc::c_char;
+    fn strchr(_: *const lua_char, _: lua_int) -> *mut lua_char;
     #[no_mangle]
-    fn luaS_newlstr(L: *mut lua_State, str: *const libc::c_char, l: size_t) -> *mut TString;
+    fn luaS_newlstr(L: *mut lua_State, str: *const lua_char, l: size_t) -> *mut TString;
     #[no_mangle]
-    fn luaG_runerror(L: *mut lua_State, fmt: *const libc::c_char, ...) -> !;
+    fn luaG_runerror(L: *mut lua_State, fmt: *const lua_char, ...) -> !;
     #[no_mangle]
     fn luaV_execute(L: *mut lua_State) -> ();
     #[no_mangle]
@@ -30,10 +30,10 @@ extern "C" {
     #[no_mangle]
     fn luaM_realloc_(
         L: *mut lua_State,
-        block: *mut libc::c_void,
+        block: *mut lua_void,
         oldsize: size_t,
         size: size_t,
-    ) -> *mut libc::c_void;
+    ) -> *mut lua_void;
     /*
      ** $Id: lmem.h,v 1.43.1.1 2017/04/19 17:20:42 roberto Exp $
      ** Interface to Memory Manager
@@ -71,17 +71,17 @@ extern "C" {
      ** See Copyright Notice in lua.h
      */
     #[no_mangle]
-    fn luaG_typeerror(L: *mut lua_State, o: *const TValue, opname: *const libc::c_char) -> !;
+    fn luaG_typeerror(L: *mut lua_State, o: *const TValue, opname: *const lua_char) -> !;
     #[no_mangle]
     fn luaC_step(L: *mut lua_State) -> ();
     #[no_mangle]
     fn luaE_extendCI(L: *mut lua_State) -> *mut CallInfo;
     #[no_mangle]
-    fn luaS_new(L: *mut lua_State, str: *const libc::c_char) -> *mut TString;
+    fn luaS_new(L: *mut lua_State, str: *const lua_char) -> *mut TString;
     #[no_mangle]
-    fn luaO_pushfstring(L: *mut lua_State, fmt: *const libc::c_char, ...) -> *const libc::c_char;
+    fn luaO_pushfstring(L: *mut lua_State, fmt: *const lua_char, ...) -> *const lua_char;
     #[no_mangle]
-    fn luaZ_fill(z: *mut ZIO) -> libc::c_int;
+    fn luaZ_fill(z: *mut ZIO) -> lua_int;
     #[no_mangle]
     fn luaF_initupvals(L: *mut lua_State, cl: *mut LClosure) -> ();
     #[no_mangle]
@@ -90,8 +90,8 @@ extern "C" {
         z: *mut ZIO,
         buff: *mut Mbuffer,
         dyd: *mut Dyndata,
-        name: *const libc::c_char,
-        firstchar: libc::c_int,
+        name: *const lua_char,
+        firstchar: lua_int,
     ) -> *mut LClosure;
     /*
      ** $Id: lundump.h,v 1.45.1.1 2017/04/19 17:20:42 roberto Exp $
@@ -102,26 +102,26 @@ extern "C" {
     /* this is the official format */
     /* load one chunk; from lundump.c */
     #[no_mangle]
-    fn luaU_undump(L: *mut lua_State, Z: *mut ZIO, name: *const libc::c_char) -> *mut LClosure;
+    fn luaU_undump(L: *mut lua_State, Z: *mut ZIO, name: *const lua_char) -> *mut LClosure;
 }
-pub type __jmp_buf = [libc::c_long; 8];
+pub type __jmp_buf = [lua_long; 8];
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct __sigset_t {
-    pub __val: [libc::c_ulong; 16],
+    pub __val: [lua_ulong; 16],
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct __jmp_buf_tag {
     pub __jmpbuf: __jmp_buf,
-    pub __mask_was_saved: libc::c_int,
+    pub __mask_was_saved: lua_int,
     pub __saved_mask: __sigset_t,
 }
 pub type jmp_buf = [__jmp_buf_tag; 1];
-pub type size_t = libc::c_ulong;
-pub type __sig_atomic_t = libc::c_int;
-pub type ptrdiff_t = libc::c_long;
-pub type intptr_t = libc::c_long;
+pub type size_t = lua_ulong;
+pub type __sig_atomic_t = lua_int;
+pub type ptrdiff_t = lua_long;
+pub type intptr_t = lua_long;
 /*
 ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
 ** Lua - A Scripting Language
@@ -142,7 +142,7 @@ pub struct lua_State {
     pub next: *mut GCObject,
     pub tt: lu_byte,
     pub marked: lu_byte,
-    pub nci: libc::c_ushort,
+    pub nci: lua_ushort,
     pub status: lu_byte,
     pub top: StkId,
     pub l_G: *mut global_State,
@@ -157,11 +157,11 @@ pub struct lua_State {
     pub base_ci: CallInfo,
     pub hook: lua_Hook,
     pub errfunc: ptrdiff_t,
-    pub stacksize: libc::c_int,
-    pub basehookcount: libc::c_int,
-    pub hookcount: libc::c_int,
-    pub nny: libc::c_ushort,
-    pub nCcalls: libc::c_ushort,
+    pub stacksize: lua_int,
+    pub basehookcount: lua_int,
+    pub hookcount: lua_int,
+    pub nny: lua_ushort,
+    pub nCcalls: lua_ushort,
     pub hookmask: sig_atomic_t,
     pub allowhook: lu_byte,
 }
@@ -169,7 +169,7 @@ pub struct lua_State {
 /* }{ */
 /* } */
 /* chars used as small naturals (so that 'char' is reserved for characters) */
-pub type lu_byte = libc::c_uchar;
+pub type lu_byte = lua_uchar;
 pub type sig_atomic_t = __sig_atomic_t;
 /* Functions to be called by the debugger in specific events */
 pub type lua_Hook = Option<unsafe extern "C" fn(_: *mut lua_State, _: *mut lua_Debug) -> ()>;
@@ -199,19 +199,19 @@ pub type lua_Hook = Option<unsafe extern "C" fn(_: *mut lua_State, _: *mut lua_D
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct lua_Debug {
-    pub event: libc::c_int,
-    pub name: *const libc::c_char,
-    pub namewhat: *const libc::c_char,
-    pub what: *const libc::c_char,
-    pub source: *const libc::c_char,
-    pub currentline: libc::c_int,
-    pub linedefined: libc::c_int,
-    pub lastlinedefined: libc::c_int,
-    pub nups: libc::c_uchar,
-    pub nparams: libc::c_uchar,
-    pub isvararg: libc::c_char,
-    pub istailcall: libc::c_char,
-    pub short_src: [libc::c_char; 60],
+    pub event: lua_int,
+    pub name: *const lua_char,
+    pub namewhat: *const lua_char,
+    pub what: *const lua_char,
+    pub source: *const lua_char,
+    pub currentline: lua_int,
+    pub linedefined: lua_int,
+    pub lastlinedefined: lua_int,
+    pub nups: lua_uchar,
+    pub nparams: lua_uchar,
+    pub isvararg: lua_char,
+    pub istailcall: lua_char,
+    pub short_src: [lua_char; 60],
     pub i_ci: *mut CallInfo,
 }
 /* private part */
@@ -224,8 +224,8 @@ pub struct CallInfo {
     pub next: *mut CallInfo,
     pub u: unnamed,
     pub extra: ptrdiff_t,
-    pub nresults: libc::c_short,
-    pub callstatus: libc::c_ushort,
+    pub nresults: lua_short,
+    pub callstatus: lua_ushort,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -247,7 +247,7 @@ pub type lua_KContext = intptr_t;
 ** Type for continuation functions
 */
 pub type lua_KFunction =
-    Option<unsafe extern "C" fn(_: *mut lua_State, _: libc::c_int, _: lua_KContext) -> libc::c_int>;
+    Option<unsafe extern "C" fn(_: *mut lua_State, _: lua_int, _: lua_KContext) -> lua_int>;
 /* only for Lua functions */
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -278,7 +278,7 @@ pub struct unnamed_1 {
 ** type for virtual-machine instructions;
 ** must be an unsigned with (at least) 4 bytes (see details in lopcodes.h)
 */
-pub type Instruction = libc::c_uint;
+pub type Instruction = lua_uint;
 /* macro defining a nil value */
 /* raw type tag of a TValue */
 /* tag with no variants (bits 0-3) */
@@ -309,7 +309,7 @@ pub type TValue = lua_TValue;
 #[repr(C)]
 pub struct lua_TValue {
     pub value_: Value,
-    pub tt_: libc::c_int,
+    pub tt_: lua_int,
 }
 /*
 ** Tagged Values. This is the basic representation of values in Lua,
@@ -322,8 +322,8 @@ pub struct lua_TValue {
 #[repr(C)]
 pub union Value {
     pub gc: *mut GCObject,
-    pub p: *mut libc::c_void,
-    pub b: libc::c_int,
+    pub p: *mut lua_void,
+    pub b: lua_int,
     pub f: lua_CFunction,
     pub i: lua_Integer,
     pub n: lua_Number,
@@ -334,13 +334,13 @@ pub union Value {
 /* minimum Lua stack available to a C function */
 /* predefined values in the registry */
 /* type of numbers in Lua */
-pub type lua_Number = libc::c_double;
+pub type lua_Number = lua_double;
 /* type for integer functions */
-pub type lua_Integer = libc::c_longlong;
+pub type lua_Integer = lua_longlong;
 /*
 ** Type for C functions registered with Lua
 */
-pub type lua_CFunction = Option<unsafe extern "C" fn(_: *mut lua_State) -> libc::c_int>;
+pub type lua_CFunction = Option<unsafe extern "C" fn(_: *mut lua_State) -> lua_int>;
 /*
 ** $Id: lobject.h,v 2.117.1.1 2017/04/19 17:39:34 roberto Exp $
 ** Type definitions for Lua objects
@@ -431,7 +431,7 @@ pub struct GCObject {
 pub struct lua_longjmp {
     pub previous: *mut lua_longjmp,
     pub b: jmp_buf,
-    pub status: libc::c_int,
+    pub status: lua_int,
 }
 /*
 ** Lua Upvalues
@@ -454,7 +454,7 @@ pub union unnamed_2 {
 #[repr(C)]
 pub struct unnamed_3 {
     pub next: *mut UpVal,
-    pub touched: libc::c_int,
+    pub touched: lua_int,
 }
 /*
 ** $Id: llimits.h,v 1.141.1.1 2017/04/19 17:20:42 roberto Exp $
@@ -490,14 +490,14 @@ of luaV_execute */
 #[repr(C)]
 pub struct global_State {
     pub frealloc: lua_Alloc,
-    pub ud: *mut libc::c_void,
+    pub ud: *mut lua_void,
     pub totalbytes: l_mem,
     pub GCdebt: l_mem,
     pub GCmemtrav: lu_mem,
     pub GCestimate: lu_mem,
     pub strt: stringtable,
     pub l_registry: TValue,
-    pub seed: libc::c_uint,
+    pub seed: lua_uint,
     pub currentwhite: lu_byte,
     pub gcstate: lu_byte,
     pub gckind: lu_byte,
@@ -513,9 +513,9 @@ pub struct global_State {
     pub tobefnz: *mut GCObject,
     pub fixedgc: *mut GCObject,
     pub twups: *mut lua_State,
-    pub gcfinnum: libc::c_uint,
-    pub gcpause: libc::c_int,
-    pub gcstepmul: libc::c_int,
+    pub gcfinnum: lua_uint,
+    pub gcpause: lua_int,
+    pub gcstepmul: lua_int,
     pub panic: lua_CFunction,
     pub mainthread: *mut lua_State,
     pub version: *const lua_Number,
@@ -536,7 +536,7 @@ pub struct TString {
     pub marked: lu_byte,
     pub extra: lu_byte,
     pub shrlen: lu_byte,
-    pub hash: libc::c_uint,
+    pub hash: lua_uint,
     pub u: unnamed_4,
 }
 #[derive(Copy, Clone)]
@@ -553,7 +553,7 @@ pub struct Table {
     pub marked: lu_byte,
     pub flags: lu_byte,
     pub lsizenode: lu_byte,
-    pub sizearray: libc::c_uint,
+    pub sizearray: lua_uint,
     pub array: *mut TValue,
     pub node: *mut Node,
     pub lastfree: *mut Node,
@@ -580,8 +580,8 @@ pub union TKey {
 #[repr(C)]
 pub struct unnamed_5 {
     pub value_: Value,
-    pub tt_: libc::c_int,
-    pub next: libc::c_int,
+    pub tt_: lua_int,
+    pub next: lua_int,
 }
 /*
 ** Atomic type (relative to signals) to better ensure that 'lua_sethook'
@@ -594,23 +594,23 @@ pub struct unnamed_5 {
 #[repr(C)]
 pub struct stringtable {
     pub hash: *mut *mut TString,
-    pub nuse: libc::c_int,
-    pub size: libc::c_int,
+    pub nuse: lua_int,
+    pub size: lua_int,
 }
 pub type l_mem = ptrdiff_t;
 /*
 ** Type for memory-allocation functions
 */
 pub type lua_Alloc = Option<
-    unsafe extern "C" fn(_: *mut libc::c_void, _: *mut libc::c_void, _: size_t, _: size_t)
-        -> *mut libc::c_void,
+    unsafe extern "C" fn(_: *mut lua_void, _: *mut lua_void, _: size_t, _: size_t)
+        -> *mut lua_void,
 >;
 /*
 ** Type for functions that read/write blocks when loading/dumping Lua chunks
 */
 pub type lua_Reader = Option<
-    unsafe extern "C" fn(_: *mut lua_State, _: *mut libc::c_void, _: *mut size_t)
-        -> *const libc::c_char,
+    unsafe extern "C" fn(_: *mut lua_State, _: *mut lua_void, _: *mut size_t)
+        -> *const lua_char,
 >;
 /*
 ** Union of all collectable objects (only for conversions)
@@ -638,18 +638,18 @@ pub struct Proto {
     pub numparams: lu_byte,
     pub is_vararg: lu_byte,
     pub maxstacksize: lu_byte,
-    pub sizeupvalues: libc::c_int,
-    pub sizek: libc::c_int,
-    pub sizecode: libc::c_int,
-    pub sizelineinfo: libc::c_int,
-    pub sizep: libc::c_int,
-    pub sizelocvars: libc::c_int,
-    pub linedefined: libc::c_int,
-    pub lastlinedefined: libc::c_int,
+    pub sizeupvalues: lua_int,
+    pub sizek: lua_int,
+    pub sizecode: lua_int,
+    pub sizelineinfo: lua_int,
+    pub sizep: lua_int,
+    pub sizelocvars: lua_int,
+    pub linedefined: lua_int,
+    pub lastlinedefined: lua_int,
     pub k: *mut TValue,
     pub code: *mut Instruction,
     pub p: *mut *mut Proto,
-    pub lineinfo: *mut libc::c_int,
+    pub lineinfo: *mut lua_int,
     pub locvars: *mut LocVar,
     pub upvalues: *mut Upvaldesc,
     pub cache: *mut LClosure,
@@ -689,8 +689,8 @@ pub struct Upvaldesc {
 #[repr(C)]
 pub struct LocVar {
     pub varname: *mut TString,
-    pub startpc: libc::c_int,
-    pub endpc: libc::c_int,
+    pub startpc: lua_int,
+    pub endpc: lua_int,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -748,7 +748,7 @@ pub struct Udata {
 */
 /* In general, 'pre'/'pos' are empty (nothing to save) */
 /* type of protected functions, to be ran by 'runprotected' */
-pub type Pfunc = Option<unsafe extern "C" fn(_: *mut lua_State, _: *mut libc::c_void) -> ()>;
+pub type Pfunc = Option<unsafe extern "C" fn(_: *mut lua_State, _: *mut lua_void) -> ()>;
 /*
 ** $Id: ltm.h,v 2.22.1.1 2017/04/19 17:20:42 roberto Exp $
 ** Tag methods
@@ -758,7 +758,7 @@ pub type Pfunc = Option<unsafe extern "C" fn(_: *mut lua_State, _: *mut libc::c_
 * WARNING: if you change the order of this enumeration,
 * grep "ORDER TM" and "ORDER OP"
 */
-pub type TMS = libc::c_uint;
+pub type TMS = lua_uint;
 /* number of elements in the enum */
 pub const TM_N: TMS = 24;
 pub const TM_CALL: TMS = 23;
@@ -821,7 +821,7 @@ pub const OP_TAILCALL: OpCode = 37;
 /*
 ** grep "ORDER OP" if you change these enums
 */
-pub type OpCode = libc::c_uint;
+pub type OpCode = lua_uint;
 /*	Ax	extra (larger) argument for previous opcode	*/
 pub const OP_EXTRAARG: OpCode = 46;
 /*	A B	R(A), R(A+1), ..., R(A+B-2) = vararg		*/
@@ -928,16 +928,16 @@ pub const OP_MOVE: OpCode = 0;
 #[repr(C)]
 pub struct Zio {
     pub n: size_t,
-    pub p: *const libc::c_char,
+    pub p: *const lua_char,
     pub reader: lua_Reader,
-    pub data: *mut libc::c_void,
+    pub data: *mut lua_void,
     pub L: *mut lua_State,
 }
 pub type ZIO = Zio;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct Mbuffer {
-    pub buffer: *mut libc::c_char,
+    pub buffer: *mut lua_char,
     pub n: size_t,
     pub buffsize: size_t,
 }
@@ -946,8 +946,8 @@ pub struct Mbuffer {
 #[repr(C)]
 pub struct Labeldesc {
     pub name: *mut TString,
-    pub pc: libc::c_int,
-    pub line: libc::c_int,
+    pub pc: lua_int,
+    pub line: lua_int,
     pub nactvar: lu_byte,
 }
 /* list of labels or gotos */
@@ -955,8 +955,8 @@ pub struct Labeldesc {
 #[repr(C)]
 pub struct Labellist {
     pub arr: *mut Labeldesc,
-    pub n: libc::c_int,
-    pub size: libc::c_int,
+    pub n: lua_int,
+    pub size: lua_int,
 }
 /* dynamic structures used by the parser */
 #[derive(Copy, Clone)]
@@ -971,14 +971,14 @@ pub struct Dyndata {
 #[repr(C)]
 pub struct unnamed_6 {
     pub arr: *mut Vardesc,
-    pub n: libc::c_int,
-    pub size: libc::c_int,
+    pub n: lua_int,
+    pub size: lua_int,
 }
 /* description of active local variable */
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct Vardesc {
-    pub idx: libc::c_short,
+    pub idx: lua_short,
 }
 /*
 ** Execute a protected parser.
@@ -990,8 +990,8 @@ pub struct SParser {
     pub z: *mut ZIO,
     pub buff: Mbuffer,
     pub dyd: Dyndata,
-    pub mode: *const libc::c_char,
-    pub name: *const libc::c_char,
+    pub mode: *const lua_char,
+    pub name: *const lua_char,
 }
 /*
 ** coroutine functions
@@ -999,12 +999,12 @@ pub struct SParser {
 #[no_mangle]
 pub unsafe extern "C" fn lua_yieldk(
     mut L: *mut lua_State,
-    mut nresults: libc::c_int,
+    mut nresults: lua_int,
     mut ctx: lua_KContext,
     mut k: lua_KFunction,
-) -> libc::c_int {
+) -> lua_int {
     let mut ci: *mut CallInfo = (*L).ci;
-    if (*L).nny as libc::c_int > 0i32 {
+    if (*L).nny as lua_int > 0i32 {
         if L != (*(*L).l_G).mainthread {
             luaG_runerror!(L, s!(b"attempt to yield across a C-call boundary\x00"),);
         } else {
@@ -1013,10 +1013,10 @@ pub unsafe extern "C" fn lua_yieldk(
     } else {
         (*L).status = 1i32 as lu_byte;
         /* save current 'func' */
-        (*ci).extra = ((*ci).func as *mut libc::c_char)
-            .wrapping_offset_from((*L).stack as *mut libc::c_char)
-            as libc::c_long;
-        if 0 != (*ci).callstatus as libc::c_int & 1i32 << 1i32 {
+        (*ci).extra = ((*ci).func as *mut lua_char)
+            .wrapping_offset_from((*L).stack as *mut lua_char)
+            as lua_long;
+        if 0 != (*ci).callstatus as lua_int & 1i32 << 1i32 {
             /* inside a hook? */
             /* must be inside a hook */
             /* return to 'luaD_hook' */
@@ -1035,11 +1035,11 @@ pub unsafe extern "C" fn lua_yieldk(
     };
 }
 #[no_mangle]
-pub unsafe extern "C" fn luaD_throw(mut L: *mut lua_State, mut errcode: libc::c_int) -> ! {
+pub unsafe extern "C" fn luaD_throw(mut L: *mut lua_State, mut errcode: lua_int) -> ! {
     if !(*L).errorJmp.is_null() {
         /* thread has an error handler? */
         /* set status */
-        ::std::ptr::write_volatile(&mut (*(*L).errorJmp).status as *mut libc::c_int, errcode);
+        ::std::ptr::write_volatile(&mut (*(*L).errorJmp).status as *mut lua_int, errcode);
         /* jump to it */
         _longjmp((*(*L).errorJmp).b.as_mut_ptr(), 1i32);
     } else {
@@ -1075,7 +1075,7 @@ pub unsafe extern "C" fn luaD_throw(mut L: *mut lua_State, mut errcode: libc::c_
 }
 unsafe extern "C" fn seterrorobj(
     mut L: *mut lua_State,
-    mut errcode: libc::c_int,
+    mut errcode: lua_int,
     mut oldtop: StkId,
 ) -> () {
     match errcode {
@@ -1085,19 +1085,19 @@ unsafe extern "C" fn seterrorobj(
             let mut io: *mut TValue = oldtop;
             let mut x_: *mut TString = (*(*L).l_G).memerrmsg;
             (*io).value_.gc = &mut (*(x_ as *mut GCUnion)).gc;
-            (*io).tt_ = (*x_).tt as libc::c_int | 1i32 << 6i32
+            (*io).tt_ = (*x_).tt as lua_int | 1i32 << 6i32
         }
         6 => {
             let mut io_0: *mut TValue = oldtop;
             let mut x__0: *mut TString = luaS_newlstr(
                 L,
                 s!(b"error in error handling\x00"),
-                (::std::mem::size_of::<[libc::c_char; 24]>() as libc::c_ulong)
-                    .wrapping_div(::std::mem::size_of::<libc::c_char>() as libc::c_ulong)
-                    .wrapping_sub(1i32 as libc::c_ulong),
+                (::std::mem::size_of::<[lua_char; 24]>() as lua_ulong)
+                    .wrapping_div(::std::mem::size_of::<lua_char>() as lua_ulong)
+                    .wrapping_sub(1i32 as lua_ulong),
             );
             (*io_0).value_.gc = &mut (*(x__0 as *mut GCUnion)).gc;
-            (*io_0).tt_ = (*x__0).tt as libc::c_int | 1i32 << 6i32
+            (*io_0).tt_ = (*x__0).tt as lua_int | 1i32 << 6i32
         }
         _ => {
             /* error message on current top */
@@ -1111,34 +1111,34 @@ unsafe extern "C" fn seterrorobj(
 pub unsafe extern "C" fn lua_resume(
     mut L: *mut lua_State,
     mut from: *mut lua_State,
-    mut nargs: libc::c_int,
-) -> libc::c_int {
-    let mut status: libc::c_int = 0;
+    mut nargs: lua_int,
+) -> lua_int {
+    let mut status: lua_int = 0;
     /* save "number of non-yieldable" calls */
-    let mut oldnny: libc::c_ushort = (*L).nny;
-    if (*L).status as libc::c_int == LUA_OK {
+    let mut oldnny: lua_ushort = (*L).nny;
+    if (*L).status as lua_int == LUA_OK {
         /* may be starting a coroutine */
         /* not in base level? */
         if (*L).ci != &mut (*L).base_ci as *mut CallInfo {
             return resume_error(L, s!(b"cannot resume non-suspended coroutine\x00"), nargs);
         }
-    } else if (*L).status as libc::c_int != 1i32 {
+    } else if (*L).status as lua_int != 1i32 {
         return resume_error(L, s!(b"cannot resume dead coroutine\x00"), nargs);
     }
     (*L).nCcalls = (if !from.is_null() {
-        (*from).nCcalls as libc::c_int + 1i32
+        (*from).nCcalls as lua_int + 1i32
     } else {
         1i32
-    }) as libc::c_ushort;
-    if (*L).nCcalls as libc::c_int >= LUAI_MAXCCALLS {
+    }) as lua_ushort;
+    if (*L).nCcalls as lua_int >= LUAI_MAXCCALLS {
         return resume_error(L, s!(b"C stack overflow\x00"), nargs);
     } else {
         /* allow yields */
-        (*L).nny = 0i32 as libc::c_ushort;
+        (*L).nny = 0i32 as lua_ushort;
         status = luaD_rawrunprotected(
             L,
             Some(resume),
-            &mut nargs as *mut libc::c_int as *mut libc::c_void,
+            &mut nargs as *mut lua_int as *mut lua_void,
         );
         /* error calling 'lua_resume'? */
         if status == -1i32 {
@@ -1150,7 +1150,7 @@ pub unsafe extern "C" fn lua_resume(
                 status = luaD_rawrunprotected(
                     L,
                     Some(unroll),
-                    &mut status as *mut libc::c_int as *mut libc::c_void,
+                    &mut status as *mut lua_int as *mut lua_void,
                 )
             }
             if status > 1i32 {
@@ -1177,16 +1177,16 @@ pub unsafe extern "C" fn lua_resume(
 ** be passed to the first continuation function (otherwise the default
 ** status is LUA_YIELD).
 */
-unsafe extern "C" fn unroll(mut L: *mut lua_State, mut ud: *mut libc::c_void) -> () {
+unsafe extern "C" fn unroll(mut L: *mut lua_State, mut ud: *mut lua_void) -> () {
     /* error status? */
     if !ud.is_null() {
         /* finish 'lua_pcallk' callee */
-        finishCcall(L, *(ud as *mut libc::c_int));
+        finishCcall(L, *(ud as *mut lua_int));
     }
     while (*L).ci != &mut (*L).base_ci as *mut CallInfo {
         /* something in the stack */
         /* C function? */
-        if 0 == (*(*L).ci).callstatus as libc::c_int & 1i32 << 1i32 {
+        if 0 == (*(*L).ci).callstatus as lua_int & 1i32 << 1i32 {
             /* complete its execution */
             finishCcall(L, 1i32);
         } else {
@@ -1202,21 +1202,21 @@ unsafe extern "C" fn unroll(mut L: *mut lua_State, mut ud: *mut libc::c_void) ->
 ** Completes the execution of an interrupted C function, calling its
 ** continuation function.
 */
-unsafe extern "C" fn finishCcall(mut L: *mut lua_State, mut status: libc::c_int) -> () {
+unsafe extern "C" fn finishCcall(mut L: *mut lua_State, mut status: lua_int) -> () {
     let mut ci: *mut CallInfo = (*L).ci;
-    let mut n: libc::c_int = 0;
+    let mut n: lua_int = 0;
     /* must have a continuation and must be able to call it */
     /* error status can only happen in a protected call */
-    if 0 != (*ci).callstatus as libc::c_int & 1i32 << 4i32 {
+    if 0 != (*ci).callstatus as lua_int & 1i32 << 4i32 {
         /* was inside a pcall? */
         /* continuation is also inside it */
-        (*ci).callstatus = ((*ci).callstatus as libc::c_int & !(1i32 << 4i32)) as libc::c_ushort;
+        (*ci).callstatus = ((*ci).callstatus as lua_int & !(1i32 << 4i32)) as lua_ushort;
         /* with the same error function */
         (*L).errfunc = (*ci).u.c.old_errfunc
     }
     /* finish 'lua_callk'/'lua_pcall'; CIST_YPCALL and 'errfunc' already
     handled */
-    if (*ci).nresults as libc::c_int == -1i32 && (*(*L).ci).top < (*L).top {
+    if (*ci).nresults as lua_int == -1i32 && (*(*L).ci).top < (*L).top {
         (*(*L).ci).top = (*L).top
     }
     /* call continuation function */
@@ -1229,19 +1229,19 @@ pub unsafe extern "C" fn luaD_poscall(
     mut L: *mut lua_State,
     mut ci: *mut CallInfo,
     mut firstResult: StkId,
-    mut nres: libc::c_int,
-) -> libc::c_int {
+    mut nres: lua_int,
+) -> lua_int {
     let mut fr: ptrdiff_t = 0;
     let mut res: StkId = 0 as *mut TValue;
-    let mut wanted: libc::c_int = (*ci).nresults as libc::c_int;
+    let mut wanted: lua_int = (*ci).nresults as lua_int;
     if 0 != (*L).hookmask & (1i32 << 1i32 | 1i32 << 2i32) {
         if 0 != (*L).hookmask & 1i32 << 1i32 {
             /* hook may change stack */
-            fr = (firstResult as *mut libc::c_char)
-                .wrapping_offset_from((*L).stack as *mut libc::c_char)
-                as libc::c_long;
+            fr = (firstResult as *mut lua_char)
+                .wrapping_offset_from((*L).stack as *mut lua_char)
+                as lua_long;
             luaD_hook(L, 1i32, -1i32);
-            firstResult = ((*L).stack as *mut libc::c_char).offset(fr as isize) as *mut TValue
+            firstResult = ((*L).stack as *mut lua_char).offset(fr as isize) as *mut TValue
         }
         /* 'oldpc' for caller function */
         (*L).oldpc = (*(*ci).previous).u.l.savedpc
@@ -1263,9 +1263,9 @@ unsafe extern "C" fn moveresults(
     mut L: *mut lua_State,
     mut firstResult: *const TValue,
     mut res: StkId,
-    mut nres: libc::c_int,
-    mut wanted: libc::c_int,
-) -> libc::c_int {
+    mut nres: lua_int,
+    mut wanted: lua_int,
+) -> lua_int {
     match wanted {
         0 => {}
         1 => {
@@ -1281,7 +1281,7 @@ unsafe extern "C" fn moveresults(
             *io1 = *firstResult
         }
         -1 => {
-            let mut i: libc::c_int = 0;
+            let mut i: lua_int = 0;
             /* move all results to correct place */
             i = 0i32;
             while i < nres {
@@ -1294,7 +1294,7 @@ unsafe extern "C" fn moveresults(
             return 0i32;
         }
         _ => {
-            let mut i_0: libc::c_int = 0;
+            let mut i_0: lua_int = 0;
             if wanted <= nres {
                 /* enough results? */
                 /* move wanted results to correct place */
@@ -1328,25 +1328,25 @@ unsafe extern "C" fn moveresults(
 #[no_mangle]
 pub unsafe extern "C" fn luaD_hook(
     mut L: *mut lua_State,
-    mut event: libc::c_int,
-    mut line: libc::c_int,
+    mut event: lua_int,
+    mut line: lua_int,
 ) -> () {
     let mut hook: lua_Hook = (*L).hook;
-    if hook.is_some() && 0 != (*L).allowhook as libc::c_int {
+    if hook.is_some() && 0 != (*L).allowhook as lua_int {
         /* make sure there is a hook */
         let mut ci: *mut CallInfo = (*L).ci;
-        let mut top: ptrdiff_t = ((*L).top as *mut libc::c_char)
-            .wrapping_offset_from((*L).stack as *mut libc::c_char)
-            as libc::c_long;
-        let mut ci_top: ptrdiff_t = ((*ci).top as *mut libc::c_char)
-            .wrapping_offset_from((*L).stack as *mut libc::c_char)
-            as libc::c_long;
+        let mut top: ptrdiff_t = ((*L).top as *mut lua_char)
+            .wrapping_offset_from((*L).stack as *mut lua_char)
+            as lua_long;
+        let mut ci_top: ptrdiff_t = ((*ci).top as *mut lua_char)
+            .wrapping_offset_from((*L).stack as *mut lua_char)
+            as lua_long;
         let mut ar: lua_Debug = lua_Debug {
             event: 0,
-            name: 0 as *const libc::c_char,
-            namewhat: 0 as *const libc::c_char,
-            what: 0 as *const libc::c_char,
-            source: 0 as *const libc::c_char,
+            name: 0 as *const lua_char,
+            namewhat: 0 as *const lua_char,
+            what: 0 as *const lua_char,
+            source: 0 as *const lua_char,
             currentline: 0,
             linedefined: 0,
             lastlinedefined: 0,
@@ -1360,31 +1360,31 @@ pub unsafe extern "C" fn luaD_hook(
         ar.event = event;
         ar.currentline = line;
         ar.i_ci = ci;
-        if (*L).stack_last.wrapping_offset_from((*L).top) as libc::c_long <= 20i32 as libc::c_long {
+        if (*L).stack_last.wrapping_offset_from((*L).top) as lua_long <= 20i32 as lua_long {
             luaD_growstack(L, 20i32);
         }
         /* ensure minimum stack size */
         (*ci).top = (*L).top.offset(20isize);
         /* cannot call hooks inside a hook */
         (*L).allowhook = 0i32 as lu_byte;
-        (*ci).callstatus = ((*ci).callstatus as libc::c_int | 1i32 << 2i32) as libc::c_ushort;
+        (*ci).callstatus = ((*ci).callstatus as lua_int | 1i32 << 2i32) as lua_ushort;
         hook.expect("non-null function pointer")(L, &mut ar);
         (*L).allowhook = 1i32 as lu_byte;
-        (*ci).top = ((*L).stack as *mut libc::c_char).offset(ci_top as isize) as *mut TValue;
-        (*L).top = ((*L).stack as *mut libc::c_char).offset(top as isize) as *mut TValue;
-        (*ci).callstatus = ((*ci).callstatus as libc::c_int & !(1i32 << 2i32)) as libc::c_ushort
+        (*ci).top = ((*L).stack as *mut lua_char).offset(ci_top as isize) as *mut TValue;
+        (*L).top = ((*L).stack as *mut lua_char).offset(top as isize) as *mut TValue;
+        (*ci).callstatus = ((*ci).callstatus as lua_int & !(1i32 << 2i32)) as lua_ushort
     };
 }
 #[no_mangle]
-pub unsafe extern "C" fn luaD_growstack(mut L: *mut lua_State, mut n: libc::c_int) -> () {
-    let mut size: libc::c_int = (*L).stacksize;
+pub unsafe extern "C" fn luaD_growstack(mut L: *mut lua_State, mut n: lua_int) -> () {
+    let mut size: lua_int = (*L).stacksize;
     /* error after extra size? */
     if size > 1000000i32 {
         luaD_throw(L, 6i32);
     } else {
-        let mut needed: libc::c_int =
-            (*L).top.wrapping_offset_from((*L).stack) as libc::c_long as libc::c_int + n + 5i32;
-        let mut newsize: libc::c_int = 2i32 * size;
+        let mut needed: lua_int =
+            (*L).top.wrapping_offset_from((*L).stack) as lua_long as lua_int + n + 5i32;
+        let mut newsize: lua_int = 2i32 * size;
         if newsize > 1000000i32 {
             newsize = 1000000i32
         }
@@ -1402,23 +1402,23 @@ pub unsafe extern "C" fn luaD_growstack(mut L: *mut lua_State, mut n: libc::c_in
     };
 }
 #[no_mangle]
-pub unsafe extern "C" fn luaD_reallocstack(mut L: *mut lua_State, mut newsize: libc::c_int) -> () {
+pub unsafe extern "C" fn luaD_reallocstack(mut L: *mut lua_State, mut newsize: lua_int) -> () {
     let mut oldstack: *mut TValue = (*L).stack;
-    let mut lim: libc::c_int = (*L).stacksize;
-    if ::std::mem::size_of::<libc::c_int>() as libc::c_ulong
-        >= ::std::mem::size_of::<size_t>() as libc::c_ulong
-        && (newsize as size_t).wrapping_add(1i32 as libc::c_ulong)
-            > (!(0i32 as size_t)).wrapping_div(::std::mem::size_of::<TValue>() as libc::c_ulong)
+    let mut lim: lua_int = (*L).stacksize;
+    if ::std::mem::size_of::<lua_int>() as lua_ulong
+        >= ::std::mem::size_of::<size_t>() as lua_ulong
+        && (newsize as size_t).wrapping_add(1i32 as lua_ulong)
+            > (!(0i32 as size_t)).wrapping_div(::std::mem::size_of::<TValue>() as lua_ulong)
     {
         luaM_toobig(L);
     } else {
     };
     (*L).stack = luaM_realloc_(
         L,
-        (*L).stack as *mut libc::c_void,
-        ((*L).stacksize as libc::c_ulong)
-            .wrapping_mul(::std::mem::size_of::<TValue>() as libc::c_ulong),
-        (newsize as libc::c_ulong).wrapping_mul(::std::mem::size_of::<TValue>() as libc::c_ulong),
+        (*L).stack as *mut lua_void,
+        ((*L).stacksize as lua_ulong)
+            .wrapping_mul(::std::mem::size_of::<TValue>() as lua_ulong),
+        (newsize as lua_ulong).wrapping_mul(::std::mem::size_of::<TValue>() as lua_ulong),
     ) as *mut TValue;
     while lim < newsize {
         /* erase new segment */
@@ -1440,26 +1440,26 @@ unsafe extern "C" fn correctstack(mut L: *mut lua_State, mut oldstack: *mut TVal
     let mut up: *mut UpVal = 0 as *mut UpVal;
     (*L).top = (*L)
         .stack
-        .offset((*L).top.wrapping_offset_from(oldstack) as libc::c_long as isize);
+        .offset((*L).top.wrapping_offset_from(oldstack) as lua_long as isize);
     up = (*L).openupval;
     while !up.is_null() {
         (*up).v = (*L)
             .stack
-            .offset((*up).v.wrapping_offset_from(oldstack) as libc::c_long as isize);
+            .offset((*up).v.wrapping_offset_from(oldstack) as lua_long as isize);
         up = (*up).u.open.next
     }
     ci = (*L).ci;
     while !ci.is_null() {
         (*ci).top = (*L)
             .stack
-            .offset((*ci).top.wrapping_offset_from(oldstack) as libc::c_long as isize);
+            .offset((*ci).top.wrapping_offset_from(oldstack) as lua_long as isize);
         (*ci).func = (*L)
             .stack
-            .offset((*ci).func.wrapping_offset_from(oldstack) as libc::c_long as isize);
-        if 0 != (*ci).callstatus as libc::c_int & 1i32 << 1i32 {
+            .offset((*ci).func.wrapping_offset_from(oldstack) as lua_long as isize);
+        if 0 != (*ci).callstatus as lua_int & 1i32 << 1i32 {
             (*ci).u.l.base = (*L)
                 .stack
-                .offset((*ci).u.l.base.wrapping_offset_from(oldstack) as libc::c_long as isize)
+                .offset((*ci).u.l.base.wrapping_offset_from(oldstack) as lua_long as isize)
         }
         ci = (*ci).previous
     }
@@ -1468,9 +1468,9 @@ unsafe extern "C" fn correctstack(mut L: *mut lua_State, mut oldstack: *mut TVal
 pub unsafe extern "C" fn luaD_rawrunprotected(
     mut L: *mut lua_State,
     mut f: Pfunc,
-    mut ud: *mut libc::c_void,
-) -> libc::c_int {
-    let mut oldnCcalls: libc::c_ushort = (*L).nCcalls;
+    mut ud: *mut lua_void,
+) -> lua_int {
+    let mut oldnCcalls: lua_ushort = (*L).nCcalls;
     let mut lj: lua_longjmp = lua_longjmp {
         previous: 0 as *mut lua_longjmp,
         b: [__jmp_buf_tag {
@@ -1480,7 +1480,7 @@ pub unsafe extern "C" fn luaD_rawrunprotected(
         }; 1],
         status: LUA_OK,
     };
-    ::std::ptr::write_volatile(&mut lj.status as *mut libc::c_int, 0i32);
+    ::std::ptr::write_volatile(&mut lj.status as *mut lua_int, 0i32);
     /* chain new error handler */
     lj.previous = (*L).errorJmp;
     (*L).errorJmp = &mut lj;
@@ -1497,7 +1497,7 @@ pub unsafe extern "C" fn luaD_rawrunprotected(
 ** there is one) and completes the execution of the interrupted
 ** 'luaD_pcall'. If there is no recover point, returns zero.
 */
-unsafe extern "C" fn recover(mut L: *mut lua_State, mut status: libc::c_int) -> libc::c_int {
+unsafe extern "C" fn recover(mut L: *mut lua_State, mut status: lua_int) -> lua_int {
     let mut oldtop: StkId = 0 as *mut TValue;
     let mut ci: *mut CallInfo = findpcall(L);
     if ci.is_null() {
@@ -1505,14 +1505,14 @@ unsafe extern "C" fn recover(mut L: *mut lua_State, mut status: libc::c_int) -> 
         return 0i32;
     } else {
         /* "finish" luaD_pcall */
-        oldtop = ((*L).stack as *mut libc::c_char).offset((*ci).extra as isize) as *mut TValue;
+        oldtop = ((*L).stack as *mut lua_char).offset((*ci).extra as isize) as *mut TValue;
         luaF_close(L, oldtop);
         seterrorobj(L, status, oldtop);
         (*L).ci = ci;
         /* restore original 'allowhook' */
-        (*L).allowhook = ((*ci).callstatus as libc::c_int & 1i32 << 0i32) as lu_byte;
+        (*L).allowhook = ((*ci).callstatus as lua_int & 1i32 << 0i32) as lu_byte;
         /* should be zero to be yieldable */
-        (*L).nny = 0i32 as libc::c_ushort;
+        (*L).nny = 0i32 as lua_ushort;
         luaD_shrinkstack(L);
         (*L).errfunc = (*ci).u.c.old_errfunc;
         /* continue running the coroutine */
@@ -1528,7 +1528,7 @@ unsafe extern "C" fn findpcall(mut L: *mut lua_State) -> *mut CallInfo {
     ci = (*L).ci;
     while !ci.is_null() {
         /* search for a pcall */
-        if 0 != (*ci).callstatus as libc::c_int & 1i32 << 4i32 {
+        if 0 != (*ci).callstatus as lua_int & 1i32 << 4i32 {
             return ci;
         } else {
             ci = (*ci).previous
@@ -1539,8 +1539,8 @@ unsafe extern "C" fn findpcall(mut L: *mut lua_State) -> *mut CallInfo {
 }
 #[no_mangle]
 pub unsafe extern "C" fn luaD_shrinkstack(mut L: *mut lua_State) -> () {
-    let mut inuse: libc::c_int = stackinuse(L);
-    let mut goodsize: libc::c_int = inuse + inuse / 8i32 + 2i32 * 5i32;
+    let mut inuse: lua_int = stackinuse(L);
+    let mut goodsize: lua_int = inuse + inuse / 8i32 + 2i32 * 5i32;
     if goodsize > 1000000i32 {
         /* respect stack limit */
         goodsize = 1000000i32
@@ -1559,7 +1559,7 @@ pub unsafe extern "C" fn luaD_shrinkstack(mut L: *mut lua_State) -> () {
         luaD_reallocstack(L, goodsize);
     };
 }
-unsafe extern "C" fn stackinuse(mut L: *mut lua_State) -> libc::c_int {
+unsafe extern "C" fn stackinuse(mut L: *mut lua_State) -> lua_int {
     let mut ci: *mut CallInfo = 0 as *mut CallInfo;
     let mut lim: StkId = (*L).top;
     ci = (*L).ci;
@@ -1570,7 +1570,7 @@ unsafe extern "C" fn stackinuse(mut L: *mut lua_State) -> libc::c_int {
         ci = (*ci).previous
     }
     /* part of stack in use */
-    return lim.wrapping_offset_from((*L).stack) as libc::c_long as libc::c_int + 1i32;
+    return lim.wrapping_offset_from((*L).stack) as lua_long as lua_int + 1i32;
 }
 /*
 ** Do the work for 'lua_resume' in protected mode. Most of the work
@@ -1579,13 +1579,13 @@ unsafe extern "C" fn stackinuse(mut L: *mut lua_State) -> libc::c_int {
 ** function), plus erroneous cases: non-suspended coroutine or dead
 ** coroutine.
 */
-unsafe extern "C" fn resume(mut L: *mut lua_State, mut ud: *mut libc::c_void) -> () {
+unsafe extern "C" fn resume(mut L: *mut lua_State, mut ud: *mut lua_void) -> () {
     /* number of arguments */
-    let mut n: libc::c_int = *(ud as *mut libc::c_int);
+    let mut n: lua_int = *(ud as *mut lua_int);
     /* first argument */
     let mut firstArg: StkId = (*L).top.offset(-(n as isize));
     let mut ci: *mut CallInfo = (*L).ci;
-    if (*L).status as libc::c_int == LUA_OK {
+    if (*L).status as lua_int == LUA_OK {
         /* starting a coroutine? */
         /* Lua function? */
         if 0 == luaD_precall(L, firstArg.offset(-1isize), LUA_MULTRET) {
@@ -1596,9 +1596,9 @@ unsafe extern "C" fn resume(mut L: *mut lua_State, mut ud: *mut libc::c_void) ->
         /* resuming from previous yield */
         /* mark that it is running (again) */
         (*L).status = LUA_OK as lu_byte;
-        (*ci).func = ((*L).stack as *mut libc::c_char).offset((*ci).extra as isize) as *mut TValue;
+        (*ci).func = ((*L).stack as *mut lua_char).offset((*ci).extra as isize) as *mut TValue;
         /* yielded inside a hook? */
-        if 0 != (*ci).callstatus as libc::c_int & 1i32 << 1i32 {
+        if 0 != (*ci).callstatus as lua_int & 1i32 << 1i32 {
             /* just continue running Lua code */
             luaV_execute(L);
         } else {
@@ -1614,15 +1614,15 @@ unsafe extern "C" fn resume(mut L: *mut lua_State, mut ud: *mut libc::c_void) ->
             luaD_poscall(L, ci, firstArg, n);
         }
         /* run continuation */
-        unroll(L, 0 as *mut libc::c_void);
+        unroll(L, 0 as *mut lua_void);
     };
 }
 #[no_mangle]
 pub unsafe extern "C" fn luaD_precall(
     mut L: *mut lua_State,
     mut func: StkId,
-    mut nresults: libc::c_int,
-) -> libc::c_int {
+    mut nresults: lua_int,
+) -> lua_int {
     let mut f: lua_CFunction = None;
     let mut ci: *mut CallInfo = 0 as *mut CallInfo;
     match (*func).tt_ & 0x3fi32 {
@@ -1633,27 +1633,27 @@ pub unsafe extern "C" fn luaD_precall(
             let mut base: StkId = 0 as *mut TValue;
             let mut p: *mut Proto = (*((*func).value_.gc as *mut GCUnion)).cl.l.p;
             /* number of real arguments */
-            let mut n_0: libc::c_int =
-                (*L).top.wrapping_offset_from(func) as libc::c_long as libc::c_int - 1i32;
+            let mut n_0: lua_int =
+                (*L).top.wrapping_offset_from(func) as lua_long as lua_int - 1i32;
             /* frame size */
-            let mut fsize: libc::c_int = (*p).maxstacksize as libc::c_int;
-            if (*L).stack_last.wrapping_offset_from((*L).top) as libc::c_long
-                <= fsize as libc::c_long
+            let mut fsize: lua_int = (*p).maxstacksize as lua_int;
+            if (*L).stack_last.wrapping_offset_from((*L).top) as lua_long
+                <= fsize as lua_long
             {
-                let mut t___0: ptrdiff_t = (func as *mut libc::c_char)
-                    .wrapping_offset_from((*L).stack as *mut libc::c_char)
-                    as libc::c_long;
-                if (*(*L).l_G).GCdebt > 0i32 as libc::c_long {
+                let mut t___0: ptrdiff_t = (func as *mut lua_char)
+                    .wrapping_offset_from((*L).stack as *mut lua_char)
+                    as lua_long;
+                if (*(*L).l_G).GCdebt > 0i32 as lua_long {
                     luaC_step(L);
                 }
                 luaD_growstack(L, fsize);
-                func = ((*L).stack as *mut libc::c_char).offset(t___0 as isize) as *mut TValue
+                func = ((*L).stack as *mut lua_char).offset(t___0 as isize) as *mut TValue
             }
             if 0 != (*p).is_vararg {
                 base = adjust_varargs(L, p, n_0)
             } else {
                 /* non vararg function */
-                while n_0 < (*p).numparams as libc::c_int {
+                while n_0 < (*p).numparams as lua_int {
                     /* complete missing arguments */
                     let fresh1 = (*L).top;
                     (*L).top = (*L).top.offset(1);
@@ -1669,14 +1669,14 @@ pub unsafe extern "C" fn luaD_precall(
                 luaE_extendCI(L)
             };
             ci = (*L).ci;
-            (*ci).nresults = nresults as libc::c_short;
+            (*ci).nresults = nresults as lua_short;
             (*ci).func = func;
             (*ci).u.l.base = base;
             (*ci).top = base.offset(fsize as isize);
             (*L).top = (*ci).top;
             /* starting point */
             (*ci).u.l.savedpc = (*p).code;
-            (*ci).callstatus = (1i32 << 1i32) as libc::c_ushort;
+            (*ci).callstatus = (1i32 << 1i32) as lua_ushort;
             if 0 != (*L).hookmask & 1i32 << 0i32 {
                 callhook(L, ci);
             }
@@ -1684,18 +1684,18 @@ pub unsafe extern "C" fn luaD_precall(
         }
         _ => {
             /* not a function */
-            if (*L).stack_last.wrapping_offset_from((*L).top) as libc::c_long
-                <= 1i32 as libc::c_long
+            if (*L).stack_last.wrapping_offset_from((*L).top) as lua_long
+                <= 1i32 as lua_long
             {
                 /* ensure space for metamethod */
-                let mut t___1: ptrdiff_t = (func as *mut libc::c_char)
-                    .wrapping_offset_from((*L).stack as *mut libc::c_char)
-                    as libc::c_long;
-                if (*(*L).l_G).GCdebt > 0i32 as libc::c_long {
+                let mut t___1: ptrdiff_t = (func as *mut lua_char)
+                    .wrapping_offset_from((*L).stack as *mut lua_char)
+                    as lua_long;
+                if (*(*L).l_G).GCdebt > 0i32 as lua_long {
                     luaC_step(L);
                 }
                 luaD_growstack(L, 1i32);
-                func = ((*L).stack as *mut libc::c_char).offset(t___1 as isize) as *mut TValue
+                func = ((*L).stack as *mut lua_char).offset(t___1 as isize) as *mut TValue
             }
             /* try to get '__call' metamethod */
             tryfuncTM(L, func);
@@ -1704,17 +1704,17 @@ pub unsafe extern "C" fn luaD_precall(
         }
     }
     /* number of returns */
-    let mut n: libc::c_int = 0;
-    if (*L).stack_last.wrapping_offset_from((*L).top) as libc::c_long <= 20i32 as libc::c_long {
+    let mut n: lua_int = 0;
+    if (*L).stack_last.wrapping_offset_from((*L).top) as lua_long <= 20i32 as lua_long {
         /* ensure minimum stack size */
-        let mut t__: ptrdiff_t = (func as *mut libc::c_char)
-            .wrapping_offset_from((*L).stack as *mut libc::c_char)
-            as libc::c_long;
-        if (*(*L).l_G).GCdebt > 0i32 as libc::c_long {
+        let mut t__: ptrdiff_t = (func as *mut lua_char)
+            .wrapping_offset_from((*L).stack as *mut lua_char)
+            as lua_long;
+        if (*(*L).l_G).GCdebt > 0i32 as lua_long {
             luaC_step(L);
         }
         luaD_growstack(L, 20i32);
-        func = ((*L).stack as *mut libc::c_char).offset(t__ as isize) as *mut TValue
+        func = ((*L).stack as *mut lua_char).offset(t__ as isize) as *mut TValue
     }
     /* now 'enter' new function */
     (*L).ci = if !(*(*L).ci).next.is_null() {
@@ -1723,10 +1723,10 @@ pub unsafe extern "C" fn luaD_precall(
         luaE_extendCI(L)
     };
     ci = (*L).ci;
-    (*ci).nresults = nresults as libc::c_short;
+    (*ci).nresults = nresults as lua_short;
     (*ci).func = func;
     (*ci).top = (*L).top.offset(20isize);
-    (*ci).callstatus = 0i32 as libc::c_ushort;
+    (*ci).callstatus = 0i32 as lua_ushort;
     if 0 != (*L).hookmask & 1i32 << 0i32 {
         luaD_hook(L, 0i32, -1i32);
     }
@@ -1762,15 +1762,15 @@ unsafe extern "C" fn tryfuncTM(mut L: *mut lua_State, mut func: StkId) -> () {
     };
 }
 unsafe extern "C" fn callhook(mut L: *mut lua_State, mut ci: *mut CallInfo) -> () {
-    let mut hook: libc::c_int = 0i32;
+    let mut hook: lua_int = 0i32;
     /* hooks assume 'pc' is already incremented */
     (*ci).u.l.savedpc = (*ci).u.l.savedpc.offset(1isize);
-    if 0 != (*(*ci).previous).callstatus as libc::c_int & 1i32 << 1i32
+    if 0 != (*(*ci).previous).callstatus as lua_int & 1i32 << 1i32
         && (*(*(*ci).previous).u.l.savedpc.offset(-1isize) >> 0i32
-            & !((!(0i32 as Instruction)) << 6i32) << 0i32) as OpCode as libc::c_uint
-            == OP_TAILCALL as libc::c_int as libc::c_uint
+            & !((!(0i32 as Instruction)) << 6i32) << 0i32) as OpCode as lua_uint
+            == OP_TAILCALL as lua_int as lua_uint
     {
-        (*ci).callstatus = ((*ci).callstatus as libc::c_int | 1i32 << 5i32) as libc::c_ushort;
+        (*ci).callstatus = ((*ci).callstatus as lua_int | 1i32 << 5i32) as lua_ushort;
         hook = 4i32
     }
     luaD_hook(L, hook, -1i32);
@@ -1780,10 +1780,10 @@ unsafe extern "C" fn callhook(mut L: *mut lua_State, mut ci: *mut CallInfo) -> (
 unsafe extern "C" fn adjust_varargs(
     mut L: *mut lua_State,
     mut p: *mut Proto,
-    mut actual: libc::c_int,
+    mut actual: lua_int,
 ) -> StkId {
-    let mut i: libc::c_int = 0;
-    let mut nfixargs: libc::c_int = (*p).numparams as libc::c_int;
+    let mut i: lua_int = 0;
+    let mut nfixargs: lua_int = (*p).numparams as lua_int;
     let mut base: StkId = 0 as *mut TValue;
     let mut fixed: StkId = 0 as *mut TValue;
     /* move fixed parameters to final position */
@@ -1817,34 +1817,34 @@ unsafe extern "C" fn adjust_varargs(
 */
 unsafe extern "C" fn resume_error(
     mut L: *mut lua_State,
-    mut msg: *const libc::c_char,
-    mut narg: libc::c_int,
-) -> libc::c_int {
+    mut msg: *const lua_char,
+    mut narg: lua_int,
+) -> lua_int {
     /* remove args from the stack */
     (*L).top = (*L).top.offset(-(narg as isize));
     /* push error message */
     let mut io: *mut TValue = (*L).top;
     let mut x_: *mut TString = luaS_new(L, msg);
     (*io).value_.gc = &mut (*(x_ as *mut GCUnion)).gc;
-    (*io).tt_ = (*x_).tt as libc::c_int | 1i32 << 6i32;
+    (*io).tt_ = (*x_).tt as lua_int | 1i32 << 6i32;
     (*L).top = (*L).top.offset(1isize);
     return 2i32;
 }
 #[no_mangle]
-pub unsafe extern "C" fn lua_isyieldable(mut L: *mut lua_State) -> libc::c_int {
-    return ((*L).nny as libc::c_int == 0i32) as libc::c_int;
+pub unsafe extern "C" fn lua_isyieldable(mut L: *mut lua_State) -> lua_int {
+    return ((*L).nny as lua_int == 0i32) as lua_int;
 }
 #[no_mangle]
 pub unsafe extern "C" fn luaD_protectedparser(
     mut L: *mut lua_State,
     mut z: *mut ZIO,
-    mut name: *const libc::c_char,
-    mut mode: *const libc::c_char,
-) -> libc::c_int {
+    mut name: *const lua_char,
+    mut mode: *const lua_char,
+) -> lua_int {
     let mut p: SParser = SParser {
         z: 0 as *mut ZIO,
         buff: Mbuffer {
-            buffer: 0 as *mut libc::c_char,
+            buffer: 0 as *mut lua_char,
             n: 0,
             buffsize: 0,
         },
@@ -1865,10 +1865,10 @@ pub unsafe extern "C" fn luaD_protectedparser(
                 size: 0,
             },
         },
-        mode: 0 as *const libc::c_char,
-        name: 0 as *const libc::c_char,
+        mode: 0 as *const lua_char,
+        name: 0 as *const lua_char,
     };
-    let mut status: libc::c_int = 0;
+    let mut status: lua_int = 0;
     /* cannot yield during parsing */
     (*L).nny = (*L).nny.wrapping_add(1);
     p.z = z;
@@ -1880,65 +1880,65 @@ pub unsafe extern "C" fn luaD_protectedparser(
     p.dyd.gt.size = 0i32;
     p.dyd.label.arr = 0 as *mut Labeldesc;
     p.dyd.label.size = 0i32;
-    p.buff.buffer = 0 as *mut libc::c_char;
+    p.buff.buffer = 0 as *mut lua_char;
     p.buff.buffsize = 0i32 as size_t;
     status = luaD_pcall(
         L,
         Some(f_parser),
-        &mut p as *mut SParser as *mut libc::c_void,
-        ((*L).top as *mut libc::c_char).wrapping_offset_from((*L).stack as *mut libc::c_char)
-            as libc::c_long,
+        &mut p as *mut SParser as *mut lua_void,
+        ((*L).top as *mut lua_char).wrapping_offset_from((*L).stack as *mut lua_char)
+            as lua_long,
         (*L).errfunc,
     );
     p.buff.buffer = luaM_realloc_(
         L,
-        p.buff.buffer as *mut libc::c_void,
+        p.buff.buffer as *mut lua_void,
         p.buff
             .buffsize
-            .wrapping_mul(::std::mem::size_of::<libc::c_char>() as libc::c_ulong),
-        (0i32 as libc::c_ulong)
-            .wrapping_mul(::std::mem::size_of::<libc::c_char>() as libc::c_ulong),
-    ) as *mut libc::c_char;
+            .wrapping_mul(::std::mem::size_of::<lua_char>() as lua_ulong),
+        (0i32 as lua_ulong)
+            .wrapping_mul(::std::mem::size_of::<lua_char>() as lua_ulong),
+    ) as *mut lua_char;
     p.buff.buffsize = 0i32 as size_t;
     luaM_realloc_(
         L,
-        p.dyd.actvar.arr as *mut libc::c_void,
-        (p.dyd.actvar.size as libc::c_ulong)
-            .wrapping_mul(::std::mem::size_of::<Vardesc>() as libc::c_ulong),
+        p.dyd.actvar.arr as *mut lua_void,
+        (p.dyd.actvar.size as lua_ulong)
+            .wrapping_mul(::std::mem::size_of::<Vardesc>() as lua_ulong),
         0i32 as size_t,
     );
     luaM_realloc_(
         L,
-        p.dyd.gt.arr as *mut libc::c_void,
-        (p.dyd.gt.size as libc::c_ulong)
-            .wrapping_mul(::std::mem::size_of::<Labeldesc>() as libc::c_ulong),
+        p.dyd.gt.arr as *mut lua_void,
+        (p.dyd.gt.size as lua_ulong)
+            .wrapping_mul(::std::mem::size_of::<Labeldesc>() as lua_ulong),
         0i32 as size_t,
     );
     luaM_realloc_(
         L,
-        p.dyd.label.arr as *mut libc::c_void,
-        (p.dyd.label.size as libc::c_ulong)
-            .wrapping_mul(::std::mem::size_of::<Labeldesc>() as libc::c_ulong),
+        p.dyd.label.arr as *mut lua_void,
+        (p.dyd.label.size as lua_ulong)
+            .wrapping_mul(::std::mem::size_of::<Labeldesc>() as lua_ulong),
         0i32 as size_t,
     );
     (*L).nny = (*L).nny.wrapping_sub(1);
     return status;
 }
-unsafe extern "C" fn f_parser(mut L: *mut lua_State, mut ud: *mut libc::c_void) -> () {
+unsafe extern "C" fn f_parser(mut L: *mut lua_State, mut ud: *mut lua_void) -> () {
     let mut cl: *mut LClosure = 0 as *mut LClosure;
     let mut p: *mut SParser = ud as *mut SParser;
     /* read first character */
     let fresh4 = (*(*p).z).n;
     (*(*p).z).n = (*(*p).z).n.wrapping_sub(1);
-    let mut c: libc::c_int = if fresh4 > 0i32 as libc::c_ulong {
+    let mut c: lua_int = if fresh4 > 0i32 as lua_ulong {
         let fresh5 = (*(*p).z).p;
         (*(*p).z).p = (*(*p).z).p.offset(1);
-        *fresh5 as libc::c_uchar as libc::c_int
+        *fresh5 as lua_uchar as lua_int
     } else {
         luaZ_fill((*p).z)
     };
-    if c == (*::std::mem::transmute::<&[u8; 5], &[libc::c_char; 5]>(b"\x1bLua\x00"))[0usize]
-        as libc::c_int
+    if c == (*::std::mem::transmute::<&[u8; 5], &[lua_char; 5]>(b"\x1bLua\x00"))[0usize]
+        as lua_int
     {
         checkmode(L, (*p).mode, s!(b"binary\x00"));
         cl = luaU_undump(L, (*p).z, (*p).name)
@@ -1950,10 +1950,10 @@ unsafe extern "C" fn f_parser(mut L: *mut lua_State, mut ud: *mut libc::c_void) 
 }
 unsafe extern "C" fn checkmode(
     mut L: *mut lua_State,
-    mut mode: *const libc::c_char,
-    mut x: *const libc::c_char,
+    mut mode: *const lua_char,
+    mut x: *const lua_char,
 ) -> () {
-    if !mode.is_null() && strchr(mode, *x.offset(0isize) as libc::c_int).is_null() {
+    if !mode.is_null() && strchr(mode, *x.offset(0isize) as lua_int).is_null() {
         luaO_pushfstring!(
             L,
             s!(b"attempt to load a %s chunk (mode is \'%s\')\x00"),
@@ -1969,21 +1969,21 @@ unsafe extern "C" fn checkmode(
 pub unsafe extern "C" fn luaD_pcall(
     mut L: *mut lua_State,
     mut func: Pfunc,
-    mut u: *mut libc::c_void,
+    mut u: *mut lua_void,
     mut old_top: ptrdiff_t,
     mut ef: ptrdiff_t,
-) -> libc::c_int {
+) -> lua_int {
     let mut oldtop: StkId = 0 as *mut TValue;
-    let mut status: libc::c_int = 0;
+    let mut status: lua_int = 0;
     let mut old_ci: *mut CallInfo = (*L).ci;
     let mut old_allowhooks: lu_byte = (*L).allowhook;
-    let mut old_nny: libc::c_ushort = (*L).nny;
+    let mut old_nny: lua_ushort = (*L).nny;
     let mut old_errfunc: ptrdiff_t = (*L).errfunc;
     (*L).errfunc = ef;
     status = luaD_rawrunprotected(L, func, u);
     if status != 0i32 {
         /* an error occurred? */
-        oldtop = ((*L).stack as *mut libc::c_char).offset(old_top as isize) as *mut TValue;
+        oldtop = ((*L).stack as *mut lua_char).offset(old_top as isize) as *mut TValue;
         /* close possible pending closures */
         luaF_close(L, oldtop);
         seterrorobj(L, status, oldtop);
@@ -1999,10 +1999,10 @@ pub unsafe extern "C" fn luaD_pcall(
 pub unsafe extern "C" fn luaD_call(
     mut L: *mut lua_State,
     mut func: StkId,
-    mut nResults: libc::c_int,
+    mut nResults: lua_int,
 ) -> () {
     (*L).nCcalls = (*L).nCcalls.wrapping_add(1);
-    if (*L).nCcalls as libc::c_int >= LUAI_MAXCCALLS {
+    if (*L).nCcalls as lua_int >= LUAI_MAXCCALLS {
         stackerror(L);
     }
     /* is a Lua function? */
@@ -2020,9 +2020,9 @@ pub unsafe extern "C" fn luaD_call(
 ** allow overflow handling to work)
 */
 unsafe extern "C" fn stackerror(mut L: *mut lua_State) -> () {
-    if (*L).nCcalls as libc::c_int == LUAI_MAXCCALLS {
+    if (*L).nCcalls as lua_int == LUAI_MAXCCALLS {
         luaG_runerror!(L, s!(b"C stack overflow\x00"),);
-    } else if (*L).nCcalls as libc::c_int >= LUAI_MAXCCALLS + (LUAI_MAXCCALLS >> 3i32) {
+    } else if (*L).nCcalls as lua_int >= LUAI_MAXCCALLS + (LUAI_MAXCCALLS >> 3i32) {
         /* error while handing stack error */
         luaD_throw(L, 6i32);
     } else {
@@ -2033,7 +2033,7 @@ unsafe extern "C" fn stackerror(mut L: *mut lua_State) -> () {
 pub unsafe extern "C" fn luaD_callnoyield(
     mut L: *mut lua_State,
     mut func: StkId,
-    mut nResults: libc::c_int,
+    mut nResults: lua_int,
 ) -> () {
     (*L).nny = (*L).nny.wrapping_add(1);
     luaD_call(L, func, nResults);
@@ -2041,7 +2041,7 @@ pub unsafe extern "C" fn luaD_callnoyield(
 }
 #[no_mangle]
 pub unsafe extern "C" fn luaD_inctop(mut L: *mut lua_State) -> () {
-    if (*L).stack_last.wrapping_offset_from((*L).top) as libc::c_long <= 1i32 as libc::c_long {
+    if (*L).stack_last.wrapping_offset_from((*L).top) as lua_long <= 1i32 as lua_long {
         luaD_growstack(L, 1i32);
     }
     (*L).top = (*L).top.offset(1isize);

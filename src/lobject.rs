@@ -1,4 +1,4 @@
-use libc;
+use types::*;
 use lua::*;
 extern "C" {
     /*
@@ -47,28 +47,28 @@ extern "C" {
     #[no_mangle]
     fn localeconv() -> *mut lconv;
     #[no_mangle]
-    fn pow(_: libc::c_double, _: libc::c_double) -> libc::c_double;
+    fn pow(_: lua_double, _: lua_double) -> lua_double;
     #[no_mangle]
-    fn floor(_: libc::c_double) -> libc::c_double;
+    fn floor(_: lua_double) -> lua_double;
     #[no_mangle]
-    fn fmod(_: libc::c_double, _: libc::c_double) -> libc::c_double;
+    fn fmod(_: lua_double, _: lua_double) -> lua_double;
     #[no_mangle]
-    fn snprintf(_: *mut libc::c_char, _: libc::c_ulong, _: *const libc::c_char, ...)
-        -> libc::c_int;
+    fn snprintf(_: *mut lua_char, _: lua_ulong, _: *const lua_char, ...)
+        -> lua_int;
     #[no_mangle]
-    fn strtod(__nptr: *const libc::c_char, __endptr: *mut *mut libc::c_char) -> libc::c_double;
+    fn strtod(__nptr: *const lua_char, __endptr: *mut *mut lua_char) -> lua_double;
     #[no_mangle]
-    fn memcpy(_: *mut libc::c_void, _: *const libc::c_void, _: libc::c_ulong) -> *mut libc::c_void;
+    fn memcpy(_: *mut lua_void, _: *const lua_void, _: lua_ulong) -> *mut lua_void;
     #[no_mangle]
-    fn strcpy(_: *mut libc::c_char, _: *const libc::c_char) -> *mut libc::c_char;
+    fn strcpy(_: *mut lua_char, _: *const lua_char) -> *mut lua_char;
     #[no_mangle]
-    fn strchr(_: *const libc::c_char, _: libc::c_int) -> *mut libc::c_char;
+    fn strchr(_: *const lua_char, _: lua_int) -> *mut lua_char;
     #[no_mangle]
-    fn strspn(_: *const libc::c_char, _: *const libc::c_char) -> libc::c_ulong;
+    fn strspn(_: *const lua_char, _: *const lua_char) -> lua_ulong;
     #[no_mangle]
-    fn strpbrk(_: *const libc::c_char, _: *const libc::c_char) -> *mut libc::c_char;
+    fn strpbrk(_: *const lua_char, _: *const lua_char) -> *mut lua_char;
     #[no_mangle]
-    fn strlen(_: *const libc::c_char) -> libc::c_ulong;
+    fn strlen(_: *const lua_char) -> lua_ulong;
     /*
      ** $Id: lctype.h,v 1.12.1.1 2013/04/12 18:48:47 roberto Exp $
      ** 'ctype' functions for Lua
@@ -102,7 +102,7 @@ extern "C" {
         event: TMS,
     ) -> ();
     #[no_mangle]
-    fn luaV_tonumber_(obj: *const TValue, n: *mut lua_Number) -> libc::c_int;
+    fn luaV_tonumber_(obj: *const TValue, n: *mut lua_Number) -> lua_int;
     #[no_mangle]
     fn luaV_shiftl(x: lua_Integer, y: lua_Integer) -> lua_Integer;
     #[no_mangle]
@@ -110,60 +110,60 @@ extern "C" {
     #[no_mangle]
     fn luaV_mod(L: *mut lua_State, x: lua_Integer, y: lua_Integer) -> lua_Integer;
     #[no_mangle]
-    fn luaV_tointeger(obj: *const TValue, p: *mut lua_Integer, mode: libc::c_int) -> libc::c_int;
+    fn luaV_tointeger(obj: *const TValue, p: *mut lua_Integer, mode: lua_int) -> lua_int;
     #[no_mangle]
-    fn luaS_newlstr(L: *mut lua_State, str: *const libc::c_char, l: size_t) -> *mut TString;
+    fn luaS_newlstr(L: *mut lua_State, str: *const lua_char, l: size_t) -> *mut TString;
     #[no_mangle]
-    fn luaV_concat(L: *mut lua_State, total: libc::c_int) -> ();
+    fn luaV_concat(L: *mut lua_State, total: lua_int) -> ();
     #[no_mangle]
     fn luaD_inctop(L: *mut lua_State) -> ();
     #[no_mangle]
-    fn luaD_growstack(L: *mut lua_State, n: libc::c_int) -> ();
+    fn luaD_growstack(L: *mut lua_State, n: lua_int) -> ();
     #[no_mangle]
-    fn luaG_runerror(L: *mut lua_State, fmt: *const libc::c_char, ...) -> !;
+    fn luaG_runerror(L: *mut lua_State, fmt: *const lua_char, ...) -> !;
 }
 pub type __builtin_va_list = [__va_list_tag; 1];
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct __va_list_tag {
-    pub gp_offset: libc::c_uint,
-    pub fp_offset: libc::c_uint,
-    pub overflow_arg_area: *mut libc::c_void,
-    pub reg_save_area: *mut libc::c_void,
+    pub gp_offset: lua_uint,
+    pub fp_offset: lua_uint,
+    pub overflow_arg_area: *mut lua_void,
+    pub reg_save_area: *mut lua_void,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct lconv {
-    pub decimal_point: *mut libc::c_char,
-    pub thousands_sep: *mut libc::c_char,
-    pub grouping: *mut libc::c_char,
-    pub int_curr_symbol: *mut libc::c_char,
-    pub currency_symbol: *mut libc::c_char,
-    pub mon_decimal_point: *mut libc::c_char,
-    pub mon_thousands_sep: *mut libc::c_char,
-    pub mon_grouping: *mut libc::c_char,
-    pub positive_sign: *mut libc::c_char,
-    pub negative_sign: *mut libc::c_char,
-    pub int_frac_digits: libc::c_char,
-    pub frac_digits: libc::c_char,
-    pub p_cs_precedes: libc::c_char,
-    pub p_sep_by_space: libc::c_char,
-    pub n_cs_precedes: libc::c_char,
-    pub n_sep_by_space: libc::c_char,
-    pub p_sign_posn: libc::c_char,
-    pub n_sign_posn: libc::c_char,
-    pub int_p_cs_precedes: libc::c_char,
-    pub int_p_sep_by_space: libc::c_char,
-    pub int_n_cs_precedes: libc::c_char,
-    pub int_n_sep_by_space: libc::c_char,
-    pub int_p_sign_posn: libc::c_char,
-    pub int_n_sign_posn: libc::c_char,
+    pub decimal_point: *mut lua_char,
+    pub thousands_sep: *mut lua_char,
+    pub grouping: *mut lua_char,
+    pub int_curr_symbol: *mut lua_char,
+    pub currency_symbol: *mut lua_char,
+    pub mon_decimal_point: *mut lua_char,
+    pub mon_thousands_sep: *mut lua_char,
+    pub mon_grouping: *mut lua_char,
+    pub positive_sign: *mut lua_char,
+    pub negative_sign: *mut lua_char,
+    pub int_frac_digits: lua_char,
+    pub frac_digits: lua_char,
+    pub p_cs_precedes: lua_char,
+    pub p_sep_by_space: lua_char,
+    pub n_cs_precedes: lua_char,
+    pub n_sep_by_space: lua_char,
+    pub p_sign_posn: lua_char,
+    pub n_sign_posn: lua_char,
+    pub int_p_cs_precedes: lua_char,
+    pub int_p_sep_by_space: lua_char,
+    pub int_n_cs_precedes: lua_char,
+    pub int_n_sep_by_space: lua_char,
+    pub int_p_sign_posn: lua_char,
+    pub int_n_sign_posn: lua_char,
 }
-pub type __sig_atomic_t = libc::c_int;
+pub type __sig_atomic_t = lua_int;
 pub type va_list = __builtin_va_list;
-pub type size_t = libc::c_ulong;
-pub type ptrdiff_t = libc::c_long;
-pub type intptr_t = libc::c_long;
+pub type size_t = lua_ulong;
+pub type ptrdiff_t = lua_long;
+pub type intptr_t = lua_long;
 /*
 ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
 ** Lua - A Scripting Language
@@ -184,7 +184,7 @@ pub struct lua_State {
     pub next: *mut GCObject,
     pub tt: lu_byte,
     pub marked: lu_byte,
-    pub nci: libc::c_ushort,
+    pub nci: lua_ushort,
     pub status: lu_byte,
     pub top: StkId,
     pub l_G: *mut global_State,
@@ -199,11 +199,11 @@ pub struct lua_State {
     pub base_ci: CallInfo,
     pub hook: lua_Hook,
     pub errfunc: ptrdiff_t,
-    pub stacksize: libc::c_int,
-    pub basehookcount: libc::c_int,
-    pub hookcount: libc::c_int,
-    pub nny: libc::c_ushort,
-    pub nCcalls: libc::c_ushort,
+    pub stacksize: lua_int,
+    pub basehookcount: lua_int,
+    pub hookcount: lua_int,
+    pub nny: lua_ushort,
+    pub nCcalls: lua_ushort,
     pub hookmask: sig_atomic_t,
     pub allowhook: lu_byte,
 }
@@ -211,7 +211,7 @@ pub struct lua_State {
 /* }{ */
 /* } */
 /* chars used as small naturals (so that 'char' is reserved for characters) */
-pub type lu_byte = libc::c_uchar;
+pub type lu_byte = lua_uchar;
 pub type sig_atomic_t = __sig_atomic_t;
 /* Functions to be called by the debugger in specific events */
 pub type lua_Hook = Option<unsafe extern "C" fn(_: *mut lua_State, _: *mut lua_Debug) -> ()>;
@@ -241,19 +241,19 @@ pub type lua_Hook = Option<unsafe extern "C" fn(_: *mut lua_State, _: *mut lua_D
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct lua_Debug {
-    pub event: libc::c_int,
-    pub name: *const libc::c_char,
-    pub namewhat: *const libc::c_char,
-    pub what: *const libc::c_char,
-    pub source: *const libc::c_char,
-    pub currentline: libc::c_int,
-    pub linedefined: libc::c_int,
-    pub lastlinedefined: libc::c_int,
-    pub nups: libc::c_uchar,
-    pub nparams: libc::c_uchar,
-    pub isvararg: libc::c_char,
-    pub istailcall: libc::c_char,
-    pub short_src: [libc::c_char; 60],
+    pub event: lua_int,
+    pub name: *const lua_char,
+    pub namewhat: *const lua_char,
+    pub what: *const lua_char,
+    pub source: *const lua_char,
+    pub currentline: lua_int,
+    pub linedefined: lua_int,
+    pub lastlinedefined: lua_int,
+    pub nups: lua_uchar,
+    pub nparams: lua_uchar,
+    pub isvararg: lua_char,
+    pub istailcall: lua_char,
+    pub short_src: [lua_char; 60],
     pub i_ci: *mut CallInfo,
 }
 /* private part */
@@ -266,8 +266,8 @@ pub struct CallInfo {
     pub next: *mut CallInfo,
     pub u: unnamed,
     pub extra: ptrdiff_t,
-    pub nresults: libc::c_short,
-    pub callstatus: libc::c_ushort,
+    pub nresults: lua_short,
+    pub callstatus: lua_ushort,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -289,7 +289,7 @@ pub type lua_KContext = intptr_t;
 ** Type for continuation functions
 */
 pub type lua_KFunction =
-    Option<unsafe extern "C" fn(_: *mut lua_State, _: libc::c_int, _: lua_KContext) -> libc::c_int>;
+    Option<unsafe extern "C" fn(_: *mut lua_State, _: lua_int, _: lua_KContext) -> lua_int>;
 /* only for Lua functions */
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -320,7 +320,7 @@ pub struct unnamed_1 {
 ** type for virtual-machine instructions;
 ** must be an unsigned with (at least) 4 bytes (see details in lopcodes.h)
 */
-pub type Instruction = libc::c_uint;
+pub type Instruction = lua_uint;
 /* macro defining a nil value */
 /* raw type tag of a TValue */
 /* tag with no variants (bits 0-3) */
@@ -351,7 +351,7 @@ pub type TValue = lua_TValue;
 #[repr(C)]
 pub struct lua_TValue {
     pub value_: Value,
-    pub tt_: libc::c_int,
+    pub tt_: lua_int,
 }
 /*
 ** Tagged Values. This is the basic representation of values in Lua,
@@ -364,8 +364,8 @@ pub struct lua_TValue {
 #[repr(C)]
 pub union Value {
     pub gc: *mut GCObject,
-    pub p: *mut libc::c_void,
-    pub b: libc::c_int,
+    pub p: *mut lua_void,
+    pub b: lua_int,
     pub f: lua_CFunction,
     pub i: lua_Integer,
     pub n: lua_Number,
@@ -376,13 +376,13 @@ pub union Value {
 /* minimum Lua stack available to a C function */
 /* predefined values in the registry */
 /* type of numbers in Lua */
-pub type lua_Number = libc::c_double;
+pub type lua_Number = lua_double;
 /* type for integer functions */
-pub type lua_Integer = libc::c_longlong;
+pub type lua_Integer = lua_longlong;
 /*
 ** Type for C functions registered with Lua
 */
-pub type lua_CFunction = Option<unsafe extern "C" fn(_: *mut lua_State) -> libc::c_int>;
+pub type lua_CFunction = Option<unsafe extern "C" fn(_: *mut lua_State) -> lua_int>;
 
 /*
 ** $Id: lobject.h,v 2.117.1.1 2017/04/19 17:39:34 roberto Exp $
@@ -475,14 +475,14 @@ of luaV_execute */
 #[repr(C)]
 pub struct global_State {
     pub frealloc: lua_Alloc,
-    pub ud: *mut libc::c_void,
+    pub ud: *mut lua_void,
     pub totalbytes: l_mem,
     pub GCdebt: l_mem,
     pub GCmemtrav: lu_mem,
     pub GCestimate: lu_mem,
     pub strt: stringtable,
     pub l_registry: TValue,
-    pub seed: libc::c_uint,
+    pub seed: lua_uint,
     pub currentwhite: lu_byte,
     pub gcstate: lu_byte,
     pub gckind: lu_byte,
@@ -498,9 +498,9 @@ pub struct global_State {
     pub tobefnz: *mut GCObject,
     pub fixedgc: *mut GCObject,
     pub twups: *mut lua_State,
-    pub gcfinnum: libc::c_uint,
-    pub gcpause: libc::c_int,
-    pub gcstepmul: libc::c_int,
+    pub gcfinnum: lua_uint,
+    pub gcpause: lua_int,
+    pub gcstepmul: lua_int,
     pub panic: lua_CFunction,
     pub mainthread: *mut lua_State,
     pub version: *const lua_Number,
@@ -521,7 +521,7 @@ pub struct TString {
     pub marked: lu_byte,
     pub extra: lu_byte,
     pub shrlen: lu_byte,
-    pub hash: libc::c_uint,
+    pub hash: lua_uint,
     pub u: unnamed_2,
 }
 #[derive(Copy, Clone)]
@@ -538,7 +538,7 @@ pub struct Table {
     pub marked: lu_byte,
     pub flags: lu_byte,
     pub lsizenode: lu_byte,
-    pub sizearray: libc::c_uint,
+    pub sizearray: lua_uint,
     pub array: *mut TValue,
     pub node: *mut Node,
     pub lastfree: *mut Node,
@@ -565,8 +565,8 @@ pub union TKey {
 #[repr(C)]
 pub struct unnamed_3 {
     pub value_: Value,
-    pub tt_: libc::c_int,
-    pub next: libc::c_int,
+    pub tt_: lua_int,
+    pub next: lua_int,
 }
 /*
 ** Atomic type (relative to signals) to better ensure that 'lua_sethook'
@@ -579,8 +579,8 @@ pub struct unnamed_3 {
 #[repr(C)]
 pub struct stringtable {
     pub hash: *mut *mut TString,
-    pub nuse: libc::c_int,
-    pub size: libc::c_int,
+    pub nuse: lua_int,
+    pub size: lua_int,
 }
 /*
 ** $Id: llimits.h,v 1.141.1.1 2017/04/19 17:20:42 roberto Exp $
@@ -600,11 +600,11 @@ pub type l_mem = ptrdiff_t;
 ** Type for memory-allocation functions
 */
 pub type lua_Alloc = Option<
-    unsafe extern "C" fn(_: *mut libc::c_void, _: *mut libc::c_void, _: size_t, _: size_t)
-        -> *mut libc::c_void,
+    unsafe extern "C" fn(_: *mut lua_void, _: *mut lua_void, _: size_t, _: size_t)
+        -> *mut lua_void,
 >;
 /* unsigned integer type */
-pub type lua_Unsigned = libc::c_ulonglong;
+pub type lua_Unsigned = lua_ulonglong;
 /* maximum value for size_t */
 /* maximum size visible for Lua (must be representable in a lua_Integer */
 /* maximum value of an int */
@@ -618,14 +618,14 @@ pub type lua_Unsigned = libc::c_ulonglong;
 #[repr(C)]
 pub union L_Umaxalign {
     pub n: lua_Number,
-    pub u: libc::c_double,
-    pub s: *mut libc::c_void,
+    pub u: lua_double,
+    pub s: *mut lua_void,
     pub i: lua_Integer,
-    pub l: libc::c_long,
+    pub l: lua_long,
 }
 /* types of 'usual argument conversions' for lua_Number and lua_Integer */
-pub type l_uacNumber = libc::c_double;
-pub type l_uacInt = libc::c_longlong;
+pub type l_uacNumber = lua_double;
+pub type l_uacInt = lua_longlong;
 /*
 ** Ensures that address after this type is always fully aligned.
 */
@@ -679,8 +679,8 @@ pub struct Upvaldesc {
 #[repr(C)]
 pub struct LocVar {
     pub varname: *mut TString,
-    pub startpc: libc::c_int,
-    pub endpc: libc::c_int,
+    pub startpc: lua_int,
+    pub endpc: lua_int,
 }
 /*
 ** Function Prototypes
@@ -694,18 +694,18 @@ pub struct Proto {
     pub numparams: lu_byte,
     pub is_vararg: lu_byte,
     pub maxstacksize: lu_byte,
-    pub sizeupvalues: libc::c_int,
-    pub sizek: libc::c_int,
-    pub sizecode: libc::c_int,
-    pub sizelineinfo: libc::c_int,
-    pub sizep: libc::c_int,
-    pub sizelocvars: libc::c_int,
-    pub linedefined: libc::c_int,
-    pub lastlinedefined: libc::c_int,
+    pub sizeupvalues: lua_int,
+    pub sizek: lua_int,
+    pub sizecode: lua_int,
+    pub sizelineinfo: lua_int,
+    pub sizep: lua_int,
+    pub sizelocvars: lua_int,
+    pub linedefined: lua_int,
+    pub lastlinedefined: lua_int,
     pub k: *mut TValue,
     pub code: *mut Instruction,
     pub p: *mut *mut Proto,
-    pub lineinfo: *mut libc::c_int,
+    pub lineinfo: *mut lua_int,
     pub locvars: *mut LocVar,
     pub upvalues: *mut Upvaldesc,
     pub cache: *mut LClosure,
@@ -752,7 +752,7 @@ pub union Closure {
 * WARNING: if you change the order of this enumeration,
 * grep "ORDER TM" and "ORDER OP"
 */
-pub type TMS = libc::c_uint;
+pub type TMS = lua_uint;
 /* number of elements in the enum */
 pub const TM_N: TMS = 24;
 pub const TM_CALL: TMS = 23;
@@ -809,29 +809,29 @@ pub static mut luaO_nilobject_: TValue = lua_TValue {
 };
 /* size of buffer for 'luaO_utf8esc' function */
 #[no_mangle]
-pub unsafe extern "C" fn luaO_int2fb(mut x: libc::c_uint) -> libc::c_int {
+pub unsafe extern "C" fn luaO_int2fb(mut x: lua_uint) -> lua_int {
     /* exponent */
-    let mut e: libc::c_int = 0i32;
-    if x < 8i32 as libc::c_uint {
-        return x as libc::c_int;
+    let mut e: lua_int = 0i32;
+    if x < 8i32 as lua_uint {
+        return x as lua_int;
     } else {
-        while x >= (8i32 << 4i32) as libc::c_uint {
+        while x >= (8i32 << 4i32) as lua_uint {
             /* coarse steps */
             /* x = ceil(x / 16) */
-            x = x.wrapping_add(0xfi32 as libc::c_uint) >> 4i32;
+            x = x.wrapping_add(0xfi32 as lua_uint) >> 4i32;
             e += 4i32
         }
-        while x >= (8i32 << 1i32) as libc::c_uint {
+        while x >= (8i32 << 1i32) as lua_uint {
             /* fine steps */
             /* x = ceil(x / 2) */
-            x = x.wrapping_add(1i32 as libc::c_uint) >> 1i32;
+            x = x.wrapping_add(1i32 as lua_uint) >> 1i32;
             e += 1
         }
-        return e + 1i32 << 3i32 | x as libc::c_int - 8i32;
+        return e + 1i32 << 3i32 | x as lua_int - 8i32;
     };
 }
 #[no_mangle]
-pub unsafe extern "C" fn luaO_fb2int(mut x: libc::c_int) -> libc::c_int {
+pub unsafe extern "C" fn luaO_fb2int(mut x: lua_int) -> lua_int {
     return if x < 8i32 {
         x
     } else {
@@ -840,40 +840,40 @@ pub unsafe extern "C" fn luaO_fb2int(mut x: libc::c_int) -> libc::c_int {
 }
 #[no_mangle]
 pub unsafe extern "C" fn luaO_utf8esc(
-    mut buff: *mut libc::c_char,
-    mut x: libc::c_ulong,
-) -> libc::c_int {
+    mut buff: *mut lua_char,
+    mut x: lua_ulong,
+) -> lua_int {
     /* number of bytes put in buffer (backwards) */
-    let mut n: libc::c_int = 1i32;
+    let mut n: lua_int = 1i32;
     /* ascii? */
-    if x < 0x80i32 as libc::c_ulong {
-        *buff.offset((8i32 - 1i32) as isize) = x as libc::c_char
+    if x < 0x80i32 as lua_ulong {
+        *buff.offset((8i32 - 1i32) as isize) = x as lua_char
     } else {
         /* need continuation bytes */
         /* maximum that fits in first byte */
-        let mut mfb: libc::c_uint = 0x3fi32 as libc::c_uint;
+        let mut mfb: lua_uint = 0x3fi32 as lua_uint;
         loop {
             /* add continuation bytes */
             let fresh0 = n;
             n = n + 1;
             *buff.offset((8i32 - fresh0) as isize) =
-                (0x80i32 as libc::c_ulong | x & 0x3fi32 as libc::c_ulong) as libc::c_char;
+                (0x80i32 as lua_ulong | x & 0x3fi32 as lua_ulong) as lua_char;
             /* remove added bits */
             x >>= 6i32;
             /* now there is one less bit available in first byte */
             mfb >>= 1i32;
-            if !(x > mfb as libc::c_ulong) {
+            if !(x > mfb as lua_ulong) {
                 break;
             }
         }
         /* still needs continuation byte? */
         /* add first byte */
-        *buff.offset((8i32 - n) as isize) = ((!mfb << 1i32) as libc::c_ulong | x) as libc::c_char
+        *buff.offset((8i32 - n) as isize) = ((!mfb << 1i32) as lua_ulong | x) as lua_char
     }
     return n;
 }
 #[no_mangle]
-pub unsafe extern "C" fn luaO_ceillog2(mut x: libc::c_uint) -> libc::c_int {
+pub unsafe extern "C" fn luaO_ceillog2(mut x: lua_uint) -> lua_int {
     /* log_2[i] = ceil(log2(i - 1)) */
     static mut log_2: [lu_byte; 256] = [
         0i32 as lu_byte,
@@ -1133,18 +1133,18 @@ pub unsafe extern "C" fn luaO_ceillog2(mut x: libc::c_uint) -> libc::c_int {
         8i32 as lu_byte,
         8i32 as lu_byte,
     ];
-    let mut l: libc::c_int = 0i32;
+    let mut l: lua_int = 0i32;
     x = x.wrapping_sub(1);
-    while x >= 256i32 as libc::c_uint {
+    while x >= 256i32 as lua_uint {
         l += 8i32;
         x >>= 8i32
     }
-    return l + log_2[x as usize] as libc::c_int;
+    return l + log_2[x as usize] as lua_int;
 }
 #[no_mangle]
 pub unsafe extern "C" fn luaO_arith(
     mut L: *mut lua_State,
-    mut op: libc::c_int,
+    mut op: lua_int,
     mut p1: *const TValue,
     mut p2: *const TValue,
     mut res: *mut TValue,
@@ -1224,11 +1224,11 @@ pub unsafe extern "C" fn luaO_arith(
     /* go to the end */
     /* could not perform raw operation; try metamethod */
     /* should not fail when folding (compile time) */
-    luaT_trybinTM(L, p1, p2, res, (op - 0i32 + TM_ADD as libc::c_int) as TMS);
+    luaT_trybinTM(L, p1, p2, res, (op - 0i32 + TM_ADD as lua_int) as TMS);
 }
 unsafe extern "C" fn numarith(
     mut _L: *mut lua_State,
-    mut op: libc::c_int,
+    mut op: lua_int,
     mut v1: lua_Number,
     mut v2: lua_Number,
 ) -> lua_Number {
@@ -1243,7 +1243,7 @@ unsafe extern "C" fn numarith(
         3 => {
             let mut m: lua_Number = 0.;
             m = fmod(v1, v2);
-            if m * v2 < 0i32 as libc::c_double {
+            if m * v2 < 0i32 as lua_double {
                 m += v2
             }
             return m;
@@ -1253,7 +1253,7 @@ unsafe extern "C" fn numarith(
 }
 unsafe extern "C" fn intarith(
     mut L: *mut lua_State,
-    mut op: libc::c_int,
+    mut op: lua_int,
     mut v1: lua_Integer,
     mut v2: lua_Integer,
 ) -> lua_Integer {
@@ -1274,10 +1274,10 @@ unsafe extern "C" fn intarith(
     };
 }
 #[no_mangle]
-pub unsafe extern "C" fn luaO_str2num(mut s: *const libc::c_char, mut o: *mut TValue) -> size_t {
+pub unsafe extern "C" fn luaO_str2num(mut s: *const lua_char, mut o: *mut TValue) -> size_t {
     let mut i: lua_Integer = 0;
     let mut n: lua_Number = 0.;
-    let mut e: *const libc::c_char = 0 as *const libc::c_char;
+    let mut e: *const lua_char = 0 as *const lua_char;
     e = l_str2int(s, &mut i);
     if !e.is_null() {
         /* try as an integer */
@@ -1296,7 +1296,7 @@ pub unsafe extern "C" fn luaO_str2num(mut s: *const libc::c_char, mut o: *mut TV
         }
     }
     /* success; return string size */
-    return (e.wrapping_offset_from(s) as libc::c_long + 1i32 as libc::c_long) as size_t;
+    return (e.wrapping_offset_from(s) as lua_long + 1i32 as lua_long) as size_t;
 }
 /*
 ** Convert string 's' to a Lua number (put in 'result'). Return NULL
@@ -1312,41 +1312,41 @@ pub unsafe extern "C" fn luaO_str2num(mut s: *const libc::c_char, mut o: *mut TV
 ** current locale radix mark, and tries to convert again.
 */
 unsafe extern "C" fn l_str2d(
-    mut s: *const libc::c_char,
+    mut s: *const lua_char,
     mut result: *mut lua_Number,
-) -> *const libc::c_char {
-    let mut endptr: *const libc::c_char = 0 as *const libc::c_char;
-    let mut pmode: *const libc::c_char = strpbrk(s, s!(b".xXnN\x00"));
-    let mut mode: libc::c_int = if !pmode.is_null() {
-        *pmode as libc::c_uchar as libc::c_int | 'A' as i32 ^ 'a' as i32
+) -> *const lua_char {
+    let mut endptr: *const lua_char = 0 as *const lua_char;
+    let mut pmode: *const lua_char = strpbrk(s, s!(b".xXnN\x00"));
+    let mut mode: lua_int = if !pmode.is_null() {
+        *pmode as lua_uchar as lua_int | 'A' as i32 ^ 'a' as i32
     } else {
         0i32
     };
     /* reject 'inf' and 'nan' */
     if mode == 'n' as i32 {
-        return 0 as *const libc::c_char;
+        return 0 as *const lua_char;
     } else {
         /* try to convert */
         endptr = l_str2dloc(s, result, mode);
         if endptr.is_null() {
             /* failed? may be a different locale */
-            let mut buff: [libc::c_char; 201] = [0; 201];
-            let mut pdot: *const libc::c_char = strchr(s, '.' as i32);
-            if strlen(s) > 200i32 as libc::c_ulong || pdot.is_null() {
+            let mut buff: [lua_char; 201] = [0; 201];
+            let mut pdot: *const lua_char = strchr(s, '.' as i32);
+            if strlen(s) > 200i32 as lua_ulong || pdot.is_null() {
                 /* string too long or no dot; fail */
-                return 0 as *const libc::c_char;
+                return 0 as *const lua_char;
             } else {
                 /* copy string to buffer */
                 strcpy(buff.as_mut_ptr(), s);
                 /* correct decimal point */
-                buff[pdot.wrapping_offset_from(s) as libc::c_long as usize] =
+                buff[pdot.wrapping_offset_from(s) as lua_long as usize] =
                     *(*localeconv()).decimal_point.offset(0isize);
                 /* try again */
                 endptr = l_str2dloc(buff.as_mut_ptr(), result, mode);
                 if !endptr.is_null() {
                     /* make relative to 's' */
                     endptr = s.offset(
-                        endptr.wrapping_offset_from(buff.as_mut_ptr()) as libc::c_long as isize,
+                        endptr.wrapping_offset_from(buff.as_mut_ptr()) as lua_long as isize,
                     )
                 }
             }
@@ -1362,104 +1362,104 @@ unsafe extern "C" fn l_str2d(
 /* }====================================================== */
 /* maximum length of a numeral */
 unsafe extern "C" fn l_str2dloc(
-    mut s: *const libc::c_char,
+    mut s: *const lua_char,
     mut result: *mut lua_Number,
-    mut mode: libc::c_int,
-) -> *const libc::c_char {
-    let mut endptr: *mut libc::c_char = 0 as *mut libc::c_char;
+    mut mode: lua_int,
+) -> *const lua_char {
+    let mut endptr: *mut lua_char = 0 as *mut lua_char;
     /* try to convert */
     *result = if mode == 'x' as i32 {
         strtod(s, &mut endptr)
     } else {
         strtod(s, &mut endptr)
     };
-    if endptr == s as *mut libc::c_char {
+    if endptr == s as *mut lua_char {
         /* nothing recognized? */
-        return 0 as *const libc::c_char;
+        return 0 as *const lua_char;
     } else {
         while 0
-            != luai_ctype_[(*endptr as libc::c_uchar as libc::c_int + 1i32) as usize] as libc::c_int
+            != luai_ctype_[(*endptr as lua_uchar as lua_int + 1i32) as usize] as lua_int
                 & 1i32 << 3i32
         {
             /* skip trailing spaces */
             endptr = endptr.offset(1isize)
         }
         /* OK if no trailing characters */
-        return if *endptr as libc::c_int == '\u{0}' as i32 {
+        return if *endptr as lua_int == '\u{0}' as i32 {
             endptr
         } else {
-            0 as *mut libc::c_char
+            0 as *mut lua_char
         };
     };
 }
 unsafe extern "C" fn l_str2int(
-    mut s: *const libc::c_char,
+    mut s: *const lua_char,
     mut result: *mut lua_Integer,
-) -> *const libc::c_char {
+) -> *const lua_char {
     let mut a: lua_Unsigned = 0i32 as lua_Unsigned;
-    let mut empty: libc::c_int = 1i32;
-    let mut neg: libc::c_int = 0;
+    let mut empty: lua_int = 1i32;
+    let mut neg: lua_int = 0;
     while 0
-        != luai_ctype_[(*s as libc::c_uchar as libc::c_int + 1i32) as usize] as libc::c_int
+        != luai_ctype_[(*s as lua_uchar as lua_int + 1i32) as usize] as lua_int
             & 1i32 << 3i32
     {
         /* skip initial spaces */
         s = s.offset(1isize)
     }
     neg = isneg(&mut s);
-    if *s.offset(0isize) as libc::c_int == '0' as i32
-        && (*s.offset(1isize) as libc::c_int == 'x' as i32
-            || *s.offset(1isize) as libc::c_int == 'X' as i32)
+    if *s.offset(0isize) as lua_int == '0' as i32
+        && (*s.offset(1isize) as lua_int == 'x' as i32
+            || *s.offset(1isize) as lua_int == 'X' as i32)
     {
         /* hex? */
         /* skip '0x' */
         s = s.offset(2isize);
         while 0
-            != luai_ctype_[(*s as libc::c_uchar as libc::c_int + 1i32) as usize] as libc::c_int
+            != luai_ctype_[(*s as lua_uchar as lua_int + 1i32) as usize] as lua_int
                 & 1i32 << 4i32
         {
             a = a
-                .wrapping_mul(16i32 as libc::c_ulonglong)
-                .wrapping_add(luaO_hexavalue(*s as libc::c_int) as libc::c_ulonglong);
+                .wrapping_mul(16i32 as lua_ulonglong)
+                .wrapping_add(luaO_hexavalue(*s as lua_int) as lua_ulonglong);
             empty = 0i32;
             s = s.offset(1isize)
         }
     } else {
         while 0
-            != luai_ctype_[(*s as libc::c_uchar as libc::c_int + 1i32) as usize] as libc::c_int
+            != luai_ctype_[(*s as lua_uchar as lua_int + 1i32) as usize] as lua_int
                 & 1i32 << 1i32
         {
-            let mut d: libc::c_int = *s as libc::c_int - '0' as i32;
+            let mut d: lua_int = *s as lua_int - '0' as i32;
             /* overflow? */
-            if a >= (9223372036854775807i64 / 10i32 as libc::c_longlong) as lua_Unsigned
-                && (a > (9223372036854775807i64 / 10i32 as libc::c_longlong) as lua_Unsigned
-                    || d > (9223372036854775807i64 % 10i32 as libc::c_longlong) as libc::c_int
+            if a >= (9223372036854775807i64 / 10i32 as lua_longlong) as lua_Unsigned
+                && (a > (9223372036854775807i64 / 10i32 as lua_longlong) as lua_Unsigned
+                    || d > (9223372036854775807i64 % 10i32 as lua_longlong) as lua_int
                         + neg)
             {
                 /* do not accept it (as integer) */
-                return 0 as *const libc::c_char;
+                return 0 as *const lua_char;
             } else {
                 a = a
-                    .wrapping_mul(10i32 as libc::c_ulonglong)
-                    .wrapping_add(d as libc::c_ulonglong);
+                    .wrapping_mul(10i32 as lua_ulonglong)
+                    .wrapping_add(d as lua_ulonglong);
                 empty = 0i32;
                 s = s.offset(1isize)
             }
         }
     }
     while 0
-        != luai_ctype_[(*s as libc::c_uchar as libc::c_int + 1i32) as usize] as libc::c_int
+        != luai_ctype_[(*s as lua_uchar as lua_int + 1i32) as usize] as lua_int
             & 1i32 << 3i32
     {
         /* skip trailing spaces */
         s = s.offset(1isize)
     }
-    if 0 != empty || *s as libc::c_int != '\u{0}' as i32 {
+    if 0 != empty || *s as lua_int != '\u{0}' as i32 {
         /* something wrong in the numeral */
-        return 0 as *const libc::c_char;
+        return 0 as *const lua_char;
     } else {
         *result = (if 0 != neg {
-            (0u32 as libc::c_ulonglong).wrapping_sub(a)
+            (0u32 as lua_ulonglong).wrapping_sub(a)
         } else {
             a
         }) as lua_Integer;
@@ -1467,19 +1467,19 @@ unsafe extern "C" fn l_str2int(
     };
 }
 #[no_mangle]
-pub unsafe extern "C" fn luaO_hexavalue(mut c: libc::c_int) -> libc::c_int {
-    if 0 != luai_ctype_[(c + 1i32) as usize] as libc::c_int & 1i32 << 1i32 {
+pub unsafe extern "C" fn luaO_hexavalue(mut c: lua_int) -> lua_int {
+    if 0 != luai_ctype_[(c + 1i32) as usize] as lua_int & 1i32 << 1i32 {
         return c - '0' as i32;
     } else {
         return (c | 'A' as i32 ^ 'a' as i32) - 'a' as i32 + 10i32;
     };
 }
-unsafe extern "C" fn isneg(mut s: *mut *const libc::c_char) -> libc::c_int {
-    if **s as libc::c_int == '-' as i32 {
+unsafe extern "C" fn isneg(mut s: *mut *const lua_char) -> lua_int {
+    if **s as lua_int == '-' as i32 {
         *s = (*s).offset(1isize);
         return 1i32;
     } else {
-        if **s as libc::c_int == '+' as i32 {
+        if **s as lua_int == '+' as i32 {
             *s = (*s).offset(1isize)
         }
         return 0i32;
@@ -1487,23 +1487,23 @@ unsafe extern "C" fn isneg(mut s: *mut *const libc::c_char) -> libc::c_int {
 }
 #[no_mangle]
 pub unsafe extern "C" fn luaO_tostring(mut L: *mut lua_State, mut obj: StkId) -> () {
-    let mut buff: [libc::c_char; 50] = [0; 50];
+    let mut buff: [lua_char; 50] = [0; 50];
     let mut len: size_t = 0;
     if (*obj).tt_ == 3i32 | 1i32 << 4i32 {
         len = snprintf(
             buff.as_mut_ptr(),
-            ::std::mem::size_of::<[libc::c_char; 50]>() as libc::c_ulong,
+            ::std::mem::size_of::<[lua_char; 50]>() as lua_ulong,
             s!(b"%lld\x00"),
             (*obj).value_.i,
         ) as size_t
     } else {
         len = snprintf(
             buff.as_mut_ptr(),
-            ::std::mem::size_of::<[libc::c_char; 50]>() as libc::c_ulong,
+            ::std::mem::size_of::<[lua_char; 50]>() as lua_ulong,
             s!(b"%.14g\x00"),
             (*obj).value_.n,
         ) as size_t;
-        if buff[strspn(buff.as_mut_ptr(), s!(b"-0123456789\x00")) as usize] as libc::c_int
+        if buff[strspn(buff.as_mut_ptr(), s!(b"-0123456789\x00")) as usize] as lua_int
             == '\u{0}' as i32
         {
             /* looks like an int? */
@@ -1513,161 +1513,161 @@ pub unsafe extern "C" fn luaO_tostring(mut L: *mut lua_State, mut obj: StkId) ->
             /* adds '.0' to result */
             let fresh2 = len;
             len = len.wrapping_add(1);
-            buff[fresh2 as usize] = '0' as i32 as libc::c_char
+            buff[fresh2 as usize] = '0' as i32 as lua_char
         }
     }
     let mut io: *mut TValue = obj;
     let mut x_: *mut TString = luaS_newlstr(L, buff.as_mut_ptr(), len);
     (*io).value_.gc = &mut (*(x_ as *mut GCUnion)).gc;
-    (*io).tt_ = (*x_).tt as libc::c_int | 1i32 << 6i32;
+    (*io).tt_ = (*x_).tt as lua_int | 1i32 << 6i32;
 }
 unsafe extern "C" fn pushstr(
     mut L: *mut lua_State,
-    mut str: *const libc::c_char,
+    mut str: *const lua_char,
     mut l: size_t,
 ) -> () {
     let mut io: *mut TValue = (*L).top;
     let mut x_: *mut TString = luaS_newlstr(L, str, l);
     (*io).value_.gc = &mut (*(x_ as *mut GCUnion)).gc;
-    (*io).tt_ = (*x_).tt as libc::c_int | 1i32 << 6i32;
+    (*io).tt_ = (*x_).tt as lua_int | 1i32 << 6i32;
     luaD_inctop(L);
 }
 #[no_mangle]
 pub unsafe extern "C" fn luaO_chunkid(
-    mut out: *mut libc::c_char,
-    mut source: *const libc::c_char,
+    mut out: *mut lua_char,
+    mut source: *const lua_char,
     mut bufflen: size_t,
 ) -> () {
     let mut l: size_t = strlen(source);
-    if *source as libc::c_int == '=' as i32 {
+    if *source as lua_int == '=' as i32 {
         /* 'literal' source */
         /* small enough? */
         if l <= bufflen {
             memcpy(
-                out as *mut libc::c_void,
-                source.offset(1isize) as *const libc::c_void,
-                l.wrapping_mul(::std::mem::size_of::<libc::c_char>() as libc::c_ulong),
+                out as *mut lua_void,
+                source.offset(1isize) as *const lua_void,
+                l.wrapping_mul(::std::mem::size_of::<lua_char>() as lua_ulong),
             );
         } else {
             /* truncate it */
             memcpy(
-                out as *mut libc::c_void,
-                source.offset(1isize) as *const libc::c_void,
+                out as *mut lua_void,
+                source.offset(1isize) as *const lua_void,
                 bufflen
-                    .wrapping_sub(1i32 as libc::c_ulong)
-                    .wrapping_mul(::std::mem::size_of::<libc::c_char>() as libc::c_ulong),
+                    .wrapping_sub(1i32 as lua_ulong)
+                    .wrapping_mul(::std::mem::size_of::<lua_char>() as lua_ulong),
             );
-            out = out.offset(bufflen.wrapping_sub(1i32 as libc::c_ulong) as isize);
-            *out = '\u{0}' as i32 as libc::c_char
+            out = out.offset(bufflen.wrapping_sub(1i32 as lua_ulong) as isize);
+            *out = '\u{0}' as i32 as lua_char
         }
-    } else if *source as libc::c_int == '@' as i32 {
+    } else if *source as lua_int == '@' as i32 {
         /* file name */
         /* small enough? */
         if l <= bufflen {
             memcpy(
-                out as *mut libc::c_void,
-                source.offset(1isize) as *const libc::c_void,
-                l.wrapping_mul(::std::mem::size_of::<libc::c_char>() as libc::c_ulong),
+                out as *mut lua_void,
+                source.offset(1isize) as *const lua_void,
+                l.wrapping_mul(::std::mem::size_of::<lua_char>() as lua_ulong),
             );
         } else {
             /* add '...' before rest of name */
             memcpy(
-                out as *mut libc::c_void,
-                s!(b"...\x00") as *const libc::c_void,
-                (::std::mem::size_of::<[libc::c_char; 4]>() as libc::c_ulong)
-                    .wrapping_div(::std::mem::size_of::<libc::c_char>() as libc::c_ulong)
-                    .wrapping_sub(1i32 as libc::c_ulong)
-                    .wrapping_mul(::std::mem::size_of::<libc::c_char>() as libc::c_ulong),
+                out as *mut lua_void,
+                s!(b"...\x00") as *const lua_void,
+                (::std::mem::size_of::<[lua_char; 4]>() as lua_ulong)
+                    .wrapping_div(::std::mem::size_of::<lua_char>() as lua_ulong)
+                    .wrapping_sub(1i32 as lua_ulong)
+                    .wrapping_mul(::std::mem::size_of::<lua_char>() as lua_ulong),
             );
             out = out.offset(
-                (::std::mem::size_of::<[libc::c_char; 4]>() as libc::c_ulong)
-                    .wrapping_div(::std::mem::size_of::<libc::c_char>() as libc::c_ulong)
-                    .wrapping_sub(1i32 as libc::c_ulong) as isize,
+                (::std::mem::size_of::<[lua_char; 4]>() as lua_ulong)
+                    .wrapping_div(::std::mem::size_of::<lua_char>() as lua_ulong)
+                    .wrapping_sub(1i32 as lua_ulong) as isize,
             );
-            bufflen = (bufflen as libc::c_ulong).wrapping_sub(
-                (::std::mem::size_of::<[libc::c_char; 4]>() as libc::c_ulong)
-                    .wrapping_div(::std::mem::size_of::<libc::c_char>() as libc::c_ulong)
-                    .wrapping_sub(1i32 as libc::c_ulong),
+            bufflen = (bufflen as lua_ulong).wrapping_sub(
+                (::std::mem::size_of::<[lua_char; 4]>() as lua_ulong)
+                    .wrapping_div(::std::mem::size_of::<lua_char>() as lua_ulong)
+                    .wrapping_sub(1i32 as lua_ulong),
             ) as size_t as size_t;
             memcpy(
-                out as *mut libc::c_void,
+                out as *mut lua_void,
                 source
                     .offset(1isize)
                     .offset(l as isize)
-                    .offset(-(bufflen as isize)) as *const libc::c_void,
-                bufflen.wrapping_mul(::std::mem::size_of::<libc::c_char>() as libc::c_ulong),
+                    .offset(-(bufflen as isize)) as *const lua_void,
+                bufflen.wrapping_mul(::std::mem::size_of::<lua_char>() as lua_ulong),
             );
         }
     } else {
         /* string; format as [string "source"] */
         /* find first new line (if any) */
-        let mut nl: *const libc::c_char = strchr(source, '\n' as i32);
+        let mut nl: *const lua_char = strchr(source, '\n' as i32);
         /* add prefix */
         memcpy(
-            out as *mut libc::c_void,
-            s!(b"[string \"\x00") as *const libc::c_void,
-            (::std::mem::size_of::<[libc::c_char; 10]>() as libc::c_ulong)
-                .wrapping_div(::std::mem::size_of::<libc::c_char>() as libc::c_ulong)
-                .wrapping_sub(1i32 as libc::c_ulong)
-                .wrapping_mul(::std::mem::size_of::<libc::c_char>() as libc::c_ulong),
+            out as *mut lua_void,
+            s!(b"[string \"\x00") as *const lua_void,
+            (::std::mem::size_of::<[lua_char; 10]>() as lua_ulong)
+                .wrapping_div(::std::mem::size_of::<lua_char>() as lua_ulong)
+                .wrapping_sub(1i32 as lua_ulong)
+                .wrapping_mul(::std::mem::size_of::<lua_char>() as lua_ulong),
         );
         out = out.offset(
-            (::std::mem::size_of::<[libc::c_char; 10]>() as libc::c_ulong)
-                .wrapping_div(::std::mem::size_of::<libc::c_char>() as libc::c_ulong)
-                .wrapping_sub(1i32 as libc::c_ulong) as isize,
+            (::std::mem::size_of::<[lua_char; 10]>() as lua_ulong)
+                .wrapping_div(::std::mem::size_of::<lua_char>() as lua_ulong)
+                .wrapping_sub(1i32 as lua_ulong) as isize,
         );
         /* save space for prefix+suffix+'\0' */
-        bufflen = (bufflen as libc::c_ulong).wrapping_sub(
-            (::std::mem::size_of::<[libc::c_char; 15]>() as libc::c_ulong)
-                .wrapping_div(::std::mem::size_of::<libc::c_char>() as libc::c_ulong)
-                .wrapping_sub(1i32 as libc::c_ulong)
-                .wrapping_add(1i32 as libc::c_ulong),
+        bufflen = (bufflen as lua_ulong).wrapping_sub(
+            (::std::mem::size_of::<[lua_char; 15]>() as lua_ulong)
+                .wrapping_div(::std::mem::size_of::<lua_char>() as lua_ulong)
+                .wrapping_sub(1i32 as lua_ulong)
+                .wrapping_add(1i32 as lua_ulong),
         ) as size_t as size_t;
         if l < bufflen && nl.is_null() {
             /* small one-line source? */
             /* keep it */
             memcpy(
-                out as *mut libc::c_void,
-                source as *const libc::c_void,
-                l.wrapping_mul(::std::mem::size_of::<libc::c_char>() as libc::c_ulong),
+                out as *mut lua_void,
+                source as *const lua_void,
+                l.wrapping_mul(::std::mem::size_of::<lua_char>() as lua_ulong),
             );
             out = out.offset(l as isize)
         } else {
             if !nl.is_null() {
                 /* stop at first newline */
-                l = nl.wrapping_offset_from(source) as libc::c_long as size_t
+                l = nl.wrapping_offset_from(source) as lua_long as size_t
             }
             if l > bufflen {
                 l = bufflen
             }
             memcpy(
-                out as *mut libc::c_void,
-                source as *const libc::c_void,
-                l.wrapping_mul(::std::mem::size_of::<libc::c_char>() as libc::c_ulong),
+                out as *mut lua_void,
+                source as *const lua_void,
+                l.wrapping_mul(::std::mem::size_of::<lua_char>() as lua_ulong),
             );
             out = out.offset(l as isize);
             memcpy(
-                out as *mut libc::c_void,
-                s!(b"...\x00") as *const libc::c_void,
-                (::std::mem::size_of::<[libc::c_char; 4]>() as libc::c_ulong)
-                    .wrapping_div(::std::mem::size_of::<libc::c_char>() as libc::c_ulong)
-                    .wrapping_sub(1i32 as libc::c_ulong)
-                    .wrapping_mul(::std::mem::size_of::<libc::c_char>() as libc::c_ulong),
+                out as *mut lua_void,
+                s!(b"...\x00") as *const lua_void,
+                (::std::mem::size_of::<[lua_char; 4]>() as lua_ulong)
+                    .wrapping_div(::std::mem::size_of::<lua_char>() as lua_ulong)
+                    .wrapping_sub(1i32 as lua_ulong)
+                    .wrapping_mul(::std::mem::size_of::<lua_char>() as lua_ulong),
             );
             out = out.offset(
-                (::std::mem::size_of::<[libc::c_char; 4]>() as libc::c_ulong)
-                    .wrapping_div(::std::mem::size_of::<libc::c_char>() as libc::c_ulong)
-                    .wrapping_sub(1i32 as libc::c_ulong) as isize,
+                (::std::mem::size_of::<[lua_char; 4]>() as lua_ulong)
+                    .wrapping_div(::std::mem::size_of::<lua_char>() as lua_ulong)
+                    .wrapping_sub(1i32 as lua_ulong) as isize,
             )
         }
         memcpy(
-            out as *mut libc::c_void,
-            s!(b"\"]\x00") as *const libc::c_void,
-            (::std::mem::size_of::<[libc::c_char; 3]>() as libc::c_ulong)
-                .wrapping_div(::std::mem::size_of::<libc::c_char>() as libc::c_ulong)
-                .wrapping_sub(1i32 as libc::c_ulong)
-                .wrapping_add(1i32 as libc::c_ulong)
-                .wrapping_mul(::std::mem::size_of::<libc::c_char>() as libc::c_ulong),
+            out as *mut lua_void,
+            s!(b"\"]\x00") as *const lua_void,
+            (::std::mem::size_of::<[lua_char; 3]>() as lua_ulong)
+                .wrapping_div(::std::mem::size_of::<lua_char>() as lua_ulong)
+                .wrapping_sub(1i32 as lua_ulong)
+                .wrapping_add(1i32 as lua_ulong)
+                .wrapping_mul(::std::mem::size_of::<lua_char>() as lua_ulong),
         );
     };
 }

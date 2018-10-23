@@ -4,21 +4,21 @@
 #[macro_export]
 macro_rules! s {
     ($str:expr) => {
-        $str as *const u8 as *const libc::c_char
+        $str as *const u8 as *const lua_char
     };
 }
 
 #[macro_export]
 macro_rules! const_c_str {
     ($name:ident, $str:expr) => {
-        const $name: *const libc::c_char = s!($str);
+        const $name: *const lua_char = s!($str);
     };
 }
 
 #[macro_export]
 macro_rules! pub_const_c_str {
     ($name:ident, $str:expr) => {
-        pub const $name: *const libc::c_char = s!($str);
+        pub const $name: *const lua_char = s!($str);
     };
 }
 
@@ -49,7 +49,7 @@ macro_rules! lua_reg_none {
 #[macro_export]
 macro_rules! lua_pushfstring {
     ($lua_State:expr, $($args:tt)*) => {{
-        let mut endptr: *const libc::c_char = 0 as *const libc::c_char;
+        let mut endptr: *const lua_char = 0 as *const lua_char;
         endptr
     }};
 }

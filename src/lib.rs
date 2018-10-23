@@ -1,3 +1,4 @@
+//TODO: remove all not necessary allows and features
 #![feature(extern_types)]
 #![feature(ptr_wrapping_offset_from)]
 #![feature(const_slice_as_ptr)]
@@ -7,8 +8,11 @@
 #![allow(dead_code)]
 #![allow(mutable_transmutes)]
 #![allow(unused_mut)]
+#![allow(unused_macros)]
 
-extern crate libc;
+//extern crate libc;
+
+pub mod types;
 
 #[macro_use]
 pub mod macros;
