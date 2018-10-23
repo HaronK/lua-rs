@@ -1,16 +1,13 @@
 [package]
 name = "lua-rs"
 authors = ["Haron"]
-version = "0.0.1"
+version = "0.0.2"
 publish = false
 
 [lib]
-#path = "lib.rs"
 crate-type = ["staticlib"]
 
 [[bin]]
 name = "lua"
-path = "src/main.rs"
 
 [dependencies]
-libc = "0.2"

@@ -10,8 +10,6 @@
 #![allow(unused_mut)]
 #![allow(unused_macros)]
 
-//extern crate libc;
-
 pub mod types;
 
 #[macro_use]
