@@ -292,128 +292,7 @@ pub struct LX {
     pub extra_: [lu_byte; 8],
     pub l: lua_State,
 }
-/*
-** Union of all collectable objects (only for conversions)
-*/
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub union GCUnion {
-    pub gc: GCObject,
-    pub ts: TString,
-    pub u: Udata,
-    pub cl: Closure,
-    pub h: Table,
-    pub p: Proto,
-    pub th: lua_State,
-}
-/*
-** Function Prototypes
-*/
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct Proto {
-    pub next: *mut GCObject,
-    pub tt: lu_byte,
-    pub marked: lu_byte,
-    pub numparams: lu_byte,
-    pub is_vararg: lu_byte,
-    pub maxstacksize: lu_byte,
-    pub sizeupvalues: lua_int,
-    pub sizek: lua_int,
-    pub sizecode: lua_int,
-    pub sizelineinfo: lua_int,
-    pub sizep: lua_int,
-    pub sizelocvars: lua_int,
-    pub linedefined: lua_int,
-    pub lastlinedefined: lua_int,
-    pub k: *mut TValue,
-    pub code: *mut Instruction,
-    pub p: *mut *mut Proto,
-    pub lineinfo: *mut lua_int,
-    pub locvars: *mut LocVar,
-    pub upvalues: *mut Upvaldesc,
-    pub cache: *mut LClosure,
-    pub source: *mut TString,
-    pub gclist: *mut GCObject,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct LClosure {
-    pub next: *mut GCObject,
-    pub tt: lu_byte,
-    pub marked: lu_byte,
-    pub nupvalues: lu_byte,
-    pub gclist: *mut GCObject,
-    pub p: *mut Proto,
-    pub upvals: [*mut UpVal; 1],
-}
-/*
-**  Get the address of memory block inside 'Udata'.
-** (Access to 'ttuv_' ensures that value is really a 'Udata'.)
-*/
-/*
-** Description of an upvalue for function prototypes
-*/
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct Upvaldesc {
-    pub name: *mut TString,
-    pub instack: lu_byte,
-    pub idx: lu_byte,
-}
-/*
-** Description of a local variable for function prototypes
-** (used for debug information)
-*/
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct LocVar {
-    pub varname: *mut TString,
-    pub startpc: lua_int,
-    pub endpc: lua_int,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub union Closure {
-    pub c: CClosure,
-    pub l: LClosure,
-}
-/*
-** Closures
-*/
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct CClosure {
-    pub next: *mut GCObject,
-    pub tt: lu_byte,
-    pub marked: lu_byte,
-    pub nupvalues: lu_byte,
-    pub gclist: *mut GCObject,
-    pub f: lua_CFunction,
-    pub upvalue: [TValue; 1],
-}
-/*
-** Get the actual string (array of bytes) from a 'TString'.
-** (Access to 'extra' ensures that value is really a 'TString'.)
-*/
-/* get the actual string (array of bytes) from a Lua value */
-/* get string length from 'TString *s' */
-/* get string length from 'TValue *o' */
-/*
-** Header for userdata; memory area follows the end of this structure
-** (aligned according to 'UUdata'; see next).
-*/
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct Udata {
-    pub next: *mut GCObject,
-    pub tt: lu_byte,
-    pub marked: lu_byte,
-    pub ttuv_: lu_byte,
-    pub metatable: *mut Table,
-    pub len: size_t,
-    pub user_: Value,
-}
+
 /*
 ** $Id: ldo.h,v 2.29.1.1 2017/04/19 17:20:42 roberto Exp $
 ** Stack and Call structure of Lua
@@ -427,8 +306,7 @@ pub struct Udata {
 ** at every check.
 */
 /* In general, 'pre'/'pos' are empty (nothing to save) */
-/* type of protected functions, to be ran by 'runprotected' */
-pub type Pfunc = Option<unsafe extern "C" fn(_: *mut lua_State, _: *mut lua_void) -> ()>;
+
 pub type time_t = __time_t;
 /*
 ** state manipulation

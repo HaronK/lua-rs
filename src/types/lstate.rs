@@ -130,3 +130,18 @@ pub struct lua_State {
     pub hookmask: l_signalT,
     pub allowhook: lu_byte,
 }
+
+/*
+** Union of all collectable objects (only for conversions)
+*/
+#[derive(Copy, Clone)]
+#[repr(C)]
+pub union GCUnion {
+    pub gc: GCObject,
+    pub ts: TString,
+    pub u: Udata,
+    pub cl: Closure,
+    pub h: Table,
+    pub p: Proto,
+    pub th: lua_State,
+}
