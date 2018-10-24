@@ -87,8 +87,6 @@ extern "C" {
         size: size_t,
     ) -> *mut lua_void;
     #[no_mangle]
-    fn luaG_runerror(L: *mut lua_State, fmt: *const lua_char, ...) -> !;
-    #[no_mangle]
     fn luaD_throw(L: *mut lua_State, errcode: lua_int) -> !;
     #[no_mangle]
     fn luaD_rawrunprotected(L: *mut lua_State, f: Pfunc, ud: *mut lua_void) -> lua_int;

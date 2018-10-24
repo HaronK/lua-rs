@@ -13,8 +13,6 @@ extern "C" {
     #[no_mangle]
     fn luaS_newlstr(L: *mut lua_State, str: *const lua_char, l: size_t) -> *mut TString;
     #[no_mangle]
-    fn luaG_runerror(L: *mut lua_State, fmt: *const lua_char, ...) -> !;
-    #[no_mangle]
     fn luaV_execute(L: *mut lua_State) -> ();
     #[no_mangle]
     fn luaV_finishOp(L: *mut lua_State) -> ();

@@ -103,8 +103,6 @@ extern "C" {
     #[no_mangle]
     fn luaG_ordererror(L: *mut lua_State, p1: *const TValue, p2: *const TValue) -> !;
     #[no_mangle]
-    fn luaG_runerror(L: *mut lua_State, fmt: *const lua_char, ...) -> !;
-    #[no_mangle]
     fn luaG_traceexec(L: *mut lua_State) -> ();
     #[no_mangle]
     fn luaD_precall(L: *mut lua_State, func: StkId, nresults: lua_int) -> lua_int;

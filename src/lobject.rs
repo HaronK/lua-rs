@@ -119,8 +119,6 @@ extern "C" {
     fn luaD_inctop(L: *mut lua_State) -> ();
     #[no_mangle]
     fn luaD_growstack(L: *mut lua_State, n: lua_int) -> ();
-    #[no_mangle]
-    fn luaG_runerror(L: *mut lua_State, fmt: *const lua_char, ...) -> !;
 }
 pub type __builtin_va_list = [__va_list_tag; 1];
 #[derive(Copy, Clone)]

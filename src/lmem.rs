@@ -44,8 +44,6 @@ extern "C" {
      */
     pub type UpVal;
     #[no_mangle]
-    fn luaG_runerror(L: *mut lua_State, fmt: *const lua_char, ...) -> !;
-    #[no_mangle]
     fn luaD_throw(L: *mut lua_State, errcode: lua_int) -> !;
     #[no_mangle]
     fn luaC_fullgc(L: *mut lua_State, isemergency: lua_int) -> ();
