@@ -1,12 +1,11 @@
 use llimits::*;
 use lua::*;
+use stdc::prelude::*;
 use types::*;
 
 extern "C" {
     #[no_mangle]
     fn _setjmp(_: *mut __jmp_buf_tag) -> lua_int;
-    #[no_mangle]
-    fn _longjmp(_: *mut __jmp_buf_tag, _: lua_int) -> !;
     #[no_mangle]
     fn abort() -> !;
     #[no_mangle]
@@ -1020,7 +1019,7 @@ pub unsafe extern "C" fn luaD_throw(mut L: *mut lua_State, mut errcode: lua_int)
         /* set status */
         ::std::ptr::write_volatile(&mut (*(*L).errorJmp).status as *mut lua_int, errcode);
         /* jump to it */
-        _longjmp((*(*L).errorJmp).b.as_mut_ptr(), 1i32);
+        _longjmp((*(*L).errorJmp).b.as_mut_ptr(), 1i32)
     } else {
         /* thread has no error handler */
         let mut g: *mut global_State = (*L).l_G;
@@ -1034,7 +1033,7 @@ pub unsafe extern "C" fn luaD_throw(mut L: *mut lua_State, mut errcode: lua_int)
             let mut io1: *mut TValue = fresh0;
             *io1 = *(*L).top.offset(-1isize);
             /* re-throw in main thread */
-            luaD_throw((*g).mainthread, errcode);
+            luaD_throw((*g).mainthread, errcode)
         } else {
             /* no handler at all; abort */
             if (*g).panic.is_some() {
@@ -1050,7 +1049,7 @@ pub unsafe extern "C" fn luaD_throw(mut L: *mut lua_State, mut errcode: lua_int)
             }
             abort();
         }
-    };
+    }
 }
 unsafe extern "C" fn seterrorobj(
     mut L: *mut lua_State,

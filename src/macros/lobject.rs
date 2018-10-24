@@ -195,3 +195,12 @@ macro_rules! luaO_pushfstring {
         endptr
     }};
 }
+
+// TODO: implement!
+#[macro_export]
+macro_rules! luaO_pushvfstring {
+    ($lua_State:expr, $($args:tt)*) => {{
+        let mut endptr: *const lua_char = 0 as *const lua_char;
+        endptr
+    }};
+}

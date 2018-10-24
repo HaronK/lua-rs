@@ -802,20 +802,18 @@ unsafe extern "C" fn dofilecont(
     return lua_gettop(L) - 1i32;
 }
 unsafe extern "C" fn luaB_collectgarbage(mut L: *mut lua_State) -> lua_int {
-    static mut opts: [*const lua_char; 9] = unsafe {
-        [
-            s!(b"stop\x00"),
-            s!(b"restart\x00"),
-            s!(b"collect\x00"),
-            s!(b"count\x00"),
-            s!(b"step\x00"),
-            s!(b"setpause\x00"),
-            s!(b"setstepmul\x00"),
-            s!(b"isrunning\x00"),
-            0 as *const lua_char,
-        ]
-    };
-    static mut optsnum: [lua_int; 8] = unsafe { [0i32, 1i32, 2i32, 3i32, 5i32, 6i32, 7i32, 9i32] };
+    static mut opts: [*const lua_char; 9] = [
+        s!(b"stop\x00"),
+        s!(b"restart\x00"),
+        s!(b"collect\x00"),
+        s!(b"count\x00"),
+        s!(b"step\x00"),
+        s!(b"setpause\x00"),
+        s!(b"setstepmul\x00"),
+        s!(b"isrunning\x00"),
+        0 as *const lua_char,
+    ];
+    static mut optsnum: [lua_int; 8] = [0i32, 1i32, 2i32, 3i32, 5i32, 6i32, 7i32, 9i32];
     let mut o: lua_int =
         optsnum[luaL_checkoption(L, 1i32, s!(b"collect\x00"), opts.as_ptr()) as usize];
     let mut ex: lua_int = luaL_optinteger(L, 2i32, 0i32 as lua_Integer) as lua_int;

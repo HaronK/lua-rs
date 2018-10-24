@@ -1,3 +1,4 @@
+use stdc::prelude::*;
 use types::*;
 
 extern "C" {
@@ -16,10 +17,6 @@ extern "C" {
      */
     /* thread status */
     pub type lua_State;
-    #[no_mangle]
-    fn random() -> lua_long;
-    #[no_mangle]
-    fn srandom(__seed: lua_uint) -> ();
     #[no_mangle]
     fn acos(_: lua_double) -> lua_double;
     #[no_mangle]

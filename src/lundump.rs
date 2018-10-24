@@ -899,7 +899,7 @@ unsafe extern "C" fn LoadBlock(
         return;
     };
 }
-unsafe extern "C" fn error(mut S: *mut LoadState, mut why: *const lua_char) -> ! {
+unsafe extern "C" fn error(mut S: *mut LoadState, mut _why: *const lua_char) -> ! {
     luaO_pushfstring!((*S).L, s!(b"%s: %s precompiled chunk\x00"), (*S).name, why,);
     luaD_throw((*S).L, 3i32);
 }

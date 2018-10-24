@@ -20,10 +20,6 @@ extern "C" {
     /* private part */
     pub type CallInfo;
     #[no_mangle]
-    static mut stdin: *mut FILE;
-    #[no_mangle]
-    static mut stderr: *mut FILE;
-    #[no_mangle]
     fn fclose(__stream: *mut FILE) -> lua_int;
     #[no_mangle]
     fn fflush(__stream: *mut FILE) -> lua_int;

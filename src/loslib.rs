@@ -1,3 +1,4 @@
+use stdc::prelude::*;
 use types::*;
 
 extern "C" {
@@ -49,10 +50,6 @@ extern "C" {
         __format: *const lua_char,
         __tp: *const tm,
     ) -> size_t;
-    #[no_mangle]
-    fn gmtime_r(__timer: *const time_t, __tp: *mut tm) -> *mut tm;
-    #[no_mangle]
-    fn localtime_r(__timer: *const time_t, __tp: *mut tm) -> *mut tm;
     #[no_mangle]
     fn lua_close(L: *mut lua_State) -> ();
     #[no_mangle]

@@ -20,12 +20,6 @@ extern "C" {
     #[no_mangle]
     fn localeconv() -> *mut lconv;
     #[no_mangle]
-    static mut stdin: *mut FILE;
-    #[no_mangle]
-    static mut stdout: *mut FILE;
-    #[no_mangle]
-    static mut stderr: *mut FILE;
-    #[no_mangle]
     fn tmpfile() -> *mut FILE;
     #[no_mangle]
     fn fclose(__stream: *mut FILE) -> lua_int;
@@ -58,10 +52,6 @@ extern "C" {
     fn popen(__command: *const lua_char, __modes: *const lua_char) -> *mut FILE;
     #[no_mangle]
     fn pclose(__stream: *mut FILE) -> lua_int;
-    #[no_mangle]
-    fn flockfile(__stream: *mut FILE) -> ();
-    #[no_mangle]
-    fn funlockfile(__stream: *mut FILE) -> ();
     #[no_mangle]
     fn strchr(_: *const lua_char, _: lua_int) -> *mut lua_char;
     #[no_mangle]

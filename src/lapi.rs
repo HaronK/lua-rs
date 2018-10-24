@@ -1541,7 +1541,7 @@ pub unsafe extern "C" fn lua_pushvfstring(
     mut argp: *mut __va_list_tag,
 ) -> *const lua_char {
     let mut ret: *const lua_char = 0 as *const lua_char;
-    ret = luaO_pushvfstring(L, fmt, argp);
+    ret = luaO_pushvfstring!(L, fmt, argp);
     if (*(*L).l_G).GCdebt > 0i32 as lua_long {
         luaC_step(L);
     }

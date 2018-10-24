@@ -1,3 +1,4 @@
+use stdc::prelude::*;
 use types::*;
 
 extern "C" {
@@ -120,14 +121,6 @@ extern "C" {
     fn luaL_addvalue(B: *mut luaL_Buffer) -> ();
     #[no_mangle]
     fn luaL_pushresult(B: *mut luaL_Buffer) -> ();
-    #[no_mangle]
-    fn dlsym(__handle: *mut lua_void, __name: *const lua_char) -> *mut lua_void;
-    #[no_mangle]
-    fn dlerror() -> *mut lua_char;
-    #[no_mangle]
-    fn dlopen(__file: *const lua_char, __mode: lua_int) -> *mut lua_void;
-    #[no_mangle]
-    fn dlclose(__handle: *mut lua_void) -> lua_int;
 }
 
 /*

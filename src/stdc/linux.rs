@@ -2,6 +2,12 @@ use types::*;
 
 extern "C" {
     #[no_mangle]
+    pub static mut stdin: *mut FILE;
+    #[no_mangle]
+    pub static mut stderr: *mut FILE;
+    #[no_mangle]
+    pub static mut stdout: *mut FILE;
+    #[no_mangle]
     fn __errno_location() -> *mut lua_int;
     #[no_mangle]
     fn __ctype_tolower_loc() -> *mut *const __int32_t;
@@ -11,6 +17,28 @@ extern "C" {
     fn __ctype_b_loc() -> *mut *const lua_ushort;
     #[no_mangle]
     fn __uflow(_: *mut FILE) -> lua_int;
+    #[no_mangle]
+    fn flockfile(__stream: *mut FILE) -> ();
+    #[no_mangle]
+    fn funlockfile(__stream: *mut FILE) -> ();
+    #[no_mangle]
+    fn gmtime_r(__timer: *const time_t, __tp: *mut tm) -> *mut tm;
+    #[no_mangle]
+    fn localtime_r(__timer: *const time_t, __tp: *mut tm) -> *mut tm;
+    #[no_mangle]
+    fn random() -> lua_long;
+    #[no_mangle]
+    fn srandom(__seed: lua_uint) -> ();
+    #[no_mangle]
+    fn dlsym(__handle: *mut lua_void, __name: *const lua_char) -> *mut lua_void;
+    #[no_mangle]
+    fn dlerror() -> *mut lua_char;
+    #[no_mangle]
+    fn dlopen(__file: *const lua_char, __mode: lua_int) -> *mut lua_void;
+    #[no_mangle]
+    fn dlclose(__handle: *mut lua_void) -> lua_int;
+    #[no_mangle]
+    fn _longjmp(_: *mut __jmp_buf_tag, _: lua_int) -> !;
 }
 
 pub fn errno() -> lua_int {

@@ -48,10 +48,6 @@ extern "C" {
      */
     pub type UpVal;
     #[no_mangle]
-    static mut stdout: *mut FILE;
-    #[no_mangle]
-    static mut stderr: *mut FILE;
-    #[no_mangle]
     fn fclose(__stream: *mut FILE) -> lua_int;
     #[no_mangle]
     fn fopen(__filename: *const lua_char, __modes: *const lua_char) -> *mut FILE;

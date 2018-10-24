@@ -2586,7 +2586,7 @@ unsafe extern "C" fn addlenmod(mut form: *mut lua_char, mut lenmod: *const lua_c
     *form.offset(l.wrapping_add(lm) as isize) = '\u{0}' as i32 as lua_char;
 }
 unsafe extern "C" fn scanformat(
-    mut L: *mut lua_State,
+    mut _L: *mut lua_State,
     mut strfrmt: *const lua_char,
     mut form: *mut lua_char,
 ) -> *const lua_char {
