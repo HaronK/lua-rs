@@ -64,8 +64,6 @@ extern "C" {
     #[no_mangle]
     fn lua_pushstring(L: *mut lua_State, s: *const lua_char) -> *const lua_char;
     #[no_mangle]
-    fn lua_pushfstring(L: *mut lua_State, fmt: *const lua_char, ...) -> *const lua_char;
-    #[no_mangle]
     fn lua_pushboolean(L: *mut lua_State, b: lua_int) -> ();
     #[no_mangle]
     fn lua_pushlightuserdata(L: *mut lua_State, p: *mut lua_void) -> ();

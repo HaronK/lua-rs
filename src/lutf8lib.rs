@@ -35,8 +35,6 @@ extern "C" {
         len: size_t,
     ) -> *const lua_char;
     #[no_mangle]
-    fn lua_pushfstring(L: *mut lua_State, fmt: *const lua_char, ...) -> *const lua_char;
-    #[no_mangle]
     fn lua_pushcclosure(L: *mut lua_State, fn_0: lua_CFunction, n: lua_int) -> ();
     #[no_mangle]
     fn lua_createtable(L: *mut lua_State, narr: lua_int, nrec: lua_int) -> ();
