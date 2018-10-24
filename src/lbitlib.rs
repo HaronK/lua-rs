@@ -36,8 +36,6 @@ extern "C" {
     #[no_mangle]
     fn luaL_optinteger(L: *mut lua_State, arg: lua_int, def: lua_Integer) -> lua_Integer;
     #[no_mangle]
-    fn luaL_error(L: *mut lua_State, fmt: *const lua_char, ...) -> lua_int;
-    #[no_mangle]
     fn luaL_setfuncs(L: *mut lua_State, l: *const luaL_Reg, nup: lua_int) -> ();
 }
 pub type size_t = lua_ulong;
@@ -189,7 +187,7 @@ unsafe extern "C" fn fieldargs(
         || 0 != luaL_argerror(L, farg + 1i32, s!(b"width must be positive\x00")))
         as lua_int;
     if f + w > 32i32 as lua_longlong {
-        luaL_error(L, s!(b"trying to access non-existent bits\x00"));
+        luaL_error!(L, s!(b"trying to access non-existent bits\x00"));
     }
     *width = w as lua_int;
     return f as lua_int;

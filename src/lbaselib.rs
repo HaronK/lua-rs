@@ -174,8 +174,6 @@ extern "C" {
     #[no_mangle]
     fn luaL_where(L: *mut lua_State, lvl: lua_int) -> ();
     #[no_mangle]
-    fn luaL_error(L: *mut lua_State, fmt: *const lua_char, ...) -> lua_int;
-    #[no_mangle]
     fn luaL_checkoption(
         L: *mut lua_State,
         arg: lua_int,
@@ -536,7 +534,7 @@ unsafe extern "C" fn luaB_setmetatable(mut L: *mut lua_State) -> lua_int {
     (t == 0i32 || t == 5i32 || 0 != luaL_argerror(L, 2i32, s!(b"nil or table expected\x00")))
         as lua_int;
     if luaL_getmetafield(L, 1i32, s!(b"__metatable\x00")) != 0i32 {
-        return luaL_error(L, s!(b"cannot change a protected metatable\x00"));
+        return luaL_error!(L, s!(b"cannot change a protected metatable\x00"));
     } else {
         lua_settop(L, 2i32);
         lua_setmetatable(L, 1i32);
@@ -612,7 +610,7 @@ unsafe extern "C" fn luaB_print(mut L: *mut lua_State) -> lua_int {
         /* get result */
         s = lua_tolstring(L, -1i32, &mut l);
         if s.is_null() {
-            return luaL_error(L, s!(b"\'tostring\' must return a string to \'print\'\x00"));
+            return luaL_error!(L, s!(b"\'tostring\' must return a string to \'print\'\x00"));
         } else {
             if i > 1i32 {
                 fwrite(
@@ -793,7 +791,7 @@ unsafe extern "C" fn generic_reader(
         return 0 as *const lua_char;
     } else {
         if 0 == lua_isstring(L, -1i32) {
-            luaL_error(L, s!(b"reader function must return a string\x00"));
+            luaL_error!(L, s!(b"reader function must return a string\x00"));
         }
         /* save string in reserved slot */
         lua_copy(L, -1i32, 5i32);

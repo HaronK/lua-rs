@@ -148,8 +148,6 @@ extern "C" {
     #[no_mangle]
     fn luaL_checktype(L: *mut lua_State, arg: lua_int, t: lua_int) -> ();
     #[no_mangle]
-    fn luaL_error(L: *mut lua_State, fmt: *const lua_char, ...) -> lua_int;
-    #[no_mangle]
     fn luaL_setfuncs(L: *mut lua_State, l: *const luaL_Reg, nup: lua_int) -> ();
     #[no_mangle]
     fn luaL_buffinit(L: *mut lua_State, B: *mut luaL_Buffer) -> ();
@@ -600,7 +598,7 @@ unsafe extern "C" fn unpackint(
                 as lua_uchar as lua_int
                 != mask_0
             {
-                luaL_error(
+                luaL_error!(
                     L,
                     s!(b"%d-byte integer does not fit into Lua Integer\x00"),
                     size,
@@ -793,7 +791,7 @@ unsafe extern "C" fn getoption(
         99 => {
             *size = getnum(fmt, -1i32);
             if *size == -1i32 {
-                luaL_error((*h).L, s!(b"missing size for format option \'c\'\x00"));
+                luaL_error!((*h).L, s!(b"missing size for format option \'c\'\x00"));
             }
             return Kchar;
         }
@@ -809,7 +807,7 @@ unsafe extern "C" fn getoption(
         61 => (*h).islittle = nativeendian.little as lua_int,
         33 => (*h).maxalign = getnumlimit(h, fmt, 8u64 as lua_int),
         _ => {
-            luaL_error((*h).L, s!(b"invalid format option \'%c\'\x00"), opt);
+            luaL_error!((*h).L, s!(b"invalid format option \'%c\'\x00"), opt);
         }
     }
     return Knop;
@@ -825,7 +823,7 @@ unsafe extern "C" fn getnumlimit(
 ) -> lua_int {
     let mut sz: lua_int = getnum(fmt, df);
     if sz > 16i32 || sz <= 0i32 {
-        return luaL_error(
+        return luaL_error!(
             (*h).L,
             s!(b"integral size (%d) out of limits [1,%d]\x00"),
             sz,
@@ -1242,7 +1240,7 @@ unsafe extern "C" fn str_rep(mut L: *mut lua_State) -> lua_int {
             }) as lua_ulonglong)
                 .wrapping_div(n as lua_ulonglong)
     {
-        return luaL_error(L, s!(b"resulting string too large\x00"));
+        return luaL_error!(L, s!(b"resulting string too large\x00"));
     } else {
         let mut totallen: size_t = (n as size_t)
             .wrapping_mul(l)
@@ -1423,12 +1421,12 @@ unsafe extern "C" fn push_onecapture(
                 e.wrapping_offset_from(s) as lua_long as size_t,
             );
         } else {
-            luaL_error((*ms).L, s!(b"invalid capture index %%%d\x00"), i + 1i32);
+            luaL_error!((*ms).L, s!(b"invalid capture index %%%d\x00"), i + 1i32);
         }
     } else {
         let mut l: ptrdiff_t = (*ms).capture[i as usize].len;
         if l == -1i32 as lua_long {
-            luaL_error((*ms).L, s!(b"unfinished capture\x00"));
+            luaL_error!((*ms).L, s!(b"unfinished capture\x00"));
         }
         if l == -2i32 as lua_long {
             lua_pushinteger(
@@ -1454,7 +1452,7 @@ unsafe extern "C" fn match_0(
     let fresh16 = (*ms).matchdepth;
     (*ms).matchdepth = (*ms).matchdepth - 1;
     if fresh16 == 0i32 {
-        luaL_error((*ms).L, s!(b"pattern too complex\x00"));
+        luaL_error!((*ms).L, s!(b"pattern too complex\x00"));
     }
     /* using goto's to optimize tail recursion */
     loop {
@@ -1520,7 +1518,7 @@ unsafe extern "C" fn match_0(
                                 let mut previous: lua_char = 0;
                                 p = p.offset(2isize);
                                 if *p as lua_int != '[' as i32 {
-                                    luaL_error(
+                                    luaL_error!(
                                         (*ms).L,
                                         s!(b"missing \'[\' after \'%%f\' in pattern\x00"),
                                     );
@@ -1590,7 +1588,7 @@ unsafe extern "C" fn match_0(
                                 let mut previous: lua_char = 0;
                                 p = p.offset(2isize);
                                 if *p as lua_int != '[' as i32 {
-                                    luaL_error(
+                                    luaL_error!(
                                         (*ms).L,
                                         s!(b"missing \'[\' after \'%%f\' in pattern\x00"),
                                     );
@@ -1660,7 +1658,7 @@ unsafe extern "C" fn match_0(
                                 let mut previous: lua_char = 0;
                                 p = p.offset(2isize);
                                 if *p as lua_int != '[' as i32 {
-                                    luaL_error(
+                                    luaL_error!(
                                         (*ms).L,
                                         s!(b"missing \'[\' after \'%%f\' in pattern\x00"),
                                     );
@@ -1790,7 +1788,7 @@ unsafe extern "C" fn classend(
     match *fresh17 as lua_int {
         37 => {
             if p == (*ms).p_end {
-                luaL_error((*ms).L, s!(b"malformed pattern (ends with \'%%\')\x00"));
+                luaL_error!((*ms).L, s!(b"malformed pattern (ends with \'%%\')\x00"));
             }
             return p.offset(1isize);
         }
@@ -1801,7 +1799,7 @@ unsafe extern "C" fn classend(
             loop {
                 /* look for a ']' */
                 if p == (*ms).p_end {
-                    luaL_error((*ms).L, s!(b"malformed pattern (missing \']\')\x00"));
+                    luaL_error!((*ms).L, s!(b"malformed pattern (missing \']\')\x00"));
                 }
                 let fresh18 = p;
                 p = p.offset(1);
@@ -2021,7 +2019,7 @@ unsafe extern "C" fn check_capture(mut ms: *mut MatchState, mut l: lua_int) -> l
         || l >= (*ms).level as lua_int
         || (*ms).capture[l as usize].len == -1i32 as lua_long
     {
-        return luaL_error((*ms).L, s!(b"invalid capture index %%%d\x00"), l + 1i32);
+        return luaL_error!((*ms).L, s!(b"invalid capture index %%%d\x00"), l + 1i32);
     } else {
         return l;
     };
@@ -2032,7 +2030,7 @@ unsafe extern "C" fn matchbalance(
     mut p: *const lua_char,
 ) -> *const lua_char {
     if p >= (*ms).p_end.offset(-1isize) {
-        luaL_error(
+        luaL_error!(
             (*ms).L,
             s!(b"malformed pattern (missing arguments to \'%%b\')\x00"),
         );
@@ -2093,7 +2091,7 @@ unsafe extern "C" fn capture_to_close(mut ms: *mut MatchState) -> lua_int {
             level -= 1
         }
     }
-    return luaL_error((*ms).L, s!(b"invalid pattern capture\x00"));
+    return luaL_error!((*ms).L, s!(b"invalid pattern capture\x00"));
 }
 unsafe extern "C" fn start_capture(
     mut ms: *mut MatchState,
@@ -2104,7 +2102,7 @@ unsafe extern "C" fn start_capture(
     let mut res: *const lua_char = 0 as *const lua_char;
     let mut level: lua_int = (*ms).level as lua_int;
     if level >= 32i32 {
-        luaL_error((*ms).L, s!(b"too many captures\x00"));
+        luaL_error!((*ms).L, s!(b"too many captures\x00"));
     }
     (*ms).capture[level as usize].init = s;
     (*ms).capture[level as usize].len = what as ptrdiff_t;
@@ -2378,7 +2376,7 @@ unsafe extern "C" fn add_value(
         /* keep original text */
         lua_pushlstring(L, s, e.wrapping_offset_from(s) as lua_long as size_t);
     } else if 0 == lua_isstring(L, -1i32) {
-        luaL_error(
+        luaL_error!(
             L,
             s!(b"invalid replacement value (a %s)\x00"),
             lua_typename(L, lua_type(L, -1i32)),
@@ -2413,7 +2411,7 @@ unsafe extern "C" fn add_s(
                 & _ISdigit as lua_int as lua_ushort as lua_int
             {
                 if *news.offset(i as isize) as lua_int != '%' as i32 {
-                    luaL_error(
+                    luaL_error!(
                         L,
                         s!(b"invalid use of \'%c\' in replacement string\x00"),
                         '%' as i32,
@@ -2605,7 +2603,7 @@ unsafe extern "C" fn str_format(mut L: *mut lua_State) -> lua_int {
                     }
                     _ => {
                         /* also treat cases 'pnLlh' */
-                        return luaL_error(
+                        return luaL_error!(
                             L,
                             s!(b"invalid option \'%%%c\' to \'format\'\x00"),
                             *strfrmt.offset(-1isize) as lua_int,
@@ -2798,7 +2796,7 @@ unsafe extern "C" fn scanformat(
         >= (::std::mem::size_of::<[lua_char; 6]>() as lua_ulong)
             .wrapping_div(::std::mem::size_of::<lua_char>() as lua_ulong)
     {
-        luaL_error(L, s!(b"invalid format (repeated flags)\x00"));
+        luaL_error!(L, s!(b"invalid format (repeated flags)\x00"));
     }
     if 0 != *(*__ctype_b_loc()).offset(*p as lua_uchar as lua_int as isize) as lua_int
         & _ISdigit as lua_int as lua_ushort as lua_int
@@ -2832,7 +2830,7 @@ unsafe extern "C" fn scanformat(
     if 0 != *(*__ctype_b_loc()).offset(*p as lua_uchar as lua_int as isize) as lua_int
         & _ISdigit as lua_int as lua_ushort as lua_int
     {
-        luaL_error(L, s!(b"invalid format (width or precision too long)\x00"));
+        luaL_error!(L, s!(b"invalid format (width or precision too long)\x00"));
     }
     let fresh34 = form;
     form = form.offset(1);
@@ -2870,7 +2868,7 @@ unsafe extern "C" fn str_dump(mut L: *mut lua_State) -> lua_int {
         strip,
     ) != 0i32
     {
-        return luaL_error(L, s!(b"unable to dump given function\x00"));
+        return luaL_error!(L, s!(b"unable to dump given function\x00"));
     } else {
         luaL_pushresult(&mut b);
         return 1i32;
@@ -2925,7 +2923,7 @@ unsafe extern "C" fn str_byte(mut L: *mut lua_State) -> lua_int {
         /* empty interval; return no values */
         return 0i32;
     } else if pose - posi >= 2147483647i32 as lua_longlong {
-        return luaL_error(L, s!(b"string slice too long\x00"));
+        return luaL_error!(L, s!(b"string slice too long\x00"));
     } else {
         n = (pose - posi) as lua_int + 1i32;
         luaL_checkstack(L, n, s!(b"string slice too long\x00"));

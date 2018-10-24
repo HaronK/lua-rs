@@ -110,8 +110,6 @@ extern "C" {
     #[no_mangle]
     fn luaL_checktype(L: *mut lua_State, arg: lua_int, t: lua_int) -> ();
     #[no_mangle]
-    fn luaL_error(L: *mut lua_State, fmt: *const lua_char, ...) -> lua_int;
-    #[no_mangle]
     fn luaL_checkoption(
         L: *mut lua_State,
         arg: lua_int,
@@ -247,7 +245,7 @@ unsafe extern "C" fn os_tmpname(mut L: *mut lua_State) -> lua_int {
     }
     err = (err == -1i32) as lua_int;
     if 0 != err {
-        return luaL_error(L, s!(b"unable to generate a unique filename\x00"));
+        return luaL_error!(L, s!(b"unable to generate a unique filename\x00"));
     } else {
         lua_pushstring(L, buff.as_mut_ptr());
         return 1i32;
@@ -301,7 +299,7 @@ unsafe extern "C" fn os_time(mut L: *mut lua_State) -> lua_int {
         setallfields(L, &mut ts);
     }
     if t != t as lua_Integer as time_t || t == -1i32 as time_t {
-        return luaL_error(
+        return luaL_error!(
             L,
             s!(b"time result cannot be represented in this installation\x00"),
         );
@@ -382,16 +380,16 @@ unsafe extern "C" fn getfield(
         /* field is not an integer? */
         /* some other value? */
         if t != 0i32 {
-            return luaL_error(L, s!(b"field \'%s\' is not an integer\x00"), key);
+            return luaL_error!(L, s!(b"field \'%s\' is not an integer\x00"), key);
         } else if d < 0i32 {
-            return luaL_error(L, s!(b"field \'%s\' missing in date table\x00"), key);
+            return luaL_error!(L, s!(b"field \'%s\' missing in date table\x00"), key);
         } else {
             res = d as lua_Integer
         }
     } else if !(-(2147483647i32 / 2i32) as lua_longlong <= res
         && res <= (2147483647i32 / 2i32) as lua_longlong)
     {
-        return luaL_error(L, s!(b"field \'%s\' is out-of-bound\x00"), key);
+        return luaL_error!(L, s!(b"field \'%s\' is out-of-bound\x00"), key);
     } else {
         res -= delta as lua_longlong
     }
@@ -567,7 +565,7 @@ unsafe extern "C" fn os_date(mut L: *mut lua_State) -> lua_int {
     }
     /* invalid date? */
     if stm.is_null() {
-        return luaL_error(
+        return luaL_error!(
             L,
             s!(b"time result cannot be represented in this installation\x00"),
         );

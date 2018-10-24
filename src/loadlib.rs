@@ -108,8 +108,6 @@ extern "C" {
         l: *mut size_t,
     ) -> *const lua_char;
     #[no_mangle]
-    fn luaL_error(L: *mut lua_State, fmt: *const lua_char, ...) -> lua_int;
-    #[no_mangle]
     fn luaL_loadfilex(
         L: *mut lua_State,
         filename: *const lua_char,
@@ -342,7 +340,7 @@ unsafe extern "C" fn findloader(mut L: *mut lua_State, mut name: *const lua_char
     luaL_buffinit(L, &mut msg);
     /* push 'package.searchers' to index 3 in the stack */
     if lua_getfield(L, -1000000i32 - 1000i32 - 1i32, s!(b"searchers\x00")) != 5i32 {
-        luaL_error(L, s!(b"\'package.searchers\' must be a table\x00"));
+        luaL_error!(L, s!(b"\'package.searchers\' must be a table\x00"));
     }
     /*  iterate over available searchers to find a loader */
     i = 1i32;
@@ -353,7 +351,7 @@ unsafe extern "C" fn findloader(mut L: *mut lua_State, mut name: *const lua_char
             lua_settop(L, -1i32 - 1i32);
             /* create error message */
             luaL_pushresult(&mut msg);
-            luaL_error(
+            luaL_error!(
                 L,
                 s!(b"module \'%s\' not found:%s\x00"),
                 name,
@@ -529,7 +527,7 @@ unsafe extern "C" fn checkload(
         /* return open function and file name */
         return 2i32;
     } else {
-        return luaL_error(
+        return luaL_error!(
             L,
             s!(b"error loading module \'%s\' from file \'%s\':\n\t%s\x00"),
             lua_tolstring(L, 1i32, 0 as *mut size_t),
@@ -737,7 +735,7 @@ unsafe extern "C" fn findfile(
     lua_getfield(L, -1000000i32 - 1000i32 - 1i32, pname);
     path = lua_tolstring(L, -1i32, 0 as *mut size_t);
     if path.is_null() {
-        luaL_error(L, s!(b"\'package.%s\' must be a string\x00"), pname);
+        luaL_error!(L, s!(b"\'package.%s\' must be a string\x00"), pname);
     }
     return searchpath(L, name, path, s!(b".\x00"), dirsep);
 }

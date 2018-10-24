@@ -60,7 +60,7 @@ macro_rules! lua_pushfstring {
 // TODO: implement!
 #[macro_export]
 macro_rules! luaL_error {
-    ($lua_State:expr, $fmt:expr, $($args:tt)*) => {{
+    ($lua_State:expr, $($args:tt)*) => {{
         0
     }};
 }

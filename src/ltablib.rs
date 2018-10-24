@@ -96,8 +96,6 @@ extern "C" {
     #[no_mangle]
     fn luaL_checktype(L: *mut lua_State, arg: lua_int, t: lua_int) -> ();
     #[no_mangle]
-    fn luaL_error(L: *mut lua_State, fmt: *const lua_char, ...) -> lua_int;
-    #[no_mangle]
     fn luaL_len(L: *mut lua_State, idx: lua_int) -> lua_Integer;
     #[no_mangle]
     fn luaL_setfuncs(L: *mut lua_State, l: *const luaL_Reg, nup: lua_int) -> ();
@@ -462,7 +460,7 @@ unsafe extern "C" fn partition(mut L: *mut lua_State, mut lo: IdxT, mut up: IdxT
             }
             /* a[i] < P  but a[up - 1] == P  ?? */
             if i == up.wrapping_sub(1i32 as lua_uint) {
-                luaL_error(L, s!(b"invalid order function for sorting\x00"));
+                luaL_error!(L, s!(b"invalid order function for sorting\x00"));
             }
             /* remove a[i] */
             lua_settop(L, -1i32 - 1i32);
@@ -477,7 +475,7 @@ unsafe extern "C" fn partition(mut L: *mut lua_State, mut lo: IdxT, mut up: IdxT
             }
             /* j < i  but  a[j] > P ?? */
             if j < i {
-                luaL_error(L, s!(b"invalid order function for sorting\x00"));
+                luaL_error!(L, s!(b"invalid order function for sorting\x00"));
             }
             /* remove a[j] */
             lua_settop(L, -1i32 - 1i32);
@@ -638,7 +636,7 @@ unsafe extern "C" fn unpack(mut L: *mut lua_State) -> lua_int {
             n = n.wrapping_add(1);
             0 == lua_checkstack(L, n as lua_int)
         } {
-            return luaL_error(L, s!(b"too many results to unpack\x00"));
+            return luaL_error!(L, s!(b"too many results to unpack\x00"));
         } else {
             while i < e {
                 /* push arg[i..e - 1] (to avoid overflows) */
@@ -704,7 +702,7 @@ unsafe extern "C" fn tinsert(mut L: *mut lua_State) -> lua_int {
                 i -= 1
             }
         }
-        _ => return luaL_error(L, s!(b"wrong number of arguments to \'insert\'\x00")),
+        _ => return luaL_error!(L, s!(b"wrong number of arguments to \'insert\'\x00")),
     }
     /* t[pos] = v */
     lua_seti(L, 1i32, pos);
@@ -744,7 +742,7 @@ unsafe extern "C" fn addfield(
 ) -> () {
     lua_geti(L, 1i32, i);
     if 0 == lua_isstring(L, -1i32) {
-        luaL_error(
+        luaL_error!(
             L,
             s!(b"invalid value (%s) at index %d in table for \'concat\'\x00"),
             lua_typename(L, lua_type(L, -1i32)),

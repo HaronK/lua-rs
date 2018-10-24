@@ -182,8 +182,6 @@ extern "C" {
     #[no_mangle]
     fn luaL_checkany(L: *mut lua_State, arg: lua_int) -> ();
     #[no_mangle]
-    fn luaL_error(L: *mut lua_State, fmt: *const lua_char, ...) -> lua_int;
-    #[no_mangle]
     fn luaL_loadbufferx(
         L: *mut lua_State,
         buff: *const lua_char,
@@ -476,7 +474,7 @@ unsafe extern "C" fn checkstack(
     mut n: lua_int,
 ) -> () {
     if L != L1 && 0 == lua_checkstack(L1, n) {
-        luaL_error(L, s!(b"stack overflow\x00"));
+        luaL_error!(L, s!(b"stack overflow\x00"));
     };
 }
 unsafe extern "C" fn db_sethook(mut L: *mut lua_State) -> lua_int {

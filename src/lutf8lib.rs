@@ -63,8 +63,6 @@ extern "C" {
     #[no_mangle]
     fn luaL_checkstack(L: *mut lua_State, sz: lua_int, msg: *const lua_char) -> ();
     #[no_mangle]
-    fn luaL_error(L: *mut lua_State, fmt: *const lua_char, ...) -> lua_int;
-    #[no_mangle]
     fn luaL_setfuncs(L: *mut lua_State, l: *const luaL_Reg, nup: lua_int) -> ();
     #[no_mangle]
     fn luaL_buffinit(L: *mut lua_State, B: *mut luaL_Buffer) -> ();
@@ -188,7 +186,7 @@ unsafe extern "C" fn iter_aux(mut L: *mut lua_State) -> lua_int {
         let mut code: lua_int = 0;
         let mut next: *const lua_char = utf8_decode(s.offset(n as isize), &mut code);
         if next.is_null() || *next as lua_int & 0xc0i32 == 0x80i32 {
-            return luaL_error(L, s!(b"invalid UTF-8 code\x00"));
+            return luaL_error!(L, s!(b"invalid UTF-8 code\x00"));
         } else {
             lua_pushinteger(L, n + 1i32 as lua_longlong);
             lua_pushinteger(L, code as lua_Integer);
@@ -356,7 +354,7 @@ unsafe extern "C" fn codepoint(mut L: *mut lua_State) -> lua_int {
         /* empty interval; return no values */
         return 0i32;
     } else if pose - posi >= 2147483647i32 as lua_longlong {
-        return luaL_error(L, s!(b"string slice too long\x00"));
+        return luaL_error!(L, s!(b"string slice too long\x00"));
     } else {
         n = (pose - posi) as lua_int + 1i32;
         luaL_checkstack(L, n, s!(b"string slice too long\x00"));
@@ -367,7 +365,7 @@ unsafe extern "C" fn codepoint(mut L: *mut lua_State) -> lua_int {
             let mut code: lua_int = 0;
             s = utf8_decode(s, &mut code);
             if s.is_null() {
-                return luaL_error(L, s!(b"invalid UTF-8 code\x00"));
+                return luaL_error!(L, s!(b"invalid UTF-8 code\x00"));
             } else {
                 lua_pushinteger(L, code as lua_Integer);
                 n += 1
@@ -402,7 +400,7 @@ unsafe extern "C" fn byteoffset(mut L: *mut lua_State) -> lua_int {
             posi -= 1
         }
     } else if *s.offset(posi as isize) as lua_int & 0xc0i32 == 0x80i32 {
-        return luaL_error(L, s!(b"initial position is a continuation byte\x00"));
+        return luaL_error!(L, s!(b"initial position is a continuation byte\x00"));
     } else if n < 0i32 as lua_longlong {
         while n < 0i32 as lua_longlong && posi > 0i32 as lua_longlong {
             /* move back */

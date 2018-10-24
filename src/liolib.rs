@@ -178,8 +178,6 @@ extern "C" {
         tname: *const lua_char,
     ) -> *mut lua_void;
     #[no_mangle]
-    fn luaL_error(L: *mut lua_State, fmt: *const lua_char, ...) -> lua_int;
-    #[no_mangle]
     fn luaL_checkoption(
         L: *mut lua_State,
         arg: lua_int,
@@ -530,7 +528,7 @@ unsafe extern "C" fn f_write(mut L: *mut lua_State) -> lua_int {
 unsafe extern "C" fn tofile(mut L: *mut lua_State) -> *mut FILE {
     let mut p: *mut LStream = luaL_checkudata(L, 1i32, s!(b"FILE*\x00")) as *mut LStream;
     if (*p).closef.is_none() {
-        luaL_error(L, s!(b"attempt to use a closed file\x00"));
+        luaL_error!(L, s!(b"attempt to use a closed file\x00"));
     }
     return (*p).f;
 }
@@ -998,7 +996,7 @@ unsafe extern "C" fn io_readline(mut L: *mut lua_State) -> lua_int {
         lua_tointegerx(L, -1000000i32 - 1000i32 - 2i32, 0 as *mut lua_int) as lua_int;
     /* file is already closed? */
     if (*p).closef.is_none() {
-        return luaL_error(L, s!(b"file is already closed\x00"));
+        return luaL_error!(L, s!(b"file is already closed\x00"));
     } else {
         lua_settop(L, 1i32);
         luaL_checkstack(L, n, s!(b"too many arguments\x00"));
@@ -1018,7 +1016,7 @@ unsafe extern "C" fn io_readline(mut L: *mut lua_State) -> lua_int {
         } else if n > 1i32 {
             /* is there error information? */
             /* 2nd result is error message */
-            return luaL_error(
+            return luaL_error!(
                 L,
                 s!(b"%s\x00"),
                 lua_tolstring(L, -n + 1i32, 0 as *mut size_t),
@@ -1075,7 +1073,7 @@ unsafe extern "C" fn getiofile(
     lua_getfield(L, -1000000i32 - 1000i32, findex);
     p = lua_touserdata(L, -1i32) as *mut LStream;
     if (*p).closef.is_none() {
-        luaL_error(
+        luaL_error!(
             L,
             s!(b"standard %s file is closed\x00"),
             findex.offset(
@@ -1178,7 +1176,7 @@ unsafe extern "C" fn opencheck(
     let mut p: *mut LStream = newfile(L);
     (*p).f = fopen(fname, mode);
     if (*p).f.is_null() {
-        luaL_error(
+        luaL_error!(
             L,
             s!(b"cannot open file \'%s\' (%s)\x00"),
             fname,

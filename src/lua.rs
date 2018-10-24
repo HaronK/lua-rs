@@ -111,8 +111,6 @@ extern "C" {
     #[no_mangle]
     fn luaL_checkstack(L: *mut lua_State, sz: lua_int, msg: *const lua_char) -> ();
     #[no_mangle]
-    fn luaL_error(L: *mut lua_State, fmt: *const lua_char, ...) -> lua_int;
-    #[no_mangle]
     fn luaL_loadfilex(
         L: *mut lua_State,
         filename: *const lua_char,
@@ -350,7 +348,7 @@ unsafe extern "C" fn lstop(mut L: *mut lua_State, mut _ar: *mut lua_Debug) -> ()
     /* unused arg. */
     /* reset hook */
     lua_sethook(L, None, 0i32, 0i32);
-    luaL_error(L, s!(b"interrupted!\x00"));
+    luaL_error!(L, s!(b"interrupted!\x00"));
 }
 /*
 ** Function to be called at a C signal. Because a C signal cannot
@@ -790,7 +788,7 @@ unsafe extern "C" fn pushargs(mut L: *mut lua_State) -> lua_int {
     let mut i: lua_int = 0;
     let mut n: lua_int = 0;
     if lua_getglobal(L, s!(b"arg\x00")) != 5i32 {
-        luaL_error(L, s!(b"\'arg\' is not a table\x00"));
+        luaL_error!(L, s!(b"\'arg\' is not a table\x00"));
     }
     n = luaL_len(L, -1i32) as lua_int;
     luaL_checkstack(L, n + 3i32, s!(b"too many arguments to script\x00"));

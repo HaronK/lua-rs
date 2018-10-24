@@ -114,8 +114,6 @@ extern "C" {
     #[no_mangle]
     fn luaL_checkany(L: *mut lua_State, arg: lua_int) -> ();
     #[no_mangle]
-    fn luaL_error(L: *mut lua_State, fmt: *const lua_char, ...) -> lua_int;
-    #[no_mangle]
     fn luaL_setfuncs(L: *mut lua_State, l: *const luaL_Reg, nup: lua_int) -> ();
 }
 pub type size_t = lua_ulong;
@@ -317,7 +315,7 @@ unsafe extern "C" fn math_random(mut L: *mut lua_State) -> lua_int {
             low = luaL_checkinteger(L, 1i32);
             up = luaL_checkinteger(L, 2i32)
         }
-        _ => return luaL_error(L, s!(b"wrong number of arguments\x00")),
+        _ => return luaL_error!(L, s!(b"wrong number of arguments\x00")),
     }
     /* random integer in the interval [low, up] */
     (low <= up || 0 != luaL_argerror(L, 1i32, s!(b"interval is empty\x00"))) as lua_int;
