@@ -55,7 +55,7 @@ pub mod lvm;
 pub mod lzio;
 
 use luac::main_0;
-use types::*;
+use types::prelude::*;
 
 fn main() -> () {
     let mut args: Vec<*mut lua_char> = Vec::new();

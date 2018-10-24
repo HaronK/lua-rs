@@ -1,5 +1,5 @@
 use stdc::prelude::*;
-use types::*;
+use types::prelude::*;
 
 extern "C" {
     /*
@@ -15,10 +15,7 @@ extern "C" {
      ** (-LUAI_MAXSTACK is the minimum valid index; we keep some free empty
      ** space after that to help overflow detection)
      */
-    /* thread status */
-    pub type lua_State;
-    /* private part */
-    pub type CallInfo;
+
     #[no_mangle]
     fn fflush(__stream: *mut FILE) -> lua_int;
     #[no_mangle]
@@ -175,26 +172,6 @@ extern "C" {
 }
 
 /*
-** basic types
-*/
-/* minimum Lua stack available to a C function */
-/* predefined values in the registry */
-/* type of numbers in Lua */
-pub type lua_Number = lua_double;
-/* type for integer functions */
-pub type lua_Integer = lua_longlong;
-/* type for continuation-function contexts */
-pub type lua_KContext = intptr_t;
-/*
-** Type for C functions registered with Lua
-*/
-pub type lua_CFunction = Option<unsafe extern "C" fn(_: *mut lua_State) -> lua_int>;
-/*
-** Type for continuation functions
-*/
-pub type lua_KFunction =
-    Option<unsafe extern "C" fn(_: *mut lua_State, _: lua_int, _: lua_KContext) -> lua_int>;
-/*
 ** {==============================================================
 ** some useful macros
 ** ===============================================================
@@ -217,26 +194,7 @@ pub type lua_KFunction =
 /*
 ** Event masks
 */
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct lua_Debug {
-    pub event: lua_int,
-    pub name: *const lua_char,
-    pub namewhat: *const lua_char,
-    pub what: *const lua_char,
-    pub source: *const lua_char,
-    pub currentline: lua_int,
-    pub linedefined: lua_int,
-    pub lastlinedefined: lua_int,
-    pub nups: lua_uchar,
-    pub nparams: lua_uchar,
-    pub isvararg: lua_char,
-    pub istailcall: lua_char,
-    pub short_src: [lua_char; 60],
-    pub i_ci: *mut CallInfo,
-}
-/* Functions to be called by the debugger in specific events */
-pub type lua_Hook = Option<unsafe extern "C" fn(_: *mut lua_State, _: *mut lua_Debug) -> ()>;
+
 /*
 ** $Id: lauxlib.h,v 1.131.1.1 2017/04/19 17:20:42 roberto Exp $
 ** Auxiliary functions for building Lua libraries

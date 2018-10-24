@@ -184,6 +184,20 @@ macro_rules! ctb {
     };
 }
 
+/*
+** Common Header for all collectable objects (in macro form, to be
+** included in other objects)
+*/
+//#define CommonHeader	GCObject *next; lu_byte tt; lu_byte marked
+#[macro_export]
+macro_rules! CommonHeader {
+    () => {
+        pub next: *mut GCObject,
+        pub tt: lu_byte,
+        pub marked: lu_byte,
+    };
+}
+
 // ------------------------------------------------
 // variadic macros
 

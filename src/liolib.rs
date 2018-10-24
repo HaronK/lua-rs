@@ -1,5 +1,5 @@
 use stdc::prelude::*;
-use types::*;
+use types::prelude::*;
 
 extern "C" {
     /*
@@ -15,8 +15,7 @@ extern "C" {
      ** (-LUAI_MAXSTACK is the minimum valid index; we keep some free empty
      ** space after that to help overflow detection)
      */
-    /* thread status */
-    pub type lua_State;
+
     #[no_mangle]
     fn localeconv() -> *mut lconv;
     #[no_mangle]
@@ -159,19 +158,6 @@ extern "C" {
     fn luaL_pushresult(B: *mut luaL_Buffer) -> ();
 }
 
-/*
-** basic types
-*/
-/* minimum Lua stack available to a C function */
-/* predefined values in the registry */
-/* type of numbers in Lua */
-pub type lua_Number = lua_double;
-/* type for integer functions */
-pub type lua_Integer = lua_longlong;
-/*
-** Type for C functions registered with Lua
-*/
-pub type lua_CFunction = Option<unsafe extern "C" fn(_: *mut lua_State) -> lua_int>;
 /*
 ** $Id: lauxlib.h,v 1.131.1.1 2017/04/19 17:20:42 roberto Exp $
 ** Auxiliary functions for building Lua libraries

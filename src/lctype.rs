@@ -1,9 +1,5 @@
-use types::*;
-/* 16-bit ints */
-/* }{ */
-/* } */
-/* chars used as small naturals (so that 'char' is reserved for characters) */
-pub type lu_byte = lua_uchar;
+use types::prelude::*;
+
 /*
 ** $Id: lctype.h,v 1.12.1.1 2013/04/12 18:48:47 roberto Exp $
 ** 'ctype' functions for Lua

@@ -1,5 +1,6 @@
 use std::process::exit;
-use types::*;
+use stdc::prelude::*;
+use types::prelude::*;
 
 // TODO: implement
 

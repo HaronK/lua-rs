@@ -1,25 +1,20 @@
-// copy of libc::c_void
-#[repr(u8)]
-pub enum lua_void {
-    #[doc(hidden)]
-    __variant1,
-    #[doc(hidden)]
-    __variant2,
-}
+use types::prelude::*;
 
-pub type lua_char = i8;
-pub type lua_schar = i8;
-pub type lua_uchar = u8;
-pub type lua_short = i16;
-pub type lua_ushort = u16;
-pub type lua_int = i32;
-pub type lua_uint = u32;
-pub type lua_float = f32;
-pub type lua_double = f64;
-pub type lua_long = i64;
-pub type lua_ulong = u64;
-pub type lua_longlong = i64;
-pub type lua_ulonglong = u64;
+#[derive(Copy, Clone)]
+#[repr(C)]
+pub struct tm {
+    pub tm_sec: lua_int,
+    pub tm_min: lua_int,
+    pub tm_hour: lua_int,
+    pub tm_mday: lua_int,
+    pub tm_mon: lua_int,
+    pub tm_year: lua_int,
+    pub tm_wday: lua_int,
+    pub tm_yday: lua_int,
+    pub tm_isdst: lua_int,
+    pub __tm_gmtoff: lua_long,
+    pub __tm_zone: *const lua_char,
+}
 
 pub type __builtin_va_list = [__va_list_tag; 1];
 
@@ -45,19 +40,18 @@ pub type FILE = _IO_FILE;
 pub type ptrdiff_t = lua_long;
 pub type intptr_t = lua_long;
 pub type __int32_t = lua_int;
-pub type unnamed = lua_uint;
-pub const _ISalnum: unnamed = 8;
-pub const _ISpunct: unnamed = 4;
-pub const _IScntrl: unnamed = 2;
-pub const _ISblank: unnamed = 1;
-pub const _ISgraph: unnamed = 32768;
-pub const _ISprint: unnamed = 16384;
-pub const _ISspace: unnamed = 8192;
-pub const _ISxdigit: unnamed = 4096;
-pub const _ISdigit: unnamed = 2048;
-pub const _ISalpha: unnamed = 1024;
-pub const _ISlower: unnamed = 512;
-pub const _ISupper: unnamed = 256;
+pub const _ISalnum: lua_int = 8;
+pub const _ISpunct: lua_int = 4;
+pub const _IScntrl: lua_int = 2;
+pub const _ISblank: lua_int = 1;
+pub const _ISgraph: lua_int = 32768;
+pub const _ISprint: lua_int = 16384;
+pub const _ISspace: lua_int = 8192;
+pub const _ISxdigit: lua_int = 4096;
+pub const _ISdigit: lua_int = 2048;
+pub const _ISalpha: lua_int = 1024;
+pub const _ISlower: lua_int = 512;
+pub const _ISupper: lua_int = 256;
 
 extern "C" {
     pub type _IO_wide_data;
@@ -69,22 +63,6 @@ pub type __clock_t = lua_long;
 pub type __time_t = lua_long;
 pub type clock_t = __clock_t;
 pub type time_t = __time_t;
-
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct tm {
-    pub tm_sec: lua_int,
-    pub tm_min: lua_int,
-    pub tm_hour: lua_int,
-    pub tm_mday: lua_int,
-    pub tm_mon: lua_int,
-    pub tm_year: lua_int,
-    pub tm_wday: lua_int,
-    pub tm_yday: lua_int,
-    pub tm_isdst: lua_int,
-    pub __tm_gmtoff: lua_long,
-    pub __tm_zone: *const lua_char,
-}
 
 pub type __jmp_buf = [lua_long; 8];
 
@@ -101,6 +79,7 @@ pub struct __jmp_buf_tag {
     pub __mask_was_saved: lua_int,
     pub __saved_mask: __sigset_t,
 }
+
 pub type jmp_buf = [__jmp_buf_tag; 1];
 
 #[derive(Copy, Clone)]

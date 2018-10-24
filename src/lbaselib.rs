@@ -1,6 +1,6 @@
 use lua::*;
 use stdc::prelude::*;
-use types::*;
+use types::prelude::*;
 
 extern "C" {
     /*
@@ -16,8 +16,7 @@ extern "C" {
      ** (-LUAI_MAXSTACK is the minimum valid index; we keep some free empty
      ** space after that to help overflow detection)
      */
-    /* thread status */
-    pub type lua_State;
+
     #[no_mangle]
     fn __ctype_toupper_loc() -> *mut *const __int32_t;
     #[no_mangle]
@@ -181,49 +180,7 @@ extern "C" {
     #[no_mangle]
     fn luaL_setfuncs(L: *mut lua_State, l: *const luaL_Reg, nup: lua_int) -> ();
 }
-pub type __int32_t = lua_int;
-pub type unnamed = lua_uint;
-pub const _ISalnum: unnamed = 8;
-pub const _ISpunct: unnamed = 4;
-pub const _IScntrl: unnamed = 2;
-pub const _ISblank: unnamed = 1;
-pub const _ISgraph: unnamed = 32768;
-pub const _ISprint: unnamed = 16384;
-pub const _ISspace: unnamed = 8192;
-pub const _ISxdigit: unnamed = 4096;
-pub const _ISdigit: unnamed = 2048;
-pub const _ISalpha: unnamed = 1024;
-pub const _ISlower: unnamed = 512;
-pub const _ISupper: unnamed = 256;
 
-/*
-** basic types
-*/
-/* minimum Lua stack available to a C function */
-/* predefined values in the registry */
-/* type of numbers in Lua */
-pub type lua_Number = lua_double;
-/* type for integer functions */
-pub type lua_Integer = lua_longlong;
-/* unsigned integer type */
-pub type lua_Unsigned = lua_ulonglong;
-/* type for continuation-function contexts */
-pub type lua_KContext = intptr_t;
-/*
-** Type for C functions registered with Lua
-*/
-pub type lua_CFunction = Option<unsafe extern "C" fn(_: *mut lua_State) -> lua_int>;
-/*
-** Type for continuation functions
-*/
-pub type lua_KFunction =
-    Option<unsafe extern "C" fn(_: *mut lua_State, _: lua_int, _: lua_KContext) -> lua_int>;
-/*
-** Type for functions that read/write blocks when loading/dumping Lua chunks
-*/
-pub type lua_Reader = Option<
-    unsafe extern "C" fn(_: *mut lua_State, _: *mut lua_void, _: *mut size_t) -> *const lua_char,
->;
 /*
 ** $Id: lauxlib.h,v 1.131.1.1 2017/04/19 17:20:42 roberto Exp $
 ** Auxiliary functions for building Lua libraries

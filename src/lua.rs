@@ -1,5 +1,5 @@
 use luaconf::*;
-use types::*;
+use types::prelude::*;
 
 extern "C" {
     /*
@@ -9,10 +9,6 @@ extern "C" {
      ** See Copyright Notice at the end of this file
      */
 
-    pub type lua_State;
-
-    /* private part */
-    pub type CallInfo;
     #[no_mangle]
     fn signal(__sig: lua_int, __handler: __sighandler_t) -> __sighandler_t;
     #[no_mangle]
@@ -202,27 +198,6 @@ pub const LUA_RIDX_MAINTHREAD: i32 = 1;
 pub const LUA_RIDX_GLOBALS: i32 = 2;
 pub const LUA_RIDX_LAST: i32 = LUA_RIDX_GLOBALS;
 
-/* type of numbers in Lua */
-pub type lua_Number = LUA_NUMBER;
-
-/* type for integer functions */
-pub type lua_Integer = lua_longlong;
-
-/* unsigned integer type */
-pub type lua_Unsigned = u64; // TODO: check
-
-/* type for continuation-function contexts */
-pub type lua_KContext = intptr_t;
-
-/*
-** Type for C functions registered with Lua
-*/
-pub type lua_CFunction = Option<unsafe extern "C" fn(_: *mut lua_State) -> lua_int>;
-/*
-** Type for continuation functions
-*/
-pub type lua_KFunction =
-    Option<unsafe extern "C" fn(_: *mut lua_State, _: lua_int, _: lua_KContext) -> lua_int>;
 /*
 ** {==============================================================
 ** some useful macros
@@ -246,26 +221,7 @@ pub type lua_KFunction =
 /*
 ** Event masks
 */
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct lua_Debug {
-    pub event: lua_int,
-    pub name: *const lua_char,
-    pub namewhat: *const lua_char,
-    pub what: *const lua_char,
-    pub source: *const lua_char,
-    pub currentline: lua_int,
-    pub linedefined: lua_int,
-    pub lastlinedefined: lua_int,
-    pub nups: lua_uchar,
-    pub nparams: lua_uchar,
-    pub isvararg: lua_char,
-    pub istailcall: lua_char,
-    pub short_src: [lua_char; 60],
-    pub i_ci: *mut CallInfo,
-}
-/* Functions to be called by the debugger in specific events */
-pub type lua_Hook = Option<unsafe extern "C" fn(_: *mut lua_State, _: *mut lua_Debug) -> ()>;
+
 /*
 ** $Id: lua.c,v 1.230.1.1 2017/04/19 17:29:57 roberto Exp $
 ** Lua stand-alone interpreter
@@ -1022,21 +978,4 @@ unsafe fn main_0(mut argc: lua_int, mut argv: *mut *mut lua_char) -> lua_int {
             1i32
         };
     };
-}
-pub fn main() -> () {
-    let mut args: Vec<*mut lua_char> = Vec::new();
-    for arg in ::std::env::args() {
-        args.push(
-            ::std::ffi::CString::new(arg)
-                .expect("Failed to convert argument into CString.")
-                .into_raw(),
-        );
-    }
-    args.push(::std::ptr::null_mut());
-    unsafe {
-        ::std::process::exit(main_0(
-            (args.len() - 1) as lua_int,
-            args.as_mut_ptr() as *mut *mut lua_char,
-        ) as i32)
-    }
 }

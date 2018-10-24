@@ -1,4 +1,4 @@
-use types::*;
+use types::prelude::*;
 extern "C" {
     /*
      ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
@@ -13,8 +13,7 @@ extern "C" {
      ** (-LUAI_MAXSTACK is the minimum valid index; we keep some free empty
      ** space after that to help overflow detection)
      */
-    /* thread status */
-    pub type lua_State;
+
     #[no_mangle]
     fn lua_settop(L: *mut lua_State, idx: lua_int) -> ();
     /*

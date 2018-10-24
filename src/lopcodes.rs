@@ -1,9 +1,5 @@
-use types::*;
-/* 16-bit ints */
-/* }{ */
-/* } */
-/* chars used as small naturals (so that 'char' is reserved for characters) */
-pub type lu_byte = lua_uchar;
+use types::prelude::*;
+
 /*
 ** $Id: lopcodes.h,v 1.149.1.1 2017/04/19 17:20:42 roberto Exp $
 ** Opcodes for Lua virtual machine

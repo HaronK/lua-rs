@@ -1,4 +1,4 @@
-use types::*;
+use types::prelude::*;
 
 extern "C" {
     /*
@@ -38,12 +38,6 @@ extern "C" {
     ** The last three lists are used only during the atomic phase.
     
     */
-    /* defined in ldo.c */
-    pub type lua_longjmp;
-    /*
-     ** Lua Upvalues
-     */
-    pub type UpVal;
     #[no_mangle]
     fn memcpy(_: *mut lua_void, _: *const lua_void, _: lua_ulong) -> *mut lua_void;
     #[no_mangle]
@@ -156,44 +150,7 @@ extern "C" {
 ** (-LUAI_MAXSTACK is the minimum valid index; we keep some free empty
 ** space after that to help overflow detection)
 */
-/* thread status */
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct lua_State {
-    pub next: *mut GCObject,
-    pub tt: lu_byte,
-    pub marked: lu_byte,
-    pub nci: lua_ushort,
-    pub status: lu_byte,
-    pub top: StkId,
-    pub l_G: *mut global_State,
-    pub ci: *mut CallInfo,
-    pub oldpc: *const Instruction,
-    pub stack_last: StkId,
-    pub stack: StkId,
-    pub openupval: *mut UpVal,
-    pub gclist: *mut GCObject,
-    pub twups: *mut lua_State,
-    pub errorJmp: *mut lua_longjmp,
-    pub base_ci: CallInfo,
-    pub hook: lua_Hook,
-    pub errfunc: ptrdiff_t,
-    pub stacksize: lua_int,
-    pub basehookcount: lua_int,
-    pub hookcount: lua_int,
-    pub nny: lua_ushort,
-    pub nCcalls: lua_ushort,
-    pub hookmask: sig_atomic_t,
-    pub allowhook: lu_byte,
-}
-/* 16-bit ints */
-/* }{ */
-/* } */
-/* chars used as small naturals (so that 'char' is reserved for characters) */
-pub type lu_byte = lua_uchar;
-pub type sig_atomic_t = __sig_atomic_t;
-/* Functions to be called by the debugger in specific events */
-pub type lua_Hook = Option<unsafe extern "C" fn(_: *mut lua_State, _: *mut lua_Debug) -> ()>;
+
 /*
 ** {==============================================================
 ** some useful macros
@@ -217,65 +174,7 @@ pub type lua_Hook = Option<unsafe extern "C" fn(_: *mut lua_State, _: *mut lua_D
 /*
 ** Event masks
 */
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct lua_Debug {
-    pub event: lua_int,
-    pub name: *const lua_char,
-    pub namewhat: *const lua_char,
-    pub what: *const lua_char,
-    pub source: *const lua_char,
-    pub currentline: lua_int,
-    pub linedefined: lua_int,
-    pub lastlinedefined: lua_int,
-    pub nups: lua_uchar,
-    pub nparams: lua_uchar,
-    pub isvararg: lua_char,
-    pub istailcall: lua_char,
-    pub short_src: [lua_char; 60],
-    pub i_ci: *mut CallInfo,
-}
-/* private part */
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct CallInfo {
-    pub func: StkId,
-    pub top: StkId,
-    pub previous: *mut CallInfo,
-    pub next: *mut CallInfo,
-    pub u: unnamed,
-    pub extra: ptrdiff_t,
-    pub nresults: lua_short,
-    pub callstatus: lua_ushort,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub union unnamed {
-    pub l: unnamed_1,
-    pub c: unnamed_0,
-}
-/* only for C functions */
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct unnamed_0 {
-    pub k: lua_KFunction,
-    pub old_errfunc: ptrdiff_t,
-    pub ctx: lua_KContext,
-}
-/* type for continuation-function contexts */
-pub type lua_KContext = intptr_t;
-/*
-** Type for continuation functions
-*/
-pub type lua_KFunction =
-    Option<unsafe extern "C" fn(_: *mut lua_State, _: lua_int, _: lua_KContext) -> lua_int>;
-/* only for Lua functions */
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct unnamed_1 {
-    pub base: StkId,
-    pub savedpc: *const Instruction,
-}
+
 /* internal assertions for in-house debugging */
 /*
 ** assertion for checking API calls
@@ -295,11 +194,7 @@ pub struct unnamed_1 {
 ** maximum depth for nested C calls and syntactical nested non-terminals
 ** in a program. (Value must fit in an unsigned short int.)
 */
-/*
-** type for virtual-machine instructions;
-** must be an unsigned with (at least) 4 bytes (see details in lopcodes.h)
-*/
-pub type Instruction = lua_uint;
+
 /* macro defining a nil value */
 /* raw type tag of a TValue */
 /* tag with no variants (bits 0-3) */
@@ -323,45 +218,7 @@ pub type Instruction = lua_uint;
 ** types and prototypes
 ** =======================================================
 */
-/* index to stack elements */
-pub type StkId = *mut TValue;
-pub type TValue = lua_TValue;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct lua_TValue {
-    pub value_: Value,
-    pub tt_: lua_int,
-}
-/*
-** Tagged Values. This is the basic representation of values in Lua,
-** an actual value plus a tag with its type.
-*/
-/*
-** Union of all Lua values
-*/
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub union Value {
-    pub gc: *mut GCObject,
-    pub p: *mut lua_void,
-    pub b: lua_int,
-    pub f: lua_CFunction,
-    pub i: lua_Integer,
-    pub n: lua_Number,
-}
-/*
-** basic types
-*/
-/* minimum Lua stack available to a C function */
-/* predefined values in the registry */
-/* type of numbers in Lua */
-pub type lua_Number = lua_double;
-/* type for integer functions */
-pub type lua_Integer = lua_longlong;
-/*
-** Type for C functions registered with Lua
-*/
-pub type lua_CFunction = Option<unsafe extern "C" fn(_: *mut lua_State) -> lua_int>;
+
 /*
 ** $Id: lobject.h,v 2.117.1.1 2017/04/19 17:39:34 roberto Exp $
 ** Type definitions for Lua objects
@@ -402,13 +259,7 @@ pub type lua_CFunction = Option<unsafe extern "C" fn(_: *mut lua_State) -> lua_i
 /*
 ** Common type for all collectable objects
 */
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct GCObject {
-    pub next: *mut GCObject,
-    pub tt: lu_byte,
-    pub marked: lu_byte,
-}
+
 /*
 ** Bits in CallInfo status
 */
@@ -423,140 +274,13 @@ of luaV_execute */
 /* using __lt for __le */
 /* call is running a finalizer */
 /* assume that CIST_OAH has offset 0 and that 'v' is strictly 0/1 */
-/*
-** 'global state', shared by all threads of this state
-*/
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct global_State {
-    pub frealloc: lua_Alloc,
-    pub ud: *mut lua_void,
-    pub totalbytes: l_mem,
-    pub GCdebt: l_mem,
-    pub GCmemtrav: lu_mem,
-    pub GCestimate: lu_mem,
-    pub strt: stringtable,
-    pub l_registry: TValue,
-    pub seed: lua_uint,
-    pub currentwhite: lu_byte,
-    pub gcstate: lu_byte,
-    pub gckind: lu_byte,
-    pub gcrunning: lu_byte,
-    pub allgc: *mut GCObject,
-    pub sweepgc: *mut *mut GCObject,
-    pub finobj: *mut GCObject,
-    pub gray: *mut GCObject,
-    pub grayagain: *mut GCObject,
-    pub weak: *mut GCObject,
-    pub ephemeron: *mut GCObject,
-    pub allweak: *mut GCObject,
-    pub tobefnz: *mut GCObject,
-    pub fixedgc: *mut GCObject,
-    pub twups: *mut lua_State,
-    pub gcfinnum: lua_uint,
-    pub gcpause: lua_int,
-    pub gcstepmul: lua_int,
-    pub panic: lua_CFunction,
-    pub mainthread: *mut lua_State,
-    pub version: *const lua_Number,
-    pub memerrmsg: *mut TString,
-    pub tmname: [*mut TString; 24],
-    pub mt: [*mut Table; 9],
-    pub strcache: [[*mut TString; 2]; 53],
-}
-/*
-** Header for string value; string bytes follow the end of this structure
-** (aligned according to 'UTString'; see next).
-*/
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct TString {
-    pub next: *mut GCObject,
-    pub tt: lu_byte,
-    pub marked: lu_byte,
-    pub extra: lu_byte,
-    pub shrlen: lu_byte,
-    pub hash: lua_uint,
-    pub u: unnamed_2,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub union unnamed_2 {
-    pub lnglen: size_t,
-    pub hnext: *mut TString,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct Table {
-    pub next: *mut GCObject,
-    pub tt: lu_byte,
-    pub marked: lu_byte,
-    pub flags: lu_byte,
-    pub lsizenode: lu_byte,
-    pub sizearray: lua_uint,
-    pub array: *mut TValue,
-    pub node: *mut Node,
-    pub lastfree: *mut Node,
-    pub metatable: *mut Table,
-    pub gclist: *mut GCObject,
-}
-/* copy a value into a key without messing up field 'next' */
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct Node {
-    pub i_val: TValue,
-    pub i_key: TKey,
-}
-/*
-** Tables
-*/
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub union TKey {
-    pub nk: unnamed_3,
-    pub tvk: TValue,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct unnamed_3 {
-    pub value_: Value,
-    pub tt_: lua_int,
-    pub next: lua_int,
-}
-/*
-** Atomic type (relative to signals) to better ensure that 'lua_sethook'
-** is thread safe
-*/
-/* extra stack space to handle TM calls and some other extras */
-/* kinds of Garbage Collection */
-/* gc was forced by an allocation failure */
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct stringtable {
-    pub hash: *mut *mut TString,
-    pub nuse: lua_int,
-    pub size: lua_int,
-}
+
 /*
 ** $Id: llimits.h,v 1.141.1.1 2017/04/19 17:20:42 roberto Exp $
 ** Limits, basic types, and some other 'installation-dependent' definitions
 ** See Copyright Notice in lua.h
 */
-/*
-** 'lu_mem' and 'l_mem' are unsigned/signed integers big enough to count
-** the total memory used by Lua (in bytes). Usually, 'size_t' and
-** 'ptrdiff_t' should work, but we use 'long' for 16-bit machines.
-*/
-/* { external definitions? */
-/* }{ */
-pub type lu_mem = size_t;
-pub type l_mem = ptrdiff_t;
-/*
-** Type for memory-allocation functions
-*/
-pub type lua_Alloc = Option<
-    unsafe extern "C" fn(_: *mut lua_void, _: *mut lua_void, _: size_t, _: size_t) -> *mut lua_void,
->;
+
 /* maximum value for size_t */
 /* maximum size visible for Lua (must be representable in a lua_Integer */
 /* maximum value of an int */

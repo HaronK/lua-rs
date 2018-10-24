@@ -1,4 +1,5 @@
-use types::*;
+use stdc::prelude::*;
+use types::prelude::*;
 
 extern "C" {
     #[no_mangle]
