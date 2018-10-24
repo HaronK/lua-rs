@@ -1,4 +1,5 @@
 use types::*;
+
 extern "C" {
     /*
      ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
@@ -29,11 +30,7 @@ extern "C" {
     #[no_mangle]
     fn lua_pushinteger(L: *mut lua_State, n: lua_Integer) -> ();
     #[no_mangle]
-    fn lua_pushlstring(
-        L: *mut lua_State,
-        s: *const lua_char,
-        len: size_t,
-    ) -> *const lua_char;
+    fn lua_pushlstring(L: *mut lua_State, s: *const lua_char, len: size_t) -> *const lua_char;
     #[no_mangle]
     fn lua_pushcclosure(L: *mut lua_State, fn_0: lua_CFunction, n: lua_int) -> ();
     #[no_mangle]
@@ -43,17 +40,9 @@ extern "C" {
     #[no_mangle]
     fn luaL_checkversion_(L: *mut lua_State, ver: lua_Number, sz: size_t) -> ();
     #[no_mangle]
-    fn luaL_argerror(
-        L: *mut lua_State,
-        arg: lua_int,
-        extramsg: *const lua_char,
-    ) -> lua_int;
+    fn luaL_argerror(L: *mut lua_State, arg: lua_int, extramsg: *const lua_char) -> lua_int;
     #[no_mangle]
-    fn luaL_checklstring(
-        L: *mut lua_State,
-        arg: lua_int,
-        l: *mut size_t,
-    ) -> *const lua_char;
+    fn luaL_checklstring(L: *mut lua_State, arg: lua_int, l: *mut size_t) -> *const lua_char;
     #[no_mangle]
     fn luaL_checkinteger(L: *mut lua_State, arg: lua_int) -> lua_Integer;
     #[no_mangle]
@@ -69,7 +58,7 @@ extern "C" {
     #[no_mangle]
     fn luaL_pushresult(B: *mut luaL_Buffer) -> ();
 }
-pub type size_t = lua_ulong;
+
 /*
 ** basic types
 */
@@ -163,8 +152,7 @@ unsafe extern "C" fn iter_codes(mut L: *mut lua_State) -> lua_int {
 unsafe extern "C" fn iter_aux(mut L: *mut lua_State) -> lua_int {
     let mut len: size_t = 0;
     let mut s: *const lua_char = luaL_checklstring(L, 1i32, &mut len);
-    let mut n: lua_Integer =
-        lua_tointegerx(L, 2i32, 0 as *mut lua_int) - 1i32 as lua_longlong;
+    let mut n: lua_Integer = lua_tointegerx(L, 2i32, 0 as *mut lua_int) - 1i32 as lua_longlong;
     /* first iteration? */
     if n < 0i32 as lua_longlong {
         /* start from here */
@@ -195,10 +183,7 @@ unsafe extern "C" fn iter_aux(mut L: *mut lua_State) -> lua_int {
 /*
 ** Decode one UTF-8 sequence, returning NULL if byte sequence is invalid.
 */
-unsafe extern "C" fn utf8_decode(
-    mut o: *const lua_char,
-    mut val: *mut lua_int,
-) -> *const lua_char {
+unsafe extern "C" fn utf8_decode(mut o: *const lua_char, mut val: *mut lua_int) -> *const lua_char {
     static mut limits: [lua_uint; 4] = [
         0xffi32 as lua_uint,
         0x7fi32 as lua_uint,
@@ -265,8 +250,7 @@ unsafe extern "C" fn utflen(mut L: *mut lua_State) -> lua_int {
     (posj < len as lua_Integer
         || 0 != luaL_argerror(L, 3i32, s!(b"final position out of string\x00"))) as lua_int;
     while posi <= posj {
-        let mut s1: *const lua_char =
-            utf8_decode(s.offset(posi as isize), 0 as *mut lua_int);
+        let mut s1: *const lua_char = utf8_decode(s.offset(posi as isize), 0 as *mut lua_int);
         if s1.is_null() {
             /* conversion error? */
             /* return nil ... */
@@ -346,8 +330,7 @@ unsafe extern "C" fn codepoint(mut L: *mut lua_State) -> lua_int {
     let mut se: *const lua_char = 0 as *const lua_char;
     (posi >= 1i32 as lua_longlong || 0 != luaL_argerror(L, 2i32, s!(b"out of range\x00")))
         as lua_int;
-    (pose <= len as lua_Integer || 0 != luaL_argerror(L, 3i32, s!(b"out of range\x00")))
-        as lua_int;
+    (pose <= len as lua_Integer || 0 != luaL_argerror(L, 3i32, s!(b"out of range\x00"))) as lua_int;
     if posi > pose {
         /* empty interval; return no values */
         return 0i32;

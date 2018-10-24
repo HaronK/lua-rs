@@ -1,8 +1,6 @@
 use types::*;
+
 extern "C" {
-    pub type _IO_wide_data;
-    pub type _IO_codecvt;
-    pub type _IO_marker;
     /*
      ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
      ** Lua - A Scripting Language
@@ -112,26 +110,15 @@ extern "C" {
     #[no_mangle]
     fn lua_getstack(L: *mut lua_State, level: lua_int, ar: *mut lua_Debug) -> lua_int;
     #[no_mangle]
-    fn lua_getinfo(L: *mut lua_State, what: *const lua_char, ar: *mut lua_Debug)
-        -> lua_int;
+    fn lua_getinfo(L: *mut lua_State, what: *const lua_char, ar: *mut lua_Debug) -> lua_int;
     #[no_mangle]
-    fn lua_getlocal(L: *mut lua_State, ar: *const lua_Debug, n: lua_int)
-        -> *const lua_char;
+    fn lua_getlocal(L: *mut lua_State, ar: *const lua_Debug, n: lua_int) -> *const lua_char;
     #[no_mangle]
-    fn lua_setlocal(L: *mut lua_State, ar: *const lua_Debug, n: lua_int)
-        -> *const lua_char;
+    fn lua_setlocal(L: *mut lua_State, ar: *const lua_Debug, n: lua_int) -> *const lua_char;
     #[no_mangle]
-    fn lua_getupvalue(
-        L: *mut lua_State,
-        funcindex: lua_int,
-        n: lua_int,
-    ) -> *const lua_char;
+    fn lua_getupvalue(L: *mut lua_State, funcindex: lua_int, n: lua_int) -> *const lua_char;
     #[no_mangle]
-    fn lua_setupvalue(
-        L: *mut lua_State,
-        funcindex: lua_int,
-        n: lua_int,
-    ) -> *const lua_char;
+    fn lua_setupvalue(L: *mut lua_State, funcindex: lua_int, n: lua_int) -> *const lua_char;
     #[no_mangle]
     fn lua_upvalueid(L: *mut lua_State, fidx: lua_int, n: lua_int) -> *mut lua_void;
     #[no_mangle]
@@ -153,17 +140,9 @@ extern "C" {
     #[no_mangle]
     fn luaL_checkversion_(L: *mut lua_State, ver: lua_Number, sz: size_t) -> ();
     #[no_mangle]
-    fn luaL_argerror(
-        L: *mut lua_State,
-        arg: lua_int,
-        extramsg: *const lua_char,
-    ) -> lua_int;
+    fn luaL_argerror(L: *mut lua_State, arg: lua_int, extramsg: *const lua_char) -> lua_int;
     #[no_mangle]
-    fn luaL_checklstring(
-        L: *mut lua_State,
-        arg: lua_int,
-        l: *mut size_t,
-    ) -> *const lua_char;
+    fn luaL_checklstring(L: *mut lua_State, arg: lua_int, l: *mut size_t) -> *const lua_char;
     #[no_mangle]
     fn luaL_optlstring(
         L: *mut lua_State,
@@ -197,45 +176,7 @@ extern "C" {
         level: lua_int,
     ) -> ();
 }
-pub type size_t = lua_ulong;
-pub type __off_t = lua_long;
-pub type __off64_t = lua_long;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct _IO_FILE {
-    pub _flags: lua_int,
-    pub _IO_read_ptr: *mut lua_char,
-    pub _IO_read_end: *mut lua_char,
-    pub _IO_read_base: *mut lua_char,
-    pub _IO_write_base: *mut lua_char,
-    pub _IO_write_ptr: *mut lua_char,
-    pub _IO_write_end: *mut lua_char,
-    pub _IO_buf_base: *mut lua_char,
-    pub _IO_buf_end: *mut lua_char,
-    pub _IO_save_base: *mut lua_char,
-    pub _IO_backup_base: *mut lua_char,
-    pub _IO_save_end: *mut lua_char,
-    pub _markers: *mut _IO_marker,
-    pub _chain: *mut _IO_FILE,
-    pub _fileno: lua_int,
-    pub _flags2: lua_int,
-    pub _old_offset: __off_t,
-    pub _cur_column: lua_ushort,
-    pub _vtable_offset: lua_schar,
-    pub _shortbuf: [lua_char; 1],
-    pub _lock: *mut lua_void,
-    pub _offset: __off64_t,
-    pub _codecvt: *mut _IO_codecvt,
-    pub _wide_data: *mut _IO_wide_data,
-    pub _freeres_list: *mut _IO_FILE,
-    pub _freeres_buf: *mut lua_void,
-    pub __pad5: size_t,
-    pub _mode: lua_int,
-    pub _unused2: [lua_char; 20],
-}
-pub type _IO_lock_t = ();
-pub type FILE = _IO_FILE;
-pub type intptr_t = lua_long;
+
 /*
 ** basic types
 */
@@ -542,10 +483,7 @@ static mut HOOKKEY: lua_int = 0i32;
 /*
 ** Convert a string mask (for 'sethook') into a bit mask
 */
-unsafe extern "C" fn makemask(
-    mut smask: *const lua_char,
-    mut count: lua_int,
-) -> lua_int {
+unsafe extern "C" fn makemask(mut smask: *const lua_char, mut count: lua_int) -> lua_int {
     let mut mask: lua_int = 0i32;
     if !strchr(smask, 'c' as i32).is_null() {
         mask |= 1i32 << 0i32
@@ -801,11 +739,7 @@ unsafe extern "C" fn treatstackoption(
     /* put object into table */
     lua_setfield(L, -2i32, fname);
 }
-unsafe extern "C" fn settabsb(
-    mut L: *mut lua_State,
-    mut k: *const lua_char,
-    mut v: lua_int,
-) -> () {
+unsafe extern "C" fn settabsb(mut L: *mut lua_State, mut k: *const lua_char, mut v: lua_int) -> () {
     lua_pushboolean(L, v);
     lua_setfield(L, -2i32, k);
 }
@@ -822,11 +756,7 @@ unsafe extern "C" fn settabss(
     lua_pushstring(L, v);
     lua_setfield(L, -2i32, k);
 }
-unsafe extern "C" fn settabsi(
-    mut L: *mut lua_State,
-    mut k: *const lua_char,
-    mut v: lua_int,
-) -> () {
+unsafe extern "C" fn settabsi(mut L: *mut lua_State, mut k: *const lua_char, mut v: lua_int) -> () {
     lua_pushinteger(L, v as lua_Integer);
     lua_setfield(L, -2i32, k);
 }
@@ -866,10 +796,7 @@ unsafe extern "C" fn db_gethook(mut L: *mut lua_State) -> lua_int {
 /*
 ** Convert a bit mask (for 'gethook') into a string mask
 */
-unsafe extern "C" fn unmakemask(
-    mut mask: lua_int,
-    mut smask: *mut lua_char,
-) -> *mut lua_char {
+unsafe extern "C" fn unmakemask(mut mask: lua_int, mut smask: *mut lua_char) -> *mut lua_char {
     let mut i: lua_int = 0i32;
     if 0 != mask & 1i32 << 0i32 {
         let fresh0 = i;

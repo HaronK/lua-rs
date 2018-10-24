@@ -1,4 +1,5 @@
 use types::*;
+
 extern "C" {
     /*
      ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
@@ -48,11 +49,8 @@ extern "C" {
     #[no_mangle]
     fn luaH_setint(L: *mut lua_State, t: *mut Table, key: lua_Integer, value: *mut TValue) -> ();
     #[no_mangle]
-    fn luaF_getlocalname(
-        func: *const Proto,
-        local_number: lua_int,
-        pc: lua_int,
-    ) -> *const lua_char;
+    fn luaF_getlocalname(func: *const Proto, local_number: lua_int, pc: lua_int)
+        -> *const lua_char;
     #[no_mangle]
     static luaP_opmodes: [lu_byte; 47];
     #[no_mangle]
@@ -80,20 +78,7 @@ extern "C" {
     #[no_mangle]
     fn luaD_hook(L: *mut lua_State, event: lua_int, line: lua_int) -> ();
 }
-pub type __builtin_va_list = [__va_list_tag; 1];
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct __va_list_tag {
-    pub gp_offset: lua_uint,
-    pub fp_offset: lua_uint,
-    pub overflow_arg_area: *mut lua_void,
-    pub reg_save_area: *mut lua_void,
-}
-pub type va_list = __builtin_va_list;
-pub type ptrdiff_t = lua_long;
-pub type size_t = lua_ulong;
-pub type __sig_atomic_t = lua_int;
-pub type intptr_t = lua_long;
+
 /*
 ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
 ** Lua - A Scripting Language
@@ -529,8 +514,7 @@ pub type l_mem = ptrdiff_t;
 ** Type for memory-allocation functions
 */
 pub type lua_Alloc = Option<
-    unsafe extern "C" fn(_: *mut lua_void, _: *mut lua_void, _: size_t, _: size_t)
-        -> *mut lua_void,
+    unsafe extern "C" fn(_: *mut lua_void, _: *mut lua_void, _: size_t, _: size_t) -> *mut lua_void,
 >;
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -964,9 +948,8 @@ unsafe extern "C" fn swapextra(mut L: *mut lua_State) -> () {
         /* exchange its 'func' and 'extra' values */
         let mut temp: StkId = (*ci).func;
         (*ci).func = ((*L).stack as *mut lua_char).offset((*ci).extra as isize) as *mut TValue;
-        (*ci).extra = (temp as *mut lua_char)
-            .wrapping_offset_from((*L).stack as *mut lua_char)
-            as lua_long
+        (*ci).extra =
+            (temp as *mut lua_char).wrapping_offset_from((*L).stack as *mut lua_char) as lua_long
     };
 }
 unsafe extern "C" fn auxgetinfo(
@@ -1096,8 +1079,7 @@ unsafe extern "C" fn funcnamefromcode(
             8 | 10 => tm = TM_NEWINDEX,
             13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 => {
                 /* ORDER OP */
-                let mut offset: lua_int = (i >> 0i32
-                    & !((!(0i32 as Instruction)) << 6i32) << 0i32)
+                let mut offset: lua_int = (i >> 0i32 & !((!(0i32 as Instruction)) << 6i32) << 0i32)
                     as OpCode as lua_int
                     - OP_ADD as lua_int;
                 /* ORDER TM */
@@ -1199,20 +1181,18 @@ unsafe extern "C" fn getobjname(
                     return s!(b"upvalue\x00");
                 }
                 1 | 2 => {
-                    let mut b_0: lua_int =
-                        if op as lua_uint == OP_LOADK as lua_int as lua_uint {
-                            (i >> 0i32 + 6i32 + 8i32
-                                & !((!(0i32 as Instruction)) << 9i32 + 9i32) << 0i32)
-                                as lua_int
-                        } else {
-                            (*(*p).code.offset((pc + 1i32) as isize) >> 0i32 + 6i32
-                                & !((!(0i32 as Instruction)) << 9i32 + 9i32 + 8i32) << 0i32)
-                                as lua_int
-                        };
+                    let mut b_0: lua_int = if op as lua_uint == OP_LOADK as lua_int as lua_uint {
+                        (i >> 0i32 + 6i32 + 8i32
+                            & !((!(0i32 as Instruction)) << 9i32 + 9i32) << 0i32)
+                            as lua_int
+                    } else {
+                        (*(*p).code.offset((pc + 1i32) as isize) >> 0i32 + 6i32
+                            & !((!(0i32 as Instruction)) << 9i32 + 9i32 + 8i32) << 0i32)
+                            as lua_int
+                    };
                     if (*(*p).k.offset(b_0 as isize)).tt_ & 0xfi32 == 4i32 {
                         *name = (&mut (*((*(*p).k.offset(b_0 as isize)).value_.gc as *mut GCUnion))
-                            .ts as *mut TString
-                            as *mut lua_char)
+                            .ts as *mut TString as *mut lua_char)
                             .offset(::std::mem::size_of::<UTString>() as lua_ulong as isize);
                         return s!(b"constant\x00");
                     }
@@ -1274,8 +1254,7 @@ unsafe extern "C" fn upvalname(mut p: *mut Proto, mut uv: lua_int) -> *const lua
     if s.is_null() {
         return s!(b"?\x00");
     } else {
-        return (s as *mut lua_char)
-            .offset(::std::mem::size_of::<UTString>() as lua_ulong as isize);
+        return (s as *mut lua_char).offset(::std::mem::size_of::<UTString>() as lua_ulong as isize);
     };
 }
 /*
@@ -1475,8 +1454,7 @@ unsafe extern "C" fn findvararg(
 ) -> *const lua_char {
     let mut nparams: lua_int =
         (*(*((*(*ci).func).value_.gc as *mut GCUnion)).cl.l.p).numparams as lua_int;
-    if n >= (*ci).u.l.base.wrapping_offset_from((*ci).func) as lua_long as lua_int - nparams
-    {
+    if n >= (*ci).u.l.base.wrapping_offset_from((*ci).func) as lua_long as lua_int - nparams {
         /* no such vararg */
         return 0 as *const lua_char;
     } else {
@@ -1646,8 +1624,7 @@ pub unsafe extern "C" fn luaG_addinfo(
     if !src.is_null() {
         luaO_chunkid(
             buff.as_mut_ptr(),
-            (src as *mut lua_char)
-                .offset(::std::mem::size_of::<UTString>() as lua_ulong as isize),
+            (src as *mut lua_char).offset(::std::mem::size_of::<UTString>() as lua_ulong as isize),
             60i32 as size_t,
         );
     } else {
@@ -1750,26 +1727,25 @@ pub unsafe extern "C" fn luaG_traceexec(mut L: *mut lua_State) -> () {
         }
         if 0 != mask as lua_int & 1i32 << 2i32 {
             let mut p: *mut Proto = (*((*(*ci).func).value_.gc as *mut GCUnion)).cl.l.p;
-            let mut npc: lua_int = (*ci).u.l.savedpc.wrapping_offset_from((*p).code)
-                as lua_long as lua_int
-                - 1i32;
+            let mut npc: lua_int =
+                (*ci).u.l.savedpc.wrapping_offset_from((*p).code) as lua_long as lua_int - 1i32;
             let mut newline: lua_int = if !(*p).lineinfo.is_null() {
                 *(*p).lineinfo.offset(npc as isize)
             } else {
                 -1i32
             };
             /* call linehook when enter a new function, */
-            if npc == 0i32 || (*ci).u.l.savedpc <= (*L).oldpc || newline != if !(*p)
-                .lineinfo
-                .is_null()
-            {
-                *(*p).lineinfo.offset(
-                    ((*L).oldpc.wrapping_offset_from((*p).code) as lua_long as lua_int
-                        - 1i32) as isize,
-                )
-            } else {
-                -1i32
-            } {
+            if npc == 0i32
+                || (*ci).u.l.savedpc <= (*L).oldpc
+                || newline
+                    != if !(*p).lineinfo.is_null() {
+                        *(*p).lineinfo.offset(
+                            ((*L).oldpc.wrapping_offset_from((*p).code) as lua_long as lua_int
+                                - 1i32) as isize,
+                        )
+                    } else {
+                        -1i32
+                    } {
                 /* when jump back (loop), or when */
                 /* enter a new line */
                 /* call line hook */

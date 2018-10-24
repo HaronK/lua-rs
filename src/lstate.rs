@@ -1,4 +1,5 @@
 use types::*;
+
 extern "C" {
     /*
      ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
@@ -66,12 +67,7 @@ extern "C" {
     #[no_mangle]
     fn luaH_setint(L: *mut lua_State, t: *mut Table, key: lua_Integer, value: *mut TValue) -> ();
     #[no_mangle]
-    fn luaH_resize(
-        L: *mut lua_State,
-        t: *mut Table,
-        nasize: lua_uint,
-        nhsize: lua_uint,
-    ) -> ();
+    fn luaH_resize(L: *mut lua_State, t: *mut Table, nasize: lua_uint, nhsize: lua_uint) -> ();
     /*
      ** $Id: lmem.h,v 1.43.1.1 2017/04/19 17:20:42 roberto Exp $
      ** Interface to Memory Manager
@@ -123,11 +119,7 @@ extern "C" {
     #[no_mangle]
     fn luaC_step(L: *mut lua_State) -> ();
 }
-pub type ptrdiff_t = lua_long;
-pub type size_t = lua_ulong;
-pub type __time_t = lua_long;
-pub type __sig_atomic_t = lua_int;
-pub type intptr_t = lua_long;
+
 /*
 ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
 ** Lua - A Scripting Language
@@ -563,8 +555,7 @@ pub type l_mem = ptrdiff_t;
 ** Type for memory-allocation functions
 */
 pub type lua_Alloc = Option<
-    unsafe extern "C" fn(_: *mut lua_void, _: *mut lua_void, _: size_t, _: size_t)
-        -> *mut lua_void,
+    unsafe extern "C" fn(_: *mut lua_void, _: *mut lua_void, _: size_t, _: size_t) -> *mut lua_void,
 >;
 /*
 ** Main thread combines a thread state and the global state
@@ -737,10 +728,7 @@ pub type time_t = __time_t;
 ** state manipulation
 */
 #[no_mangle]
-pub unsafe extern "C" fn lua_newstate(
-    mut f: lua_Alloc,
-    mut ud: *mut lua_void,
-) -> *mut lua_State {
+pub unsafe extern "C" fn lua_newstate(mut f: lua_Alloc, mut ud: *mut lua_void) -> *mut lua_State {
     let mut i: lua_int = 0;
     let mut L: *mut lua_State = 0 as *mut lua_State;
     let mut g: *mut global_State = 0 as *mut global_State;
@@ -919,8 +907,7 @@ unsafe extern "C" fn stack_init(mut L1: *mut lua_State, mut L: *mut lua_State) -
     let mut i: lua_int = 0;
     let mut ci: *mut CallInfo = 0 as *mut CallInfo;
     /* initialize stack array */
-    if ::std::mem::size_of::<lua_int>() as lua_ulong
-        >= ::std::mem::size_of::<size_t>() as lua_ulong
+    if ::std::mem::size_of::<lua_int>() as lua_ulong >= ::std::mem::size_of::<size_t>() as lua_ulong
         && ((2i32 * 20i32) as size_t).wrapping_add(1i32 as lua_ulong)
             > (!(0i32 as size_t)).wrapping_div(::std::mem::size_of::<TValue>() as lua_ulong)
     {
@@ -931,8 +918,7 @@ unsafe extern "C" fn stack_init(mut L1: *mut lua_State, mut L: *mut lua_State) -
         L,
         0 as *mut lua_void,
         (0i32 as lua_ulong).wrapping_mul(::std::mem::size_of::<TValue>() as lua_ulong),
-        ((2i32 * 20i32) as lua_ulong)
-            .wrapping_mul(::std::mem::size_of::<TValue>() as lua_ulong),
+        ((2i32 * 20i32) as lua_ulong).wrapping_mul(::std::mem::size_of::<TValue>() as lua_ulong),
     ) as *mut TValue;
     (*L1).stacksize = 2i32 * 20i32;
     i = 0i32;
@@ -971,8 +957,8 @@ unsafe extern "C" fn makeseed(mut L: *mut lua_State) -> lua_uint {
         &mut t as *mut size_t as *const lua_void,
         ::std::mem::size_of::<size_t>() as lua_ulong,
     );
-    p = (p as lua_ulong).wrapping_add(::std::mem::size_of::<size_t>() as lua_ulong)
-        as lua_int as lua_int;
+    p = (p as lua_ulong).wrapping_add(::std::mem::size_of::<size_t>() as lua_ulong) as lua_int
+        as lua_int;
     /* local variable */
     let mut t_0: size_t = &mut h as *mut lua_uint as size_t;
     memcpy(
@@ -980,8 +966,8 @@ unsafe extern "C" fn makeseed(mut L: *mut lua_State) -> lua_uint {
         &mut t_0 as *mut size_t as *const lua_void,
         ::std::mem::size_of::<size_t>() as lua_ulong,
     );
-    p = (p as lua_ulong).wrapping_add(::std::mem::size_of::<size_t>() as lua_ulong)
-        as lua_int as lua_int;
+    p = (p as lua_ulong).wrapping_add(::std::mem::size_of::<size_t>() as lua_ulong) as lua_int
+        as lua_int;
     /* global variable */
     let mut t_1: size_t = &luaO_nilobject_ as *const TValue as size_t;
     memcpy(
@@ -989,8 +975,8 @@ unsafe extern "C" fn makeseed(mut L: *mut lua_State) -> lua_uint {
         &mut t_1 as *mut size_t as *const lua_void,
         ::std::mem::size_of::<size_t>() as lua_ulong,
     );
-    p = (p as lua_ulong).wrapping_add(::std::mem::size_of::<size_t>() as lua_ulong)
-        as lua_int as lua_int;
+    p = (p as lua_ulong).wrapping_add(::std::mem::size_of::<size_t>() as lua_ulong) as lua_int
+        as lua_int;
     /* public function */
     let mut t_2: size_t = ::std::mem::transmute::<
         Option<unsafe extern "C" fn(_: lua_Alloc, _: *mut lua_void) -> *mut lua_State>,
@@ -1001,8 +987,8 @@ unsafe extern "C" fn makeseed(mut L: *mut lua_State) -> lua_uint {
         &mut t_2 as *mut size_t as *const lua_void,
         ::std::mem::size_of::<size_t>() as lua_ulong,
     );
-    p = (p as lua_ulong).wrapping_add(::std::mem::size_of::<size_t>() as lua_ulong)
-        as lua_int as lua_int;
+    p = (p as lua_ulong).wrapping_add(::std::mem::size_of::<size_t>() as lua_ulong) as lua_int
+        as lua_int;
     return luaS_hash(buff.as_mut_ptr(), p as size_t, h);
 }
 /*

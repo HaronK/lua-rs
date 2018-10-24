@@ -1,4 +1,5 @@
 use types::*;
+
 extern "C" {
     /*
      ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
@@ -83,17 +84,9 @@ extern "C" {
     #[no_mangle]
     fn luaL_checkversion_(L: *mut lua_State, ver: lua_Number, sz: size_t) -> ();
     #[no_mangle]
-    fn luaL_argerror(
-        L: *mut lua_State,
-        arg: lua_int,
-        extramsg: *const lua_char,
-    ) -> lua_int;
+    fn luaL_argerror(L: *mut lua_State, arg: lua_int, extramsg: *const lua_char) -> lua_int;
     #[no_mangle]
-    fn luaL_checklstring(
-        L: *mut lua_State,
-        arg: lua_int,
-        l: *mut size_t,
-    ) -> *const lua_char;
+    fn luaL_checklstring(L: *mut lua_State, arg: lua_int, l: *mut size_t) -> *const lua_char;
     #[no_mangle]
     fn luaL_optlstring(
         L: *mut lua_State,
@@ -115,11 +108,7 @@ extern "C" {
         lst: *const *const lua_char,
     ) -> lua_int;
     #[no_mangle]
-    fn luaL_fileresult(
-        L: *mut lua_State,
-        stat: lua_int,
-        fname: *const lua_char,
-    ) -> lua_int;
+    fn luaL_fileresult(L: *mut lua_State, stat: lua_int, fname: *const lua_char) -> lua_int;
     #[no_mangle]
     fn luaL_execresult(L: *mut lua_State, stat: lua_int) -> lua_int;
     #[no_mangle]
@@ -133,27 +122,7 @@ extern "C" {
     #[no_mangle]
     fn close(__fd: lua_int) -> lua_int;
 }
-pub type size_t = lua_ulong;
-pub type __clock_t = lua_long;
-pub type __time_t = lua_long;
-pub type clock_t = __clock_t;
-pub type time_t = __time_t;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct tm {
-    pub tm_sec: lua_int,
-    pub tm_min: lua_int,
-    pub tm_hour: lua_int,
-    pub tm_mday: lua_int,
-    pub tm_mon: lua_int,
-    pub tm_year: lua_int,
-    pub tm_wday: lua_int,
-    pub tm_yday: lua_int,
-    pub tm_isdst: lua_int,
-    pub __tm_gmtoff: lua_long,
-    pub __tm_zone: *const lua_char,
-}
-pub type ptrdiff_t = lua_long;
+
 /*
 ** basic types
 */
@@ -350,10 +319,7 @@ unsafe extern "C" fn setfield(
     lua_pushinteger(L, value as lua_Integer);
     lua_setfield(L, -2i32, key);
 }
-unsafe extern "C" fn getboolfield(
-    mut L: *mut lua_State,
-    mut key: *const lua_char,
-) -> lua_int {
+unsafe extern "C" fn getboolfield(mut L: *mut lua_State, mut key: *const lua_char) -> lua_int {
     let mut res: lua_int = 0;
     res = if lua_getfield(L, -1i32, key) == 0i32 {
         -1i32
@@ -406,8 +372,7 @@ unsafe extern "C" fn os_setlocale(mut L: *mut lua_State) -> lua_int {
         s!(b"time\x00"),
         0 as *const lua_char,
     ];
-    let mut l: *const lua_char =
-        luaL_optlstring(L, 1i32, 0 as *const lua_char, 0 as *mut size_t);
+    let mut l: *const lua_char = luaL_optlstring(L, 1i32, 0 as *const lua_char, 0 as *mut size_t);
     let mut op: lua_int = luaL_checkoption(L, 2i32, s!(b"all\x00"), catnames.as_ptr());
     lua_pushstring(L, setlocale(cat[op as usize], l));
     return 1i32;
@@ -476,8 +441,7 @@ unsafe extern "C" fn os_exit(mut L: *mut lua_State) -> lua_int {
 /* } */
 /* }================================================================== */
 unsafe extern "C" fn os_execute(mut L: *mut lua_State) -> lua_int {
-    let mut cmd: *const lua_char =
-        luaL_optlstring(L, 1i32, 0 as *const lua_char, 0 as *mut size_t);
+    let mut cmd: *const lua_char = luaL_optlstring(L, 1i32, 0 as *const lua_char, 0 as *mut size_t);
     let mut stat: lua_int = system(cmd);
     if !cmd.is_null() {
         return luaL_execresult(L, stat);
@@ -524,8 +488,8 @@ unsafe extern "C" fn os_difftime(mut L: *mut lua_State) -> lua_int {
 */
 unsafe extern "C" fn l_checktime(mut L: *mut lua_State, mut arg: lua_int) -> time_t {
     let mut t: lua_Integer = luaL_checkinteger(L, arg);
-    (t as time_t as lua_longlong == t
-        || 0 != luaL_argerror(L, arg, s!(b"time out-of-bounds\x00"))) as lua_int;
+    (t as time_t as lua_longlong == t || 0 != luaL_argerror(L, arg, s!(b"time out-of-bounds\x00")))
+        as lua_int;
     return t as time_t;
 }
 /* maximum size for an individual 'strftime' item */

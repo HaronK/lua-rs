@@ -1,4 +1,5 @@
 use types::*;
+
 extern "C" {
     /*
      ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
@@ -91,10 +92,7 @@ extern "C" {
     #[no_mangle]
     fn luaS_createlngstrobj(L: *mut lua_State, l: size_t) -> *mut TString;
 }
-pub type size_t = lua_ulong;
-pub type ptrdiff_t = lua_long;
-pub type __sig_atomic_t = lua_int;
-pub type intptr_t = lua_long;
+
 /*
 ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
 ** Lua - A Scripting Language
@@ -530,15 +528,13 @@ pub type l_mem = ptrdiff_t;
 ** Type for memory-allocation functions
 */
 pub type lua_Alloc = Option<
-    unsafe extern "C" fn(_: *mut lua_void, _: *mut lua_void, _: size_t, _: size_t)
-        -> *mut lua_void,
+    unsafe extern "C" fn(_: *mut lua_void, _: *mut lua_void, _: size_t, _: size_t) -> *mut lua_void,
 >;
 /*
 ** Type for functions that read/write blocks when loading/dumping Lua chunks
 */
 pub type lua_Reader = Option<
-    unsafe extern "C" fn(_: *mut lua_State, _: *mut lua_void, _: *mut size_t)
-        -> *const lua_char,
+    unsafe extern "C" fn(_: *mut lua_State, _: *mut lua_void, _: *mut size_t) -> *const lua_char,
 >;
 /* maximum value for size_t */
 /* maximum size visible for Lua (must be representable in a lua_Integer */
@@ -741,8 +737,7 @@ pub unsafe extern "C" fn luaU_undump(
     if *name as lua_int == '@' as i32 || *name as lua_int == '=' as i32 {
         S.name = name.offset(1isize)
     } else if *name as lua_int
-        == (*::std::mem::transmute::<&[u8; 5], &[lua_char; 5]>(b"\x1bLua\x00"))[0usize]
-            as lua_int
+        == (*::std::mem::transmute::<&[u8; 5], &[lua_char; 5]>(b"\x1bLua\x00"))[0usize] as lua_int
     {
         S.name = s!(b"binary string\x00")
     } else {
@@ -787,11 +782,9 @@ unsafe extern "C" fn LoadDebug(mut S: *mut LoadState, mut f: *mut Proto) -> () {
     let mut i: lua_int = 0;
     let mut n: lua_int = 0;
     n = LoadInt(S);
-    if ::std::mem::size_of::<lua_int>() as lua_ulong
-        >= ::std::mem::size_of::<size_t>() as lua_ulong
+    if ::std::mem::size_of::<lua_int>() as lua_ulong >= ::std::mem::size_of::<size_t>() as lua_ulong
         && (n as size_t).wrapping_add(1i32 as lua_ulong)
-            > (!(0i32 as size_t))
-                .wrapping_div(::std::mem::size_of::<lua_int>() as lua_ulong)
+            > (!(0i32 as size_t)).wrapping_div(::std::mem::size_of::<lua_int>() as lua_ulong)
     {
         luaM_toobig((*S).L);
     } else {
@@ -809,8 +802,7 @@ unsafe extern "C" fn LoadDebug(mut S: *mut LoadState, mut f: *mut Proto) -> () {
         (n as lua_ulong).wrapping_mul(::std::mem::size_of::<lua_int>() as lua_ulong),
     );
     n = LoadInt(S);
-    if ::std::mem::size_of::<lua_int>() as lua_ulong
-        >= ::std::mem::size_of::<size_t>() as lua_ulong
+    if ::std::mem::size_of::<lua_int>() as lua_ulong >= ::std::mem::size_of::<size_t>() as lua_ulong
         && (n as size_t).wrapping_add(1i32 as lua_ulong)
             > (!(0i32 as size_t)).wrapping_div(::std::mem::size_of::<LocVar>() as lua_ulong)
     {
@@ -923,8 +915,7 @@ unsafe extern "C" fn LoadInt(mut S: *mut LoadState) -> lua_int {
 unsafe extern "C" fn LoadProtos(mut S: *mut LoadState, mut f: *mut Proto) -> () {
     let mut i: lua_int = 0;
     let mut n: lua_int = LoadInt(S);
-    if ::std::mem::size_of::<lua_int>() as lua_ulong
-        >= ::std::mem::size_of::<size_t>() as lua_ulong
+    if ::std::mem::size_of::<lua_int>() as lua_ulong >= ::std::mem::size_of::<size_t>() as lua_ulong
         && (n as size_t).wrapping_add(1i32 as lua_ulong)
             > (!(0i32 as size_t)).wrapping_div(::std::mem::size_of::<*mut Proto>() as lua_ulong)
     {
@@ -956,8 +947,7 @@ unsafe extern "C" fn LoadUpvalues(mut S: *mut LoadState, mut f: *mut Proto) -> (
     let mut i: lua_int = 0;
     let mut n: lua_int = 0;
     n = LoadInt(S);
-    if ::std::mem::size_of::<lua_int>() as lua_ulong
-        >= ::std::mem::size_of::<size_t>() as lua_ulong
+    if ::std::mem::size_of::<lua_int>() as lua_ulong >= ::std::mem::size_of::<size_t>() as lua_ulong
         && (n as size_t).wrapping_add(1i32 as lua_ulong)
             > (!(0i32 as size_t)).wrapping_div(::std::mem::size_of::<Upvaldesc>() as lua_ulong)
     {
@@ -990,8 +980,7 @@ unsafe extern "C" fn LoadConstants(mut S: *mut LoadState, mut f: *mut Proto) -> 
     let mut io_1: *mut TValue = 0 as *mut TValue;
     let mut i: lua_int = 0;
     let mut n: lua_int = LoadInt(S);
-    if ::std::mem::size_of::<lua_int>() as lua_ulong
-        >= ::std::mem::size_of::<size_t>() as lua_ulong
+    if ::std::mem::size_of::<lua_int>() as lua_ulong >= ::std::mem::size_of::<size_t>() as lua_ulong
         && (n as size_t).wrapping_add(1i32 as lua_ulong)
             > (!(0i32 as size_t)).wrapping_div(::std::mem::size_of::<TValue>() as lua_ulong)
     {
@@ -1062,11 +1051,9 @@ unsafe extern "C" fn LoadNumber(mut S: *mut LoadState) -> lua_Number {
 }
 unsafe extern "C" fn LoadCode(mut S: *mut LoadState, mut f: *mut Proto) -> () {
     let mut n: lua_int = LoadInt(S);
-    if ::std::mem::size_of::<lua_int>() as lua_ulong
-        >= ::std::mem::size_of::<size_t>() as lua_ulong
+    if ::std::mem::size_of::<lua_int>() as lua_ulong >= ::std::mem::size_of::<size_t>() as lua_ulong
         && (n as size_t).wrapping_add(1i32 as lua_ulong)
-            > (!(0i32 as size_t))
-                .wrapping_div(::std::mem::size_of::<Instruction>() as lua_ulong)
+            > (!(0i32 as size_t)).wrapping_div(::std::mem::size_of::<Instruction>() as lua_ulong)
     {
         luaM_toobig((*S).L);
     } else {
@@ -1088,12 +1075,10 @@ unsafe extern "C" fn checkHeader(mut S: *mut LoadState) -> () {
     /* 1st char already checked */
     checkliteral(S, (s!(b"\x1bLua\x00")).offset(1isize), s!(b"not a\x00"));
     if LoadByte(S) as lua_int
-        != ((*::std::mem::transmute::<&[u8; 2], &[lua_char; 2]>(b"5\x00"))[0usize]
-            as lua_int
+        != ((*::std::mem::transmute::<&[u8; 2], &[lua_char; 2]>(b"5\x00"))[0usize] as lua_int
             - '0' as i32)
             * 16i32
-            + ((*::std::mem::transmute::<&[u8; 2], &[lua_char; 2]>(b"3\x00"))[0usize]
-                as lua_int
+            + ((*::std::mem::transmute::<&[u8; 2], &[lua_char; 2]>(b"3\x00"))[0usize] as lua_int
                 - '0' as i32)
     {
         error(S, s!(b"version mismatch in\x00"));

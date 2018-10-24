@@ -1,5 +1,6 @@
-use types::*;
 use lua::*;
+use types::*;
+
 extern "C" {
     /*
      ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
@@ -53,8 +54,7 @@ extern "C" {
     #[no_mangle]
     fn fmod(_: lua_double, _: lua_double) -> lua_double;
     #[no_mangle]
-    fn snprintf(_: *mut lua_char, _: lua_ulong, _: *const lua_char, ...)
-        -> lua_int;
+    fn snprintf(_: *mut lua_char, _: lua_ulong, _: *const lua_char, ...) -> lua_int;
     #[no_mangle]
     fn strtod(__nptr: *const lua_char, __endptr: *mut *mut lua_char) -> lua_double;
     #[no_mangle]
@@ -157,11 +157,7 @@ pub struct lconv {
     pub int_p_sign_posn: lua_char,
     pub int_n_sign_posn: lua_char,
 }
-pub type __sig_atomic_t = lua_int;
-pub type va_list = __builtin_va_list;
-pub type size_t = lua_ulong;
-pub type ptrdiff_t = lua_long;
-pub type intptr_t = lua_long;
+
 /*
 ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
 ** Lua - A Scripting Language
@@ -598,8 +594,7 @@ pub type l_mem = ptrdiff_t;
 ** Type for memory-allocation functions
 */
 pub type lua_Alloc = Option<
-    unsafe extern "C" fn(_: *mut lua_void, _: *mut lua_void, _: size_t, _: size_t)
-        -> *mut lua_void,
+    unsafe extern "C" fn(_: *mut lua_void, _: *mut lua_void, _: size_t, _: size_t) -> *mut lua_void,
 >;
 /* unsigned integer type */
 pub type lua_Unsigned = lua_ulonglong;
@@ -837,10 +832,7 @@ pub unsafe extern "C" fn luaO_fb2int(mut x: lua_int) -> lua_int {
     };
 }
 #[no_mangle]
-pub unsafe extern "C" fn luaO_utf8esc(
-    mut buff: *mut lua_char,
-    mut x: lua_ulong,
-) -> lua_int {
+pub unsafe extern "C" fn luaO_utf8esc(mut buff: *mut lua_char, mut x: lua_ulong) -> lua_int {
     /* number of bytes put in buffer (backwards) */
     let mut n: lua_int = 1i32;
     /* ascii? */
@@ -1157,12 +1149,13 @@ pub unsafe extern "C" fn luaO_arith(
                 1i32
             } else {
                 luaV_tointeger(p1, &mut i1, 0i32)
-            } && 0 != if (*p2).tt_ == 3i32 | 1i32 << 4i32 {
-                i2 = (*p2).value_.i;
-                1i32
-            } else {
-                luaV_tointeger(p2, &mut i2, 0i32)
-            } {
+            } && 0
+                != if (*p2).tt_ == 3i32 | 1i32 << 4i32 {
+                    i2 = (*p2).value_.i;
+                    1i32
+                } else {
+                    luaV_tointeger(p2, &mut i2, 0i32)
+                } {
                 let mut io: *mut TValue = res;
                 (*io).value_.i = intarith(L, op, i1, i2);
                 (*io).tt_ = 3i32 | 1i32 << 4i32;
@@ -1179,12 +1172,13 @@ pub unsafe extern "C" fn luaO_arith(
                 1i32
             } else {
                 luaV_tonumber_(p1, &mut n1)
-            } && 0 != if (*p2).tt_ == 3i32 | 0i32 << 4i32 {
-                n2 = (*p2).value_.n;
-                1i32
-            } else {
-                luaV_tonumber_(p2, &mut n2)
-            } {
+            } && 0
+                != if (*p2).tt_ == 3i32 | 0i32 << 4i32 {
+                    n2 = (*p2).value_.n;
+                    1i32
+                } else {
+                    luaV_tonumber_(p2, &mut n2)
+                } {
                 let mut io_0: *mut TValue = res;
                 (*io_0).value_.n = numarith(L, op, n1, n2);
                 (*io_0).tt_ = 3i32 | 0i32 << 4i32;
@@ -1201,17 +1195,19 @@ pub unsafe extern "C" fn luaO_arith(
                 (*io_1).value_.i = intarith(L, op, (*p1).value_.i, (*p2).value_.i);
                 (*io_1).tt_ = 3i32 | 1i32 << 4i32;
                 return;
-            } else if 0 != if (*p1).tt_ == 3i32 | 0i32 << 4i32 {
-                n1_0 = (*p1).value_.n;
-                1i32
-            } else {
-                luaV_tonumber_(p1, &mut n1_0)
-            } && 0 != if (*p2).tt_ == 3i32 | 0i32 << 4i32 {
-                n2_0 = (*p2).value_.n;
-                1i32
-            } else {
-                luaV_tonumber_(p2, &mut n2_0)
-            } {
+            } else if 0
+                != if (*p1).tt_ == 3i32 | 0i32 << 4i32 {
+                    n1_0 = (*p1).value_.n;
+                    1i32
+                } else {
+                    luaV_tonumber_(p1, &mut n1_0)
+                }
+                && 0 != if (*p2).tt_ == 3i32 | 0i32 << 4i32 {
+                    n2_0 = (*p2).value_.n;
+                    1i32
+                } else {
+                    luaV_tonumber_(p2, &mut n2_0)
+                } {
                 let mut io_2: *mut TValue = res;
                 (*io_2).value_.n = numarith(L, op, n1_0, n2_0);
                 (*io_2).tt_ = 3i32 | 0i32 << 4i32;
@@ -1343,9 +1339,8 @@ unsafe extern "C" fn l_str2d(
                 endptr = l_str2dloc(buff.as_mut_ptr(), result, mode);
                 if !endptr.is_null() {
                     /* make relative to 's' */
-                    endptr = s.offset(
-                        endptr.wrapping_offset_from(buff.as_mut_ptr()) as lua_long as isize,
-                    )
+                    endptr = s
+                        .offset(endptr.wrapping_offset_from(buff.as_mut_ptr()) as lua_long as isize)
                 }
             }
         }
@@ -1397,10 +1392,7 @@ unsafe extern "C" fn l_str2int(
     let mut a: lua_Unsigned = 0i32 as lua_Unsigned;
     let mut empty: lua_int = 1i32;
     let mut neg: lua_int = 0;
-    while 0
-        != luai_ctype_[(*s as lua_uchar as lua_int + 1i32) as usize] as lua_int
-            & 1i32 << 3i32
-    {
+    while 0 != luai_ctype_[(*s as lua_uchar as lua_int + 1i32) as usize] as lua_int & 1i32 << 3i32 {
         /* skip initial spaces */
         s = s.offset(1isize)
     }
@@ -1413,8 +1405,7 @@ unsafe extern "C" fn l_str2int(
         /* skip '0x' */
         s = s.offset(2isize);
         while 0
-            != luai_ctype_[(*s as lua_uchar as lua_int + 1i32) as usize] as lua_int
-                & 1i32 << 4i32
+            != luai_ctype_[(*s as lua_uchar as lua_int + 1i32) as usize] as lua_int & 1i32 << 4i32
         {
             a = a
                 .wrapping_mul(16i32 as lua_ulonglong)
@@ -1424,15 +1415,13 @@ unsafe extern "C" fn l_str2int(
         }
     } else {
         while 0
-            != luai_ctype_[(*s as lua_uchar as lua_int + 1i32) as usize] as lua_int
-                & 1i32 << 1i32
+            != luai_ctype_[(*s as lua_uchar as lua_int + 1i32) as usize] as lua_int & 1i32 << 1i32
         {
             let mut d: lua_int = *s as lua_int - '0' as i32;
             /* overflow? */
             if a >= (9223372036854775807i64 / 10i32 as lua_longlong) as lua_Unsigned
                 && (a > (9223372036854775807i64 / 10i32 as lua_longlong) as lua_Unsigned
-                    || d > (9223372036854775807i64 % 10i32 as lua_longlong) as lua_int
-                        + neg)
+                    || d > (9223372036854775807i64 % 10i32 as lua_longlong) as lua_int + neg)
             {
                 /* do not accept it (as integer) */
                 return 0 as *const lua_char;
@@ -1445,10 +1434,7 @@ unsafe extern "C" fn l_str2int(
             }
         }
     }
-    while 0
-        != luai_ctype_[(*s as lua_uchar as lua_int + 1i32) as usize] as lua_int
-            & 1i32 << 3i32
-    {
+    while 0 != luai_ctype_[(*s as lua_uchar as lua_int + 1i32) as usize] as lua_int & 1i32 << 3i32 {
         /* skip trailing spaces */
         s = s.offset(1isize)
     }
@@ -1519,11 +1505,7 @@ pub unsafe extern "C" fn luaO_tostring(mut L: *mut lua_State, mut obj: StkId) ->
     (*io).value_.gc = &mut (*(x_ as *mut GCUnion)).gc;
     (*io).tt_ = (*x_).tt as lua_int | 1i32 << 6i32;
 }
-unsafe extern "C" fn pushstr(
-    mut L: *mut lua_State,
-    mut str: *const lua_char,
-    mut l: size_t,
-) -> () {
+unsafe extern "C" fn pushstr(mut L: *mut lua_State, mut str: *const lua_char, mut l: size_t) -> () {
     let mut io: *mut TValue = (*L).top;
     let mut x_: *mut TString = luaS_newlstr(L, str, l);
     (*io).value_.gc = &mut (*(x_ as *mut GCUnion)).gc;

@@ -1,6 +1,7 @@
-use types::*;
 use llimits::*;
 use lua::*;
+use types::*;
+
 extern "C" {
     #[no_mangle]
     fn _setjmp(_: *mut __jmp_buf_tag) -> lua_int;
@@ -102,24 +103,7 @@ extern "C" {
     #[no_mangle]
     fn luaU_undump(L: *mut lua_State, Z: *mut ZIO, name: *const lua_char) -> *mut LClosure;
 }
-pub type __jmp_buf = [lua_long; 8];
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct __sigset_t {
-    pub __val: [lua_ulong; 16],
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct __jmp_buf_tag {
-    pub __jmpbuf: __jmp_buf,
-    pub __mask_was_saved: lua_int,
-    pub __saved_mask: __sigset_t,
-}
-pub type jmp_buf = [__jmp_buf_tag; 1];
-pub type size_t = lua_ulong;
-pub type __sig_atomic_t = lua_int;
-pub type ptrdiff_t = lua_long;
-pub type intptr_t = lua_long;
+
 /*
 ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
 ** Lua - A Scripting Language
@@ -600,15 +584,13 @@ pub type l_mem = ptrdiff_t;
 ** Type for memory-allocation functions
 */
 pub type lua_Alloc = Option<
-    unsafe extern "C" fn(_: *mut lua_void, _: *mut lua_void, _: size_t, _: size_t)
-        -> *mut lua_void,
+    unsafe extern "C" fn(_: *mut lua_void, _: *mut lua_void, _: size_t, _: size_t) -> *mut lua_void,
 >;
 /*
 ** Type for functions that read/write blocks when loading/dumping Lua chunks
 */
 pub type lua_Reader = Option<
-    unsafe extern "C" fn(_: *mut lua_State, _: *mut lua_void, _: *mut size_t)
-        -> *const lua_char,
+    unsafe extern "C" fn(_: *mut lua_State, _: *mut lua_void, _: *mut size_t) -> *const lua_char,
 >;
 /*
 ** Union of all collectable objects (only for conversions)
@@ -1012,8 +994,7 @@ pub unsafe extern "C" fn lua_yieldk(
         (*L).status = 1i32 as lu_byte;
         /* save current 'func' */
         (*ci).extra = ((*ci).func as *mut lua_char)
-            .wrapping_offset_from((*L).stack as *mut lua_char)
-            as lua_long;
+            .wrapping_offset_from((*L).stack as *mut lua_char) as lua_long;
         if 0 != (*ci).callstatus as lua_int & 1i32 << 1i32 {
             /* inside a hook? */
             /* must be inside a hook */
@@ -1133,11 +1114,7 @@ pub unsafe extern "C" fn lua_resume(
     } else {
         /* allow yields */
         (*L).nny = 0i32 as lua_ushort;
-        status = luaD_rawrunprotected(
-            L,
-            Some(resume),
-            &mut nargs as *mut lua_int as *mut lua_void,
-        );
+        status = luaD_rawrunprotected(L, Some(resume), &mut nargs as *mut lua_int as *mut lua_void);
         /* error calling 'lua_resume'? */
         if status == -1i32 {
             status = 2i32
@@ -1235,8 +1212,7 @@ pub unsafe extern "C" fn luaD_poscall(
     if 0 != (*L).hookmask & (1i32 << 1i32 | 1i32 << 2i32) {
         if 0 != (*L).hookmask & 1i32 << 1i32 {
             /* hook may change stack */
-            fr = (firstResult as *mut lua_char)
-                .wrapping_offset_from((*L).stack as *mut lua_char)
+            fr = (firstResult as *mut lua_char).wrapping_offset_from((*L).stack as *mut lua_char)
                 as lua_long;
             luaD_hook(L, 1i32, -1i32);
             firstResult = ((*L).stack as *mut lua_char).offset(fr as isize) as *mut TValue
@@ -1403,8 +1379,7 @@ pub unsafe extern "C" fn luaD_growstack(mut L: *mut lua_State, mut n: lua_int) -
 pub unsafe extern "C" fn luaD_reallocstack(mut L: *mut lua_State, mut newsize: lua_int) -> () {
     let mut oldstack: *mut TValue = (*L).stack;
     let mut lim: lua_int = (*L).stacksize;
-    if ::std::mem::size_of::<lua_int>() as lua_ulong
-        >= ::std::mem::size_of::<size_t>() as lua_ulong
+    if ::std::mem::size_of::<lua_int>() as lua_ulong >= ::std::mem::size_of::<size_t>() as lua_ulong
         && (newsize as size_t).wrapping_add(1i32 as lua_ulong)
             > (!(0i32 as size_t)).wrapping_div(::std::mem::size_of::<TValue>() as lua_ulong)
     {
@@ -1414,8 +1389,7 @@ pub unsafe extern "C" fn luaD_reallocstack(mut L: *mut lua_State, mut newsize: l
     (*L).stack = luaM_realloc_(
         L,
         (*L).stack as *mut lua_void,
-        ((*L).stacksize as lua_ulong)
-            .wrapping_mul(::std::mem::size_of::<TValue>() as lua_ulong),
+        ((*L).stacksize as lua_ulong).wrapping_mul(::std::mem::size_of::<TValue>() as lua_ulong),
         (newsize as lua_ulong).wrapping_mul(::std::mem::size_of::<TValue>() as lua_ulong),
     ) as *mut TValue;
     while lim < newsize {
@@ -1635,9 +1609,7 @@ pub unsafe extern "C" fn luaD_precall(
                 (*L).top.wrapping_offset_from(func) as lua_long as lua_int - 1i32;
             /* frame size */
             let mut fsize: lua_int = (*p).maxstacksize as lua_int;
-            if (*L).stack_last.wrapping_offset_from((*L).top) as lua_long
-                <= fsize as lua_long
-            {
+            if (*L).stack_last.wrapping_offset_from((*L).top) as lua_long <= fsize as lua_long {
                 let mut t___0: ptrdiff_t = (func as *mut lua_char)
                     .wrapping_offset_from((*L).stack as *mut lua_char)
                     as lua_long;
@@ -1682,9 +1654,7 @@ pub unsafe extern "C" fn luaD_precall(
         }
         _ => {
             /* not a function */
-            if (*L).stack_last.wrapping_offset_from((*L).top) as lua_long
-                <= 1i32 as lua_long
-            {
+            if (*L).stack_last.wrapping_offset_from((*L).top) as lua_long <= 1i32 as lua_long {
                 /* ensure space for metamethod */
                 let mut t___1: ptrdiff_t = (func as *mut lua_char)
                     .wrapping_offset_from((*L).stack as *mut lua_char)
@@ -1705,9 +1675,8 @@ pub unsafe extern "C" fn luaD_precall(
     let mut n: lua_int = 0;
     if (*L).stack_last.wrapping_offset_from((*L).top) as lua_long <= 20i32 as lua_long {
         /* ensure minimum stack size */
-        let mut t__: ptrdiff_t = (func as *mut lua_char)
-            .wrapping_offset_from((*L).stack as *mut lua_char)
-            as lua_long;
+        let mut t__: ptrdiff_t =
+            (func as *mut lua_char).wrapping_offset_from((*L).stack as *mut lua_char) as lua_long;
         if (*(*L).l_G).GCdebt > 0i32 as lua_long {
             luaC_step(L);
         }
@@ -1884,8 +1853,7 @@ pub unsafe extern "C" fn luaD_protectedparser(
         L,
         Some(f_parser),
         &mut p as *mut SParser as *mut lua_void,
-        ((*L).top as *mut lua_char).wrapping_offset_from((*L).stack as *mut lua_char)
-            as lua_long,
+        ((*L).top as *mut lua_char).wrapping_offset_from((*L).stack as *mut lua_char) as lua_long,
         (*L).errfunc,
     );
     p.buff.buffer = luaM_realloc_(
@@ -1894,8 +1862,7 @@ pub unsafe extern "C" fn luaD_protectedparser(
         p.buff
             .buffsize
             .wrapping_mul(::std::mem::size_of::<lua_char>() as lua_ulong),
-        (0i32 as lua_ulong)
-            .wrapping_mul(::std::mem::size_of::<lua_char>() as lua_ulong),
+        (0i32 as lua_ulong).wrapping_mul(::std::mem::size_of::<lua_char>() as lua_ulong),
     ) as *mut lua_char;
     p.buff.buffsize = 0i32 as size_t;
     luaM_realloc_(
@@ -1908,8 +1875,7 @@ pub unsafe extern "C" fn luaD_protectedparser(
     luaM_realloc_(
         L,
         p.dyd.gt.arr as *mut lua_void,
-        (p.dyd.gt.size as lua_ulong)
-            .wrapping_mul(::std::mem::size_of::<Labeldesc>() as lua_ulong),
+        (p.dyd.gt.size as lua_ulong).wrapping_mul(::std::mem::size_of::<Labeldesc>() as lua_ulong),
         0i32 as size_t,
     );
     luaM_realloc_(
@@ -1935,8 +1901,7 @@ unsafe extern "C" fn f_parser(mut L: *mut lua_State, mut ud: *mut lua_void) -> (
     } else {
         luaZ_fill((*p).z)
     };
-    if c == (*::std::mem::transmute::<&[u8; 5], &[lua_char; 5]>(b"\x1bLua\x00"))[0usize]
-        as lua_int
+    if c == (*::std::mem::transmute::<&[u8; 5], &[lua_char; 5]>(b"\x1bLua\x00"))[0usize] as lua_int
     {
         checkmode(L, (*p).mode, s!(b"binary\x00"));
         cl = luaU_undump(L, (*p).z, (*p).name)

@@ -1,4 +1,5 @@
 use types::*;
+
 extern "C" {
     /*
      ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
@@ -154,10 +155,7 @@ extern "C" {
     #[no_mangle]
     fn luaH_set(L: *mut lua_State, t: *mut Table, key: *const TValue) -> *mut TValue;
 }
-pub type size_t = lua_ulong;
-pub type ptrdiff_t = lua_long;
-pub type __sig_atomic_t = lua_int;
-pub type intptr_t = lua_long;
+
 /*
 ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
 ** Lua - A Scripting Language
@@ -570,15 +568,13 @@ pub type l_mem = ptrdiff_t;
 ** Type for memory-allocation functions
 */
 pub type lua_Alloc = Option<
-    unsafe extern "C" fn(_: *mut lua_void, _: *mut lua_void, _: size_t, _: size_t)
-        -> *mut lua_void,
+    unsafe extern "C" fn(_: *mut lua_void, _: *mut lua_void, _: size_t, _: size_t) -> *mut lua_void,
 >;
 /*
 ** Type for functions that read/write blocks when loading/dumping Lua chunks
 */
 pub type lua_Reader = Option<
-    unsafe extern "C" fn(_: *mut lua_State, _: *mut lua_void, _: *mut size_t)
-        -> *const lua_char,
+    unsafe extern "C" fn(_: *mut lua_State, _: *mut lua_void, _: *mut size_t) -> *const lua_char,
 >;
 /*
 ** Get the actual string (array of bytes) from a 'TString'.
@@ -965,8 +961,7 @@ pub unsafe extern "C" fn luaX_setinput(
         (*(*ls).buff)
             .buffsize
             .wrapping_mul(::std::mem::size_of::<lua_char>() as lua_ulong),
-        (32i32 as lua_ulong)
-            .wrapping_mul(::std::mem::size_of::<lua_char>() as lua_ulong),
+        (32i32 as lua_ulong).wrapping_mul(::std::mem::size_of::<lua_char>() as lua_ulong),
     ) as *mut lua_char;
     (*(*ls).buff).buffsize = 32i32 as size_t;
 }
@@ -1274,9 +1269,7 @@ unsafe extern "C" fn llex(mut ls: *mut LexState, mut seminfo: *mut SemInfo) -> l
                     ts = luaX_newstring(ls, (*(*ls).buff).buffer, (*(*ls).buff).n);
                     (*seminfo).ts = ts;
                     /* reserved word? */
-                    if (*ts).tt as lua_int == 4i32 | 0i32 << 4i32
-                        && (*ts).extra as lua_int > 0i32
-                    {
+                    if (*ts).tt as lua_int == 4i32 | 0i32 << 4i32 && (*ts).extra as lua_int > 0i32 {
                         return (*ts).extra as lua_int - 1i32 + 257i32;
                     } else {
                         return TK_NAME as lua_int;
@@ -1303,14 +1296,15 @@ unsafe extern "C" fn save(mut ls: *mut LexState, mut c: lua_int) -> () {
     let mut b: *mut Mbuffer = (*ls).buff;
     if (*b).n.wrapping_add(1i32 as lua_ulong) > (*b).buffsize {
         let mut newsize: size_t = 0;
-        if (*b).buffsize >= if (::std::mem::size_of::<size_t>() as lua_ulong)
-            < ::std::mem::size_of::<lua_Integer>() as lua_ulong
-        {
-            !(0i32 as size_t)
-        } else {
-            9223372036854775807i64 as size_t
-        }
-        .wrapping_div(2i32 as lua_ulong)
+        if (*b).buffsize
+            >= if (::std::mem::size_of::<size_t>() as lua_ulong)
+                < ::std::mem::size_of::<lua_Integer>() as lua_ulong
+            {
+                !(0i32 as size_t)
+            } else {
+                9223372036854775807i64 as size_t
+            }
+            .wrapping_div(2i32 as lua_ulong)
         {
             lexerror(ls, s!(b"lexical element too long\x00"), 0i32);
         } else {
@@ -1340,10 +1334,7 @@ unsafe extern "C" fn lexerror(
     }
     luaD_throw((*ls).L, 3i32);
 }
-unsafe extern "C" fn txtToken(
-    mut ls: *mut LexState,
-    mut token: lua_int,
-) -> *const lua_char {
+unsafe extern "C" fn txtToken(mut ls: *mut LexState, mut token: lua_int) -> *const lua_char {
     match token {
         292 | 293 | 290 | 291 => {
             save(ls, '\u{0}' as i32);
@@ -1447,10 +1438,7 @@ unsafe extern "C" fn read_numeral(mut ls: *mut LexState, mut seminfo: *mut SemIn
 ** Check whether current char is in set 'set' (with two chars) and
 ** saves it
 */
-unsafe extern "C" fn check_next2(
-    mut ls: *mut LexState,
-    mut set: *const lua_char,
-) -> lua_int {
+unsafe extern "C" fn check_next2(mut ls: *mut LexState, mut set: *const lua_char) -> lua_int {
     if (*ls).current == *set.offset(0isize) as lua_int
         || (*ls).current == *set.offset(1isize) as lua_int
     {
@@ -1621,8 +1609,7 @@ unsafe extern "C" fn read_string(
                     _ => {
                         esccheck(
                             ls,
-                            luai_ctype_[((*ls).current + 1i32) as usize] as lua_int
-                                & 1i32 << 1i32,
+                            luai_ctype_[((*ls).current + 1i32) as usize] as lua_int & 1i32 << 1i32,
                             s!(b"invalid escape sequence\x00"),
                         );
                         /* digital escape '\ddd' */
@@ -1646,9 +1633,8 @@ unsafe extern "C" fn read_string(
                 }
                 /* go through */
                 /* remove '\\' */
-                (*(*ls).buff).n = ((*(*ls).buff).n as lua_ulong)
-                    .wrapping_sub(1i32 as lua_ulong) as size_t
-                    as size_t;
+                (*(*ls).buff).n = ((*(*ls).buff).n as lua_ulong).wrapping_sub(1i32 as lua_ulong)
+                    as size_t as size_t;
                 save(ls, c);
             }
             _ => {
@@ -1688,9 +1674,7 @@ unsafe extern "C" fn readdecesc(mut ls: *mut LexState) -> lua_int {
     /* result accumulator */
     let mut r: lua_int = 0i32;
     i = 0i32;
-    while i < 3i32
-        && 0 != luai_ctype_[((*ls).current + 1i32) as usize] as lua_int & 1i32 << 1i32
-    {
+    while i < 3i32 && 0 != luai_ctype_[((*ls).current + 1i32) as usize] as lua_int & 1i32 << 1i32 {
         /* read up to 3 digits */
         r = 10i32 * r + (*ls).current - '0' as i32;
         save(ls, (*ls).current);
@@ -2018,9 +2002,6 @@ pub unsafe extern "C" fn luaX_lookahead(mut ls: *mut LexState) -> lua_int {
     return (*ls).lookahead.token;
 }
 #[no_mangle]
-pub unsafe extern "C" fn luaX_syntaxerror(
-    mut ls: *mut LexState,
-    mut msg: *const lua_char,
-) -> ! {
+pub unsafe extern "C" fn luaX_syntaxerror(mut ls: *mut LexState, mut msg: *const lua_char) -> ! {
     lexerror(ls, msg, (*ls).t.token);
 }

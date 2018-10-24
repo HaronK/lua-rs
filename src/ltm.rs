@@ -1,4 +1,5 @@
 use types::*;
+
 extern "C" {
     /*
      ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
@@ -121,10 +122,7 @@ extern "C" {
     #[no_mangle]
     fn luaG_concaterror(L: *mut lua_State, p1: *const TValue, p2: *const TValue) -> !;
 }
-pub type size_t = lua_ulong;
-pub type ptrdiff_t = lua_long;
-pub type __sig_atomic_t = lua_int;
-pub type intptr_t = lua_long;
+
 /*
 ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
 ** Lua - A Scripting Language
@@ -537,8 +535,7 @@ pub type l_mem = ptrdiff_t;
 ** Type for memory-allocation functions
 */
 pub type lua_Alloc = Option<
-    unsafe extern "C" fn(_: *mut lua_void, _: *mut lua_void, _: size_t, _: size_t)
-        -> *mut lua_void,
+    unsafe extern "C" fn(_: *mut lua_void, _: *mut lua_void, _: size_t, _: size_t) -> *mut lua_void,
 >;
 /* maximum value for size_t */
 /* maximum size visible for Lua (must be representable in a lua_Integer */
@@ -860,9 +857,8 @@ pub unsafe extern "C" fn luaT_callTM(
     mut hasres: lua_int,
 ) -> () {
     let mut io1_2: *mut TValue = 0 as *mut TValue;
-    let mut result: ptrdiff_t = (p3 as *mut lua_char)
-        .wrapping_offset_from((*L).stack as *mut lua_char)
-        as lua_long;
+    let mut result: ptrdiff_t =
+        (p3 as *mut lua_char).wrapping_offset_from((*L).stack as *mut lua_char) as lua_long;
     let mut func: StkId = (*L).top;
     /* push function (assume EXTRA_STACK) */
     let mut io1: *mut TValue = func;
@@ -937,12 +933,13 @@ pub unsafe extern "C" fn luaT_trybinTM(
                     1i32
                 } else {
                     luaV_tonumber_(p1, &mut dummy)
-                } && 0 != if (*p2).tt_ == 3i32 | 0i32 << 4i32 {
-                    dummy = (*p2).value_.n;
-                    1i32
-                } else {
-                    luaV_tonumber_(p2, &mut dummy)
-                } {
+                } && 0
+                    != if (*p2).tt_ == 3i32 | 0i32 << 4i32 {
+                        dummy = (*p2).value_.n;
+                        1i32
+                    } else {
+                        luaV_tonumber_(p2, &mut dummy)
+                    } {
                     luaG_tointerror(L, p1, p2);
                 } else {
                     luaG_opinterror(L, p1, p2, s!(b"perform bitwise operation on\x00"));

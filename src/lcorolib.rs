@@ -1,5 +1,6 @@
-use types::*;
 use lua::*;
+use types::*;
+
 extern "C" {
     /*
      ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
@@ -74,11 +75,7 @@ extern "C" {
     #[no_mangle]
     fn luaL_checkversion_(L: *mut lua_State, ver: lua_Number, sz: size_t) -> ();
     #[no_mangle]
-    fn luaL_argerror(
-        L: *mut lua_State,
-        arg: lua_int,
-        extramsg: *const lua_char,
-    ) -> lua_int;
+    fn luaL_argerror(L: *mut lua_State, arg: lua_int, extramsg: *const lua_char) -> lua_int;
     #[no_mangle]
     fn luaL_checktype(L: *mut lua_State, arg: lua_int, t: lua_int) -> ();
     #[no_mangle]
@@ -86,8 +83,7 @@ extern "C" {
     #[no_mangle]
     fn luaL_setfuncs(L: *mut lua_State, l: *const luaL_Reg, nup: lua_int) -> ();
 }
-pub type size_t = lua_ulong;
-pub type intptr_t = lua_long;
+
 /*
 ** basic types
 */

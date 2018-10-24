@@ -1,4 +1,5 @@
 use types::*;
+
 extern "C" {
     /*
      ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
@@ -109,10 +110,7 @@ extern "C" {
     #[no_mangle]
     fn luaV_tointeger(obj: *const TValue, p: *mut lua_Integer, mode: lua_int) -> lua_int;
 }
-pub type __sig_atomic_t = lua_int;
-pub type size_t = lua_ulong;
-pub type ptrdiff_t = lua_long;
-pub type intptr_t = lua_long;
+
 /*
 ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
 ** Lua - A Scripting Language
@@ -525,15 +523,13 @@ pub type l_mem = ptrdiff_t;
 ** Type for memory-allocation functions
 */
 pub type lua_Alloc = Option<
-    unsafe extern "C" fn(_: *mut lua_void, _: *mut lua_void, _: size_t, _: size_t)
-        -> *mut lua_void,
+    unsafe extern "C" fn(_: *mut lua_void, _: *mut lua_void, _: size_t, _: size_t) -> *mut lua_void,
 >;
 /*
 ** Type for functions that read/write blocks when loading/dumping Lua chunks
 */
 pub type lua_Reader = Option<
-    unsafe extern "C" fn(_: *mut lua_State, _: *mut lua_void, _: *mut size_t)
-        -> *const lua_char,
+    unsafe extern "C" fn(_: *mut lua_State, _: *mut lua_void, _: *mut size_t) -> *const lua_char,
 >;
 /*
 ** Get the actual string (array of bytes) from a 'TString'.
@@ -1121,19 +1117,14 @@ unsafe extern "C" fn getjump(mut fs: *mut FuncState, mut pc: lua_int) -> lua_int
 ** Fix jump instruction at position 'pc' to jump to 'dest'.
 ** (Jump addresses are relative in Lua)
 */
-unsafe extern "C" fn fixjump(
-    mut fs: *mut FuncState,
-    mut pc: lua_int,
-    mut dest: lua_int,
-) -> () {
+unsafe extern "C" fn fixjump(mut fs: *mut FuncState, mut pc: lua_int, mut dest: lua_int) -> () {
     let mut jmp: *mut Instruction = &mut *(*(*fs).f).code.offset(pc as isize) as *mut Instruction;
     let mut offset: lua_int = dest - (pc + 1i32);
     if abs(offset) > (1i32 << 9i32 + 9i32) - 1i32 >> 1i32 {
         luaX_syntaxerror((*fs).ls, s!(b"control structure too long\x00"));
     } else {
         *jmp = *jmp & !(!((!(0i32 as Instruction)) << 9i32 + 9i32) << 0i32 + 6i32 + 8i32)
-            | ((offset + ((1i32 << 9i32 + 9i32) - 1i32 >> 1i32)) as lua_uint)
-                << 0i32 + 6i32 + 8i32
+            | ((offset + ((1i32 << 9i32 + 9i32) - 1i32 >> 1i32)) as lua_uint) << 0i32 + 6i32 + 8i32
                 & !((!(0i32 as Instruction)) << 9i32 + 9i32) << 0i32 + 6i32 + 8i32;
         return;
     };
@@ -1183,10 +1174,7 @@ unsafe extern "C" fn patchtestreg(
 ** jump (that is, its condition), or the jump itself if it is
 ** unconditional.
 */
-unsafe extern "C" fn getjumpcontrol(
-    mut fs: *mut FuncState,
-    mut pc: lua_int,
-) -> *mut Instruction {
+unsafe extern "C" fn getjumpcontrol(mut fs: *mut FuncState, mut pc: lua_int) -> *mut Instruction {
     let mut pi: *mut Instruction = &mut *(*(*fs).f).code.offset(pc as isize) as *mut Instruction;
     if pc >= 1i32
         && 0 != luaP_opmodes[(*pi.offset(-1isize) >> 0i32
@@ -1243,26 +1231,20 @@ pub unsafe extern "C" fn luaK_fixline(mut fs: *mut FuncState, mut line: lua_int)
     *(*(*fs).f).lineinfo.offset(((*fs).pc - 1i32) as isize) = line;
 }
 #[no_mangle]
-pub unsafe extern "C" fn luaK_nil(
-    mut fs: *mut FuncState,
-    mut from: lua_int,
-    mut n: lua_int,
-) -> () {
+pub unsafe extern "C" fn luaK_nil(mut fs: *mut FuncState, mut from: lua_int, mut n: lua_int) -> () {
     let mut previous: *mut Instruction = 0 as *mut Instruction;
     /* last register to set nil */
     let mut l: lua_int = from + n - 1i32;
     if (*fs).pc > (*fs).lasttarget {
         /* no jumps to current position? */
         previous = &mut *(*(*fs).f).code.offset(((*fs).pc - 1i32) as isize) as *mut Instruction;
-        if (*previous >> 0i32 & !((!(0i32 as Instruction)) << 6i32) << 0i32) as OpCode
-            as lua_uint
+        if (*previous >> 0i32 & !((!(0i32 as Instruction)) << 6i32) << 0i32) as OpCode as lua_uint
             == OP_LOADNIL as lua_int as lua_uint
         {
             /* previous is LOADNIL? */
             /* get previous range */
-            let mut pfrom: lua_int = (*previous >> 0i32 + 6i32
-                & !((!(0i32 as Instruction)) << 8i32) << 0i32)
-                as lua_int;
+            let mut pfrom: lua_int =
+                (*previous >> 0i32 + 6i32 & !((!(0i32 as Instruction)) << 8i32) << 0i32) as lua_int;
             let mut pl: lua_int = pfrom
                 + (*previous >> 0i32 + 6i32 + 8i32 + 9i32
                     & !((!(0i32 as Instruction)) << 9i32) << 0i32) as lua_int;
@@ -1480,10 +1462,7 @@ unsafe extern "C" fn freereg(mut fs: *mut FuncState, mut reg: lua_int) -> () {
     };
 }
 #[no_mangle]
-pub unsafe extern "C" fn luaK_exp2anyreg(
-    mut fs: *mut FuncState,
-    mut e: *mut expdesc,
-) -> lua_int {
+pub unsafe extern "C" fn luaK_exp2anyreg(mut fs: *mut FuncState, mut e: *mut expdesc) -> lua_int {
     luaK_dischargevars(fs, e);
     if (*e).k as lua_uint == VNONRELOC as lua_int as lua_uint {
         /* expression already has a register? */
@@ -1516,11 +1495,7 @@ pub unsafe extern "C" fn luaK_exp2nextreg(mut fs: *mut FuncState, mut e: *mut ex
 ** its final position or to "load" instructions (for those tests
 ** that do not produce values).
 */
-unsafe extern "C" fn exp2reg(
-    mut fs: *mut FuncState,
-    mut e: *mut expdesc,
-    mut reg: lua_int,
-) -> () {
+unsafe extern "C" fn exp2reg(mut fs: *mut FuncState, mut e: *mut expdesc, mut reg: lua_int) -> () {
     let mut fj: lua_int = 0;
     discharge2reg(fs, e, reg);
     /* expression itself is a test? */
@@ -2261,26 +2236,24 @@ unsafe extern "C" fn constfolding(
 ** Bitwise operations need operands convertible to integers; division
 ** operations cannot have 0 as divisor.
 */
-unsafe extern "C" fn validop(
-    mut op: lua_int,
-    mut v1: *mut TValue,
-    mut v2: *mut TValue,
-) -> lua_int {
+unsafe extern "C" fn validop(mut op: lua_int, mut v1: *mut TValue, mut v2: *mut TValue) -> lua_int {
     match op {
         7 | 8 | 9 | 10 | 11 | 13 => {
             /* conversion errors */
             let mut i: lua_Integer = 0;
-            return (0 != if (*v1).tt_ == 3i32 | 1i32 << 4i32 {
-                i = (*v1).value_.i;
-                1i32
-            } else {
-                luaV_tointeger(v1, &mut i, 0i32)
-            } && 0 != if (*v2).tt_ == 3i32 | 1i32 << 4i32 {
-                i = (*v2).value_.i;
-                1i32
-            } else {
-                luaV_tointeger(v2, &mut i, 0i32)
-            }) as lua_int;
+            return (0
+                != if (*v1).tt_ == 3i32 | 1i32 << 4i32 {
+                    i = (*v1).value_.i;
+                    1i32
+                } else {
+                    luaV_tointeger(v1, &mut i, 0i32)
+                }
+                && 0 != if (*v2).tt_ == 3i32 | 1i32 << 4i32 {
+                    i = (*v2).value_.i;
+                    1i32
+                } else {
+                    luaV_tointeger(v2, &mut i, 0i32)
+                }) as lua_int;
         }
         5 | 6 => {}
         3 => {}
@@ -2416,8 +2389,7 @@ pub unsafe extern "C" fn luaK_posfix(
             ) {
                 codebinexpval(
                     fs,
-                    (op as lua_uint).wrapping_add(OP_ADD as lua_int as lua_uint)
-                        as OpCode,
+                    (op as lua_uint).wrapping_add(OP_ADD as lua_int as lua_uint) as OpCode,
                     e1,
                     e2,
                     line,
@@ -2481,14 +2453,12 @@ unsafe extern "C" fn freeexps(
     mut e1: *mut expdesc,
     mut e2: *mut expdesc,
 ) -> () {
-    let mut r1: lua_int = if (*e1).k as lua_uint == VNONRELOC as lua_int as lua_uint
-    {
+    let mut r1: lua_int = if (*e1).k as lua_uint == VNONRELOC as lua_int as lua_uint {
         (*e1).u.info
     } else {
         -1i32
     };
-    let mut r2: lua_int = if (*e2).k as lua_uint == VNONRELOC as lua_int as lua_uint
-    {
+    let mut r2: lua_int = if (*e2).k as lua_uint == VNONRELOC as lua_int as lua_uint {
         (*e2).u.info
     } else {
         -1i32

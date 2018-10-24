@@ -1,4 +1,5 @@
 use types::*;
+
 extern "C" {
     /*
      ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
@@ -26,11 +27,7 @@ extern "C" {
     #[no_mangle]
     fn luaL_checkversion_(L: *mut lua_State, ver: lua_Number, sz: size_t) -> ();
     #[no_mangle]
-    fn luaL_argerror(
-        L: *mut lua_State,
-        arg: lua_int,
-        extramsg: *const lua_char,
-    ) -> lua_int;
+    fn luaL_argerror(L: *mut lua_State, arg: lua_int, extramsg: *const lua_char) -> lua_int;
     #[no_mangle]
     fn luaL_checkinteger(L: *mut lua_State, arg: lua_int) -> lua_Integer;
     #[no_mangle]
@@ -38,7 +35,7 @@ extern "C" {
     #[no_mangle]
     fn luaL_setfuncs(L: *mut lua_State, l: *const luaL_Reg, nup: lua_int) -> ();
 }
-pub type size_t = lua_ulong;
+
 /*
 ** basic types
 */
@@ -181,11 +178,10 @@ unsafe extern "C" fn fieldargs(
 ) -> lua_int {
     let mut f: lua_Integer = luaL_checkinteger(L, farg);
     let mut w: lua_Integer = luaL_optinteger(L, farg + 1i32, 1i32 as lua_Integer);
-    (0i32 as lua_longlong <= f
-        || 0 != luaL_argerror(L, farg, s!(b"field cannot be negative\x00"))) as lua_int;
-    ((0i32 as lua_longlong) < w
-        || 0 != luaL_argerror(L, farg + 1i32, s!(b"width must be positive\x00")))
+    (0i32 as lua_longlong <= f || 0 != luaL_argerror(L, farg, s!(b"field cannot be negative\x00")))
         as lua_int;
+    ((0i32 as lua_longlong) < w
+        || 0 != luaL_argerror(L, farg + 1i32, s!(b"width must be positive\x00"))) as lua_int;
     if f + w > 32i32 as lua_longlong {
         luaL_error!(L, s!(b"trying to access non-existent bits\x00"));
     }
@@ -294,9 +290,10 @@ unsafe extern "C" fn b_arshift(mut L: *mut lua_State) -> lua_int {
         if i >= 32i32 as lua_longlong {
             r = !((!(0i32 as lua_Unsigned)) << 32i32 - 1i32 << 1i32)
         } else {
-            r = (r >> i | !((!(0i32 as lua_Unsigned)
-                & !((!(0i32 as lua_Unsigned)) << 32i32 - 1i32 << 1i32))
-                >> i))
+            r = (r >> i
+                | !((!(0i32 as lua_Unsigned)
+                    & !((!(0i32 as lua_Unsigned)) << 32i32 - 1i32 << 1i32))
+                    >> i))
                 & !((!(0i32 as lua_Unsigned)) << 32i32 - 1i32 << 1i32)
         }
         lua_pushinteger(L, r as lua_Integer);

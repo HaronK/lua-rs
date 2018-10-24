@@ -1,4 +1,5 @@
 use types::*;
+
 extern "C" {
     /*
      ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
@@ -46,10 +47,7 @@ extern "C" {
     #[no_mangle]
     fn memcpy(_: *mut lua_void, _: *const lua_void, _: lua_ulong) -> *mut lua_void;
 }
-pub type size_t = lua_ulong;
-pub type ptrdiff_t = lua_long;
-pub type __sig_atomic_t = lua_int;
-pub type intptr_t = lua_long;
+
 /*
 ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
 ** Lua - A Scripting Language
@@ -462,15 +460,13 @@ pub type l_mem = ptrdiff_t;
 ** Type for memory-allocation functions
 */
 pub type lua_Alloc = Option<
-    unsafe extern "C" fn(_: *mut lua_void, _: *mut lua_void, _: size_t, _: size_t)
-        -> *mut lua_void,
+    unsafe extern "C" fn(_: *mut lua_void, _: *mut lua_void, _: size_t, _: size_t) -> *mut lua_void,
 >;
 /*
 ** Type for functions that read/write blocks when loading/dumping Lua chunks
 */
 pub type lua_Reader = Option<
-    unsafe extern "C" fn(_: *mut lua_State, _: *mut lua_void, _: *mut size_t)
-        -> *const lua_char,
+    unsafe extern "C" fn(_: *mut lua_State, _: *mut lua_void, _: *mut size_t) -> *const lua_char,
 >;
 /*
 ** $Id: lzio.h,v 1.31.1.1 2017/04/19 17:20:42 roberto Exp $
@@ -503,11 +499,7 @@ pub unsafe extern "C" fn luaZ_init(
 }
 /* read next n bytes */
 #[no_mangle]
-pub unsafe extern "C" fn luaZ_read(
-    mut z: *mut ZIO,
-    mut b: *mut lua_void,
-    mut n: size_t,
-) -> size_t {
+pub unsafe extern "C" fn luaZ_read(mut z: *mut ZIO, mut b: *mut lua_void, mut n: size_t) -> size_t {
     while 0 != n {
         let mut m: size_t = 0;
         if (*z).n == 0i32 as lua_ulong {

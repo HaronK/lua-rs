@@ -1,9 +1,8 @@
-use types::*;
 use lua::*;
+use stdc::prelude::*;
+use types::*;
+
 extern "C" {
-    pub type _IO_wide_data;
-    pub type _IO_codecvt;
-    pub type _IO_marker;
     /*
      ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
      ** Lua - A Scripting Language
@@ -19,8 +18,6 @@ extern "C" {
      */
     /* thread status */
     pub type lua_State;
-    #[no_mangle]
-    fn __ctype_b_loc() -> *mut *const lua_ushort;
     #[no_mangle]
     fn __ctype_toupper_loc() -> *mut *const __int32_t;
     #[no_mangle]
@@ -134,26 +131,13 @@ extern "C" {
     #[no_mangle]
     fn lua_stringtonumber(L: *mut lua_State, s: *const lua_char) -> size_t;
     #[no_mangle]
-    fn lua_setupvalue(
-        L: *mut lua_State,
-        funcindex: lua_int,
-        n: lua_int,
-    ) -> *const lua_char;
+    fn lua_setupvalue(L: *mut lua_State, funcindex: lua_int, n: lua_int) -> *const lua_char;
     #[no_mangle]
-    fn luaL_getmetafield(
-        L: *mut lua_State,
-        obj: lua_int,
-        e: *const lua_char,
-    ) -> lua_int;
+    fn luaL_getmetafield(L: *mut lua_State, obj: lua_int, e: *const lua_char) -> lua_int;
     #[no_mangle]
-    fn luaL_tolstring(L: *mut lua_State, idx: lua_int, len: *mut size_t)
-        -> *const lua_char;
+    fn luaL_tolstring(L: *mut lua_State, idx: lua_int, len: *mut size_t) -> *const lua_char;
     #[no_mangle]
-    fn luaL_argerror(
-        L: *mut lua_State,
-        arg: lua_int,
-        extramsg: *const lua_char,
-    ) -> lua_int;
+    fn luaL_argerror(L: *mut lua_State, arg: lua_int, extramsg: *const lua_char) -> lua_int;
     #[no_mangle]
     fn luaL_optlstring(
         L: *mut lua_State,
@@ -198,8 +182,6 @@ extern "C" {
     fn luaL_setfuncs(L: *mut lua_State, l: *const luaL_Reg, nup: lua_int) -> ();
 }
 pub type __int32_t = lua_int;
-pub type __off_t = lua_long;
-pub type __off64_t = lua_long;
 pub type unnamed = lua_uint;
 pub const _ISalnum: unnamed = 8;
 pub const _ISpunct: unnamed = 4;
@@ -213,43 +195,7 @@ pub const _ISdigit: unnamed = 2048;
 pub const _ISalpha: unnamed = 1024;
 pub const _ISlower: unnamed = 512;
 pub const _ISupper: unnamed = 256;
-pub type size_t = lua_ulong;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct _IO_FILE {
-    pub _flags: lua_int,
-    pub _IO_read_ptr: *mut lua_char,
-    pub _IO_read_end: *mut lua_char,
-    pub _IO_read_base: *mut lua_char,
-    pub _IO_write_base: *mut lua_char,
-    pub _IO_write_ptr: *mut lua_char,
-    pub _IO_write_end: *mut lua_char,
-    pub _IO_buf_base: *mut lua_char,
-    pub _IO_buf_end: *mut lua_char,
-    pub _IO_save_base: *mut lua_char,
-    pub _IO_backup_base: *mut lua_char,
-    pub _IO_save_end: *mut lua_char,
-    pub _markers: *mut _IO_marker,
-    pub _chain: *mut _IO_FILE,
-    pub _fileno: lua_int,
-    pub _flags2: lua_int,
-    pub _old_offset: __off_t,
-    pub _cur_column: lua_ushort,
-    pub _vtable_offset: lua_schar,
-    pub _shortbuf: [lua_char; 1],
-    pub _lock: *mut lua_void,
-    pub _offset: __off64_t,
-    pub _codecvt: *mut _IO_codecvt,
-    pub _wide_data: *mut _IO_wide_data,
-    pub _freeres_list: *mut _IO_FILE,
-    pub _freeres_buf: *mut lua_void,
-    pub __pad5: size_t,
-    pub _mode: lua_int,
-    pub _unused2: [lua_char; 20],
-}
-pub type _IO_lock_t = ();
-pub type FILE = _IO_FILE;
-pub type intptr_t = lua_long;
+
 /*
 ** basic types
 */
@@ -276,8 +222,7 @@ pub type lua_KFunction =
 ** Type for functions that read/write blocks when loading/dumping Lua chunks
 */
 pub type lua_Reader = Option<
-    unsafe extern "C" fn(_: *mut lua_State, _: *mut lua_void, _: *mut size_t)
-        -> *const lua_char,
+    unsafe extern "C" fn(_: *mut lua_State, _: *mut lua_void, _: *mut size_t) -> *const lua_char,
 >;
 /*
 ** $Id: lauxlib.h,v 1.131.1.1 2017/04/19 17:20:42 roberto Exp $
@@ -293,13 +238,7 @@ pub struct luaL_Reg {
     pub name: *const lua_char,
     pub func: lua_CFunction,
 }
-unsafe extern "C" fn toupper(mut __c: lua_int) -> lua_int {
-    return if __c >= -128i32 && __c < 256i32 {
-        *(*__ctype_toupper_loc()).offset(__c as isize)
-    } else {
-        __c
-    };
-}
+
 /*
 ** $Id: lualib.h,v 1.45.1.1 2017/04/19 17:20:42 roberto Exp $
 ** Lua standard libraries
@@ -464,38 +403,29 @@ unsafe extern "C" fn b_str2int(
         s = s.offset(1isize)
     }
     /* no digit? */
-    if 0 == *(*__ctype_b_loc()).offset(*s as lua_uchar as lua_int as isize) as lua_int
-        & _ISalnum as lua_int as lua_ushort as lua_int
-    {
+    if 0 == isalnum(*s as lua_uchar as lua_int) {
         return 0 as *const lua_char;
     } else {
         loop {
-            let mut digit: lua_int = if 0
-                != *(*__ctype_b_loc()).offset(*s as lua_uchar as lua_int as isize)
-                    as lua_int
-                    & _ISdigit as lua_int as lua_ushort as lua_int
-            {
+            let mut digit: lua_int = if 0 != isdigit(*s as lua_uchar as lua_int) {
                 *s as lua_int - ('0' as i32)
             } else {
                 {
                     let mut __c: lua_int = 0;
                     let mut __res: lua_int = 0;
-                    if ::std::mem::size_of::<lua_uchar>() as lua_ulong
-                        > 1i32 as lua_ulong
-                    {
+                    if ::std::mem::size_of::<lua_uchar>() as lua_ulong > 1i32 as lua_ulong {
                         if 0 != 0 {
                             __c = *s as lua_uchar as lua_int;
                             __res = if __c < -128i32 || __c > 255i32 {
                                 __c
                             } else {
-                                *(*__ctype_toupper_loc()).offset(__c as isize)
+                                toupper(__c)
                             }
                         } else {
                             __res = toupper(*s as lua_uchar as lua_int)
                         }
                     } else {
-                        __res = *(*__ctype_toupper_loc())
-                            .offset(*s as lua_uchar as lua_int as isize)
+                        __res = *s as lua_uchar as lua_int
                     }
                     //__res // TODO: What is this?
                 }
@@ -509,11 +439,7 @@ unsafe extern "C" fn b_str2int(
                     .wrapping_mul(base as lua_ulonglong)
                     .wrapping_add(digit as lua_ulonglong);
                 s = s.offset(1isize);
-                if !(0
-                    != *(*__ctype_b_loc()).offset(*s as lua_uchar as lua_int as isize)
-                        as lua_int
-                        & _ISalnum as lua_int as lua_ushort as lua_int)
-                {
+                if !(0 != isalnum(*s as lua_uchar as lua_int)) {
                     break;
                 }
             }
@@ -555,8 +481,8 @@ unsafe extern "C" fn luaB_select(mut L: *mut lua_State) -> lua_int {
         } else if i > n as lua_longlong {
             i = n as lua_Integer
         }
-        (1i32 as lua_longlong <= i
-            || 0 != luaL_argerror(L, 1i32, s!(b"index out of range\x00"))) as lua_int;
+        (1i32 as lua_longlong <= i || 0 != luaL_argerror(L, 1i32, s!(b"index out of range\x00")))
+            as lua_int;
         return n - i as lua_int;
     };
 }
@@ -889,8 +815,7 @@ unsafe extern "C" fn luaB_collectgarbage(mut L: *mut lua_State) -> lua_int {
             0 as *const lua_char,
         ]
     };
-    static mut optsnum: [lua_int; 8] =
-        unsafe { [0i32, 1i32, 2i32, 3i32, 5i32, 6i32, 7i32, 9i32] };
+    static mut optsnum: [lua_int; 8] = unsafe { [0i32, 1i32, 2i32, 3i32, 5i32, 6i32, 7i32, 9i32] };
     let mut o: lua_int =
         optsnum[luaL_checkoption(L, 1i32, s!(b"collect\x00"), opts.as_ptr()) as usize];
     let mut ex: lua_int = luaL_optinteger(L, 2i32, 0i32 as lua_Integer) as lua_int;

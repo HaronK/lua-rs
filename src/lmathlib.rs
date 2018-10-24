@@ -1,4 +1,5 @@
 use types::*;
+
 extern "C" {
     /*
      ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
@@ -74,12 +75,7 @@ extern "C" {
     #[no_mangle]
     fn lua_tointegerx(L: *mut lua_State, idx: lua_int, isnum: *mut lua_int) -> lua_Integer;
     #[no_mangle]
-    fn lua_compare(
-        L: *mut lua_State,
-        idx1: lua_int,
-        idx2: lua_int,
-        op: lua_int,
-    ) -> lua_int;
+    fn lua_compare(L: *mut lua_State, idx1: lua_int, idx2: lua_int, op: lua_int) -> lua_int;
     /*
      ** push functions (C -> stack)
      */
@@ -100,11 +96,7 @@ extern "C" {
     #[no_mangle]
     fn luaL_checkversion_(L: *mut lua_State, ver: lua_Number, sz: size_t) -> ();
     #[no_mangle]
-    fn luaL_argerror(
-        L: *mut lua_State,
-        arg: lua_int,
-        extramsg: *const lua_char,
-    ) -> lua_int;
+    fn luaL_argerror(L: *mut lua_State, arg: lua_int, extramsg: *const lua_char) -> lua_int;
     #[no_mangle]
     fn luaL_checknumber(L: *mut lua_State, arg: lua_int) -> lua_Number;
     #[no_mangle]
@@ -116,7 +108,7 @@ extern "C" {
     #[no_mangle]
     fn luaL_setfuncs(L: *mut lua_State, l: *const luaL_Reg, nup: lua_int) -> ();
 }
-pub type size_t = lua_ulong;
+
 /*
 ** basic types
 */
@@ -437,11 +429,9 @@ unsafe extern "C" fn math_ult(mut L: *mut lua_State) -> lua_int {
 unsafe extern "C" fn math_fmod(mut L: *mut lua_State) -> lua_int {
     if 0 != lua_isinteger(L, 1i32) && 0 != lua_isinteger(L, 2i32) {
         let mut d: lua_Integer = lua_tointegerx(L, 2i32, 0 as *mut lua_int);
-        if (d as lua_Unsigned).wrapping_add(1u32 as lua_ulonglong) <= 1u32 as lua_ulonglong
-        {
+        if (d as lua_Unsigned).wrapping_add(1u32 as lua_ulonglong) <= 1u32 as lua_ulonglong {
             /* special cases: -1 or 0 */
-            (d != 0i32 as lua_longlong || 0 != luaL_argerror(L, 2i32, s!(b"zero\x00")))
-                as lua_int;
+            (d != 0i32 as lua_longlong || 0 != luaL_argerror(L, 2i32, s!(b"zero\x00"))) as lua_int;
             /* avoid overflow with 0x80000... / -1 */
             lua_pushinteger(L, 0i32 as lua_Integer);
         } else {

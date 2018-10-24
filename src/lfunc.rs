@@ -1,4 +1,5 @@
 use types::*;
+
 extern "C" {
     /*
      ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
@@ -52,10 +53,7 @@ extern "C" {
     #[no_mangle]
     fn luaC_upvalbarrier_(L: *mut lua_State, uv: *mut UpVal) -> ();
 }
-pub type ptrdiff_t = lua_long;
-pub type size_t = lua_ulong;
-pub type __sig_atomic_t = lua_int;
-pub type intptr_t = lua_long;
+
 /*
 ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
 ** Lua - A Scripting Language
@@ -491,8 +489,7 @@ pub type l_mem = ptrdiff_t;
 ** Type for memory-allocation functions
 */
 pub type lua_Alloc = Option<
-    unsafe extern "C" fn(_: *mut lua_void, _: *mut lua_void, _: size_t, _: size_t)
-        -> *mut lua_void,
+    unsafe extern "C" fn(_: *mut lua_void, _: *mut lua_void, _: size_t, _: size_t) -> *mut lua_void,
 >;
 /* maximum value for size_t */
 /* maximum size visible for Lua (must be representable in a lua_Integer */
@@ -645,8 +642,7 @@ pub union GCUnion {
 }
 #[no_mangle]
 pub unsafe extern "C" fn luaF_newproto(mut L: *mut lua_State) -> *mut Proto {
-    let mut o: *mut GCObject =
-        luaC_newobj(L, 9i32, ::std::mem::size_of::<Proto>() as lua_ulong);
+    let mut o: *mut GCObject = luaC_newobj(L, 9i32, ::std::mem::size_of::<Proto>() as lua_ulong);
     let mut f: *mut Proto = &mut (*(o as *mut GCUnion)).p;
     (*f).k = 0 as *mut TValue;
     (*f).sizek = 0i32;
@@ -670,26 +666,20 @@ pub unsafe extern "C" fn luaF_newproto(mut L: *mut lua_State) -> *mut Proto {
     return f;
 }
 #[no_mangle]
-pub unsafe extern "C" fn luaF_newCclosure(
-    mut L: *mut lua_State,
-    mut n: lua_int,
-) -> *mut CClosure {
+pub unsafe extern "C" fn luaF_newCclosure(mut L: *mut lua_State, mut n: lua_int) -> *mut CClosure {
     let mut o: *mut GCObject = luaC_newobj(
         L,
         6i32 | 2i32 << 4i32,
         (::std::mem::size_of::<CClosure>() as lua_ulong as lua_int
-            + (::std::mem::size_of::<TValue>() as lua_ulong)
-                .wrapping_mul((n - 1i32) as lua_ulong) as lua_int) as size_t,
+            + (::std::mem::size_of::<TValue>() as lua_ulong).wrapping_mul((n - 1i32) as lua_ulong)
+                as lua_int) as size_t,
     );
     let mut c: *mut CClosure = &mut (*(o as *mut GCUnion)).cl.c;
     (*c).nupvalues = n as lu_byte;
     return c;
 }
 #[no_mangle]
-pub unsafe extern "C" fn luaF_newLclosure(
-    mut L: *mut lua_State,
-    mut n: lua_int,
-) -> *mut LClosure {
+pub unsafe extern "C" fn luaF_newLclosure(mut L: *mut lua_State, mut n: lua_int) -> *mut LClosure {
     let mut o: *mut GCObject = luaC_newobj(
         L,
         6i32 | 0i32 << 4i32,
@@ -812,15 +802,13 @@ pub unsafe extern "C" fn luaF_freeproto(mut L: *mut lua_State, mut f: *mut Proto
     luaM_realloc_(
         L,
         (*f).p as *mut lua_void,
-        ((*f).sizep as lua_ulong)
-            .wrapping_mul(::std::mem::size_of::<*mut Proto>() as lua_ulong),
+        ((*f).sizep as lua_ulong).wrapping_mul(::std::mem::size_of::<*mut Proto>() as lua_ulong),
         0i32 as size_t,
     );
     luaM_realloc_(
         L,
         (*f).k as *mut lua_void,
-        ((*f).sizek as lua_ulong)
-            .wrapping_mul(::std::mem::size_of::<TValue>() as lua_ulong),
+        ((*f).sizek as lua_ulong).wrapping_mul(::std::mem::size_of::<TValue>() as lua_ulong),
         0i32 as size_t,
     );
     luaM_realloc_(
@@ -833,8 +821,7 @@ pub unsafe extern "C" fn luaF_freeproto(mut L: *mut lua_State, mut f: *mut Proto
     luaM_realloc_(
         L,
         (*f).locvars as *mut lua_void,
-        ((*f).sizelocvars as lua_ulong)
-            .wrapping_mul(::std::mem::size_of::<LocVar>() as lua_ulong),
+        ((*f).sizelocvars as lua_ulong).wrapping_mul(::std::mem::size_of::<LocVar>() as lua_ulong),
         0i32 as size_t,
     );
     luaM_realloc_(

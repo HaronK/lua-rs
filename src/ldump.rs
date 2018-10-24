@@ -1,6 +1,7 @@
-use types::*;
 use lobject::*;
 use lua::*;
+use types::*;
+
 extern "C" {
     /*
      ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
@@ -46,10 +47,7 @@ extern "C" {
      */
     pub type UpVal;
 }
-pub type ptrdiff_t = lua_long;
-pub type size_t = lua_ulong;
-pub type __sig_atomic_t = lua_int;
-pub type intptr_t = lua_long;
+
 /*
 ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
 ** Lua - A Scripting Language
@@ -462,16 +460,11 @@ pub type l_mem = ptrdiff_t;
 ** Type for memory-allocation functions
 */
 pub type lua_Alloc = Option<
-    unsafe extern "C" fn(_: *mut lua_void, _: *mut lua_void, _: size_t, _: size_t)
-        -> *mut lua_void,
+    unsafe extern "C" fn(_: *mut lua_void, _: *mut lua_void, _: size_t, _: size_t) -> *mut lua_void,
 >;
 pub type lua_Writer = Option<
-    unsafe extern "C" fn(
-        _: *mut lua_State,
-        _: *const lua_void,
-        _: size_t,
-        _: *mut lua_void,
-    ) -> lua_int,
+    unsafe extern "C" fn(_: *mut lua_State, _: *const lua_void, _: size_t, _: *mut lua_void)
+        -> lua_int,
 >;
 /* maximum value for size_t */
 /* maximum size visible for Lua (must be representable in a lua_Integer */
@@ -730,16 +723,14 @@ unsafe extern "C" fn DumpString(mut s: *const TString, mut D: *mut DumpState) ->
         }
         .wrapping_add(1i32 as lua_ulong);
         let mut str: *const lua_char =
-            (s as *mut lua_char)
-                .offset(::std::mem::size_of::<UTString>() as lua_ulong as isize);
+            (s as *mut lua_char).offset(::std::mem::size_of::<UTString>() as lua_ulong as isize);
         if size < 0xffi32 as lua_ulong {
             DumpByte(size as lua_int, D);
         } else {
             DumpByte(0xffi32, D);
             DumpBlock(
                 &mut size as *mut size_t as *const lua_void,
-                (1i32 as lua_ulong)
-                    .wrapping_mul(::std::mem::size_of::<size_t>() as lua_ulong),
+                (1i32 as lua_ulong).wrapping_mul(::std::mem::size_of::<size_t>() as lua_ulong),
                 D,
             );
         }
@@ -796,10 +787,7 @@ unsafe extern "C" fn DumpUpvalues(mut f: *const Proto, mut D: *mut DumpState) ->
     DumpInt(n, D);
     i = 0i32;
     while i < n {
-        DumpByte(
-            (*(*f).upvalues.offset(i as isize)).instack as lua_int,
-            D,
-        );
+        DumpByte((*(*f).upvalues.offset(i as isize)).instack as lua_int, D);
         DumpByte((*(*f).upvalues.offset(i as isize)).idx as lua_int, D);
         i += 1
     }
@@ -865,8 +853,7 @@ unsafe extern "C" fn DumpHeader(mut D: *mut DumpState) -> () {
         ((*::std::mem::transmute::<&[u8; 2], &[lua_char; 2]>(b"5\x00"))[0usize] as lua_int
             - '0' as i32)
             * 16i32
-            + ((*::std::mem::transmute::<&[u8; 2], &[lua_char; 2]>(b"3\x00"))[0usize]
-                as lua_int
+            + ((*::std::mem::transmute::<&[u8; 2], &[lua_char; 2]>(b"3\x00"))[0usize] as lua_int
                 - '0' as i32),
         D,
     );
@@ -877,14 +864,8 @@ unsafe extern "C" fn DumpHeader(mut D: *mut DumpState) -> () {
             .wrapping_sub(::std::mem::size_of::<lua_char>() as lua_ulong),
         D,
     );
-    DumpByte(
-        ::std::mem::size_of::<lua_int>() as lua_ulong as lua_int,
-        D,
-    );
-    DumpByte(
-        ::std::mem::size_of::<size_t>() as lua_ulong as lua_int,
-        D,
-    );
+    DumpByte(::std::mem::size_of::<lua_int>() as lua_ulong as lua_int, D);
+    DumpByte(::std::mem::size_of::<size_t>() as lua_ulong as lua_int, D);
     DumpByte(
         ::std::mem::size_of::<Instruction>() as lua_ulong as lua_int,
         D,

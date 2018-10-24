@@ -13,6 +13,7 @@
 #[macro_use]
 pub mod macros;
 
+pub mod stdc;
 pub mod types;
 
 pub mod lapi;

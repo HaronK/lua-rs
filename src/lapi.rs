@@ -1,6 +1,6 @@
-use types::*;
 use lobject::*;
 use lua::*;
+use types::*;
 
 extern "C" {
     /*
@@ -153,12 +153,7 @@ extern "C" {
     #[no_mangle]
     fn luaH_get(t: *mut Table, key: *const TValue) -> *const TValue;
     #[no_mangle]
-    fn luaH_resize(
-        L: *mut lua_State,
-        t: *mut Table,
-        nasize: lua_uint,
-        nhsize: lua_uint,
-    ) -> ();
+    fn luaH_resize(L: *mut lua_State, t: *mut Table, nasize: lua_uint, nhsize: lua_uint) -> ();
     #[no_mangle]
     fn luaH_new(L: *mut lua_State) -> *mut Table;
     #[no_mangle]
@@ -201,8 +196,7 @@ extern "C" {
         mode: *const lua_char,
     ) -> lua_int;
     #[no_mangle]
-    fn luaZ_init(L: *mut lua_State, z: *mut ZIO, reader: lua_Reader, data: *mut lua_void)
-        -> ();
+    fn luaZ_init(L: *mut lua_State, z: *mut ZIO, reader: lua_Reader, data: *mut lua_void) -> ();
     /* dump one chunk; from ldump.c */
     #[no_mangle]
     fn luaU_dump(
@@ -232,23 +226,6 @@ extern "C" {
     #[no_mangle]
     fn luaC_upvdeccount(L: *mut lua_State, uv: *mut UpVal) -> ();
 }
-
-pub type __builtin_va_list = [__va_list_tag; 1];
-
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct __va_list_tag {
-    pub gp_offset: lua_uint,
-    pub fp_offset: lua_uint,
-    pub overflow_arg_area: *mut lua_void,
-    pub reg_save_area: *mut lua_void,
-}
-
-pub type va_list = __builtin_va_list;
-pub type size_t = lua_ulong;
-pub type ptrdiff_t = lua_long;
-pub type __sig_atomic_t = lua_int;
-pub type intptr_t = lua_long;
 
 /*
 ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
@@ -685,8 +662,7 @@ pub type l_mem = ptrdiff_t;
 ** Type for memory-allocation functions
 */
 pub type lua_Alloc = Option<
-    unsafe extern "C" fn(_: *mut lua_void, _: *mut lua_void, _: size_t, _: size_t)
-        -> *mut lua_void,
+    unsafe extern "C" fn(_: *mut lua_void, _: *mut lua_void, _: size_t, _: size_t) -> *mut lua_void,
 >;
 /* unsigned integer type */
 pub type lua_Unsigned = lua_ulonglong;
@@ -694,16 +670,11 @@ pub type lua_Unsigned = lua_ulonglong;
 ** Type for functions that read/write blocks when loading/dumping Lua chunks
 */
 pub type lua_Reader = Option<
-    unsafe extern "C" fn(_: *mut lua_State, _: *mut lua_void, _: *mut size_t)
-        -> *const lua_char,
+    unsafe extern "C" fn(_: *mut lua_State, _: *mut lua_void, _: *mut size_t) -> *const lua_char,
 >;
 pub type lua_Writer = Option<
-    unsafe extern "C" fn(
-        _: *mut lua_State,
-        _: *const lua_void,
-        _: size_t,
-        _: *mut lua_void,
-    ) -> lua_int,
+    unsafe extern "C" fn(_: *mut lua_State, _: *const lua_void, _: size_t, _: *mut lua_void)
+        -> lua_int,
 >;
 /*
 ** Closures
@@ -1005,8 +976,7 @@ pub unsafe extern "C" fn lua_absindex(mut L: *mut lua_State, mut idx: lua_int) -
 pub unsafe extern "C" fn lua_gettop(mut L: *mut lua_State) -> lua_int {
     return (*L)
         .top
-        .wrapping_offset_from((*(*L).ci).func.offset(1isize)) as lua_long
-        as lua_int;
+        .wrapping_offset_from((*(*L).ci).func.offset(1isize)) as lua_long as lua_int;
 }
 #[no_mangle]
 pub unsafe extern "C" fn lua_settop(mut L: *mut lua_State, mut idx: lua_int) -> () {
@@ -1064,11 +1034,7 @@ unsafe extern "C" fn index2addr(mut L: *mut lua_State, mut idx: lua_int) -> *mut
     };
 }
 #[no_mangle]
-pub unsafe extern "C" fn lua_rotate(
-    mut L: *mut lua_State,
-    mut idx: lua_int,
-    mut n: lua_int,
-) -> () {
+pub unsafe extern "C" fn lua_rotate(mut L: *mut lua_State, mut idx: lua_int, mut n: lua_int) -> () {
     let mut p: StkId = 0 as *mut TValue;
     let mut t: StkId = 0 as *mut TValue;
     let mut m: StkId = 0 as *mut TValue;
@@ -1161,11 +1127,9 @@ pub unsafe extern "C" fn lua_checkstack(mut L: *mut lua_State, mut n: lua_int) -
             /* no */
             res = 0i32
         } else {
-            res = (luaD_rawrunprotected(
-                L,
-                Some(growstack),
-                &mut n as *mut lua_int as *mut lua_void,
-            ) == LUA_OK) as lua_int
+            res =
+                (luaD_rawrunprotected(L, Some(growstack), &mut n as *mut lua_int as *mut lua_void)
+                    == LUA_OK) as lua_int
         }
     }
     if 0 != res && (*ci).top < (*L).top.offset(n as isize) {
@@ -1224,10 +1188,7 @@ pub unsafe extern "C" fn lua_isstring(mut L: *mut lua_State, mut idx: lua_int) -
     return ((*o).tt_ & 0xfi32 == 4i32 || (*o).tt_ & 0xfi32 == 3i32) as lua_int;
 }
 #[no_mangle]
-pub unsafe extern "C" fn lua_iscfunction(
-    mut L: *mut lua_State,
-    mut idx: lua_int,
-) -> lua_int {
+pub unsafe extern "C" fn lua_iscfunction(mut L: *mut lua_State, mut idx: lua_int) -> lua_int {
     let mut o: StkId = index2addr(L, idx);
     return (ttislcf!(*o) || (*o).tt_ == 6i32 | 2i32 << 4i32 | 1i32 << 6i32) as lua_int;
 }
@@ -1237,10 +1198,7 @@ pub unsafe extern "C" fn lua_isinteger(mut L: *mut lua_State, mut idx: lua_int) 
     return ((*o).tt_ == 3i32 | 1i32 << 4i32) as lua_int;
 }
 #[no_mangle]
-pub unsafe extern "C" fn lua_isuserdata(
-    mut L: *mut lua_State,
-    mut idx: lua_int,
-) -> lua_int {
+pub unsafe extern "C" fn lua_isuserdata(mut L: *mut lua_State, mut idx: lua_int) -> lua_int {
     let mut o: *const TValue = index2addr(L, idx);
     return ((*o).tt_ == 7i32 | 1i32 << 6i32 || (*o).tt_ == 2i32) as lua_int;
 }
@@ -1254,10 +1212,7 @@ pub unsafe extern "C" fn lua_type(mut L: *mut lua_State, mut idx: lua_int) -> lu
     };
 }
 #[no_mangle]
-pub unsafe extern "C" fn lua_typename(
-    mut _L: *mut lua_State,
-    mut t: lua_int,
-) -> *const lua_char {
+pub unsafe extern "C" fn lua_typename(mut _L: *mut lua_State, mut t: lua_int) -> *const lua_char {
     return luaT_typenames_[(t + 1i32) as usize];
 }
 #[no_mangle]
@@ -1357,10 +1312,7 @@ pub unsafe extern "C" fn lua_rawlen(mut L: *mut lua_State, mut idx: lua_int) -> 
     };
 }
 #[no_mangle]
-pub unsafe extern "C" fn lua_tocfunction(
-    mut L: *mut lua_State,
-    mut idx: lua_int,
-) -> lua_CFunction {
+pub unsafe extern "C" fn lua_tocfunction(mut L: *mut lua_State, mut idx: lua_int) -> lua_CFunction {
     let mut o: StkId = index2addr(L, idx);
     if ttislcf!(*o) {
         return (*o).value_.f;
@@ -1371,10 +1323,7 @@ pub unsafe extern "C" fn lua_tocfunction(
     };
 }
 #[no_mangle]
-pub unsafe extern "C" fn lua_touserdata(
-    mut L: *mut lua_State,
-    mut idx: lua_int,
-) -> *mut lua_void {
+pub unsafe extern "C" fn lua_touserdata(mut L: *mut lua_State, mut idx: lua_int) -> *mut lua_void {
     let mut o: StkId = index2addr(L, idx);
     match (*o).tt_ & 0xfi32 {
         7 => {
@@ -1387,10 +1336,7 @@ pub unsafe extern "C" fn lua_touserdata(
     };
 }
 #[no_mangle]
-pub unsafe extern "C" fn lua_tothread(
-    mut L: *mut lua_State,
-    mut idx: lua_int,
-) -> *mut lua_State {
+pub unsafe extern "C" fn lua_tothread(mut L: *mut lua_State, mut idx: lua_int) -> *mut lua_State {
     let mut o: StkId = index2addr(L, idx);
     return if !((*o).tt_ == 8i32 | 1i32 << 6i32) {
         0 as *mut lua_State
@@ -1399,28 +1345,19 @@ pub unsafe extern "C" fn lua_tothread(
     };
 }
 #[no_mangle]
-pub unsafe extern "C" fn lua_topointer(
-    mut L: *mut lua_State,
-    mut idx: lua_int,
-) -> *const lua_void {
+pub unsafe extern "C" fn lua_topointer(mut L: *mut lua_State, mut idx: lua_int) -> *const lua_void {
     let mut o: StkId = index2addr(L, idx);
     match (*o).tt_ & 0x3fi32 {
         5 => return &mut (*((*o).value_.gc as *mut GCUnion)).h as *mut Table as *const lua_void,
         6 => {
-            return &mut (*((*o).value_.gc as *mut GCUnion)).cl.l as *mut LClosure
-                as *const lua_void
+            return &mut (*((*o).value_.gc as *mut GCUnion)).cl.l as *mut LClosure as *const lua_void
         }
         38 => {
-            return &mut (*((*o).value_.gc as *mut GCUnion)).cl.c as *mut CClosure
-                as *const lua_void
+            return &mut (*((*o).value_.gc as *mut GCUnion)).cl.c as *mut CClosure as *const lua_void
         }
-        22 => {
-            return ::std::mem::transmute::<lua_CFunction, size_t>((*o).value_.f)
-                as *mut lua_void
-        }
+        22 => return ::std::mem::transmute::<lua_CFunction, size_t>((*o).value_.f) as *mut lua_void,
         8 => {
-            return &mut (*((*o).value_.gc as *mut GCUnion)).th as *mut lua_State
-                as *const lua_void
+            return &mut (*((*o).value_.gc as *mut GCUnion)).th as *mut lua_State as *const lua_void
         }
         7 => {
             return (&mut (*((*o).value_.gc as *mut GCUnion)).u as *mut Udata as *mut lua_char)
@@ -1572,8 +1509,7 @@ pub unsafe extern "C" fn lua_pushlstring(
     if (*(*L).l_G).GCdebt > 0i32 as lua_long {
         luaC_step(L);
     }
-    return (ts as *mut lua_char)
-        .offset(::std::mem::size_of::<UTString>() as lua_ulong as isize);
+    return (ts as *mut lua_char).offset(::std::mem::size_of::<UTString>() as lua_ulong as isize);
 }
 #[no_mangle]
 pub unsafe extern "C" fn lua_pushstring(
@@ -1590,8 +1526,7 @@ pub unsafe extern "C" fn lua_pushstring(
         (*io).value_.gc = &mut (*(x_ as *mut GCUnion)).gc;
         (*io).tt_ = (*x_).tt as lua_int | 1i32 << 6i32;
         /* internal copy's address */
-        s = (ts as *mut lua_char)
-            .offset(::std::mem::size_of::<UTString>() as lua_ulong as isize)
+        s = (ts as *mut lua_char).offset(::std::mem::size_of::<UTString>() as lua_ulong as isize)
     }
     (*L).top = (*L).top.offset(1isize);
     if (*(*L).l_G).GCdebt > 0i32 as lua_long {
@@ -1657,10 +1592,7 @@ pub unsafe extern "C" fn lua_pushboolean(mut L: *mut lua_State, mut b: lua_int) 
     (*L).top = (*L).top.offset(1isize);
 }
 #[no_mangle]
-pub unsafe extern "C" fn lua_pushlightuserdata(
-    mut L: *mut lua_State,
-    mut p: *mut lua_void,
-) -> () {
+pub unsafe extern "C" fn lua_pushlightuserdata(mut L: *mut lua_State, mut p: *mut lua_void) -> () {
     let mut io: *mut TValue = (*L).top;
     (*io).value_.p = p;
     (*io).tt_ = 2i32;
@@ -1859,10 +1791,7 @@ pub unsafe extern "C" fn lua_createtable(
     };
 }
 #[no_mangle]
-pub unsafe extern "C" fn lua_newuserdata(
-    mut L: *mut lua_State,
-    mut size: size_t,
-) -> *mut lua_void {
+pub unsafe extern "C" fn lua_newuserdata(mut L: *mut lua_State, mut size: size_t) -> *mut lua_void {
     let mut u: *mut Udata = 0 as *mut Udata;
     u = luaS_newudata(L, size);
     let mut io: *mut TValue = (*L).top;
@@ -1873,15 +1802,11 @@ pub unsafe extern "C" fn lua_newuserdata(
     if (*(*L).l_G).GCdebt > 0i32 as lua_long {
         luaC_step(L);
     }
-    return (u as *mut lua_char)
-        .offset(::std::mem::size_of::<UUdata>() as lua_ulong as isize)
+    return (u as *mut lua_char).offset(::std::mem::size_of::<UUdata>() as lua_ulong as isize)
         as *mut lua_void;
 }
 #[no_mangle]
-pub unsafe extern "C" fn lua_getmetatable(
-    mut L: *mut lua_State,
-    mut objindex: lua_int,
-) -> lua_int {
+pub unsafe extern "C" fn lua_getmetatable(mut L: *mut lua_State, mut objindex: lua_int) -> lua_int {
     let mut obj: *const TValue = 0 as *const TValue;
     let mut mt: *mut Table = 0 as *mut Table;
     let mut res: lua_int = 0i32;
@@ -1902,10 +1827,7 @@ pub unsafe extern "C" fn lua_getmetatable(
     return res;
 }
 #[no_mangle]
-pub unsafe extern "C" fn lua_getuservalue(
-    mut L: *mut lua_State,
-    mut idx: lua_int,
-) -> lua_int {
+pub unsafe extern "C" fn lua_getuservalue(mut L: *mut lua_State, mut idx: lua_int) -> lua_int {
     let mut o: StkId = 0 as *mut TValue;
     o = index2addr(L, idx);
     let mut io: *mut TValue = (*L).top;
@@ -2149,10 +2071,7 @@ pub unsafe extern "C" fn lua_rawsetp(
     (*L).top = (*L).top.offset(-1isize);
 }
 #[no_mangle]
-pub unsafe extern "C" fn lua_setmetatable(
-    mut L: *mut lua_State,
-    mut objindex: lua_int,
-) -> lua_int {
+pub unsafe extern "C" fn lua_setmetatable(mut L: *mut lua_State, mut objindex: lua_int) -> lua_int {
     let mut obj: *mut TValue = 0 as *mut TValue;
     let mut mt: *mut Table = 0 as *mut Table;
     obj = index2addr(L, objindex);
@@ -2276,8 +2195,7 @@ pub unsafe extern "C" fn lua_pcallk(
         func = 0i32 as ptrdiff_t
     } else {
         o = index2addr(L, errfunc);
-        func = (o as *mut lua_char).wrapping_offset_from((*L).stack as *mut lua_char)
-            as lua_long
+        func = (o as *mut lua_char).wrapping_offset_from((*L).stack as *mut lua_char) as lua_long
     }
     /* function to be called */
     c.func = (*L).top.offset(-((nargs + 1i32) as isize));
@@ -2289,8 +2207,7 @@ pub unsafe extern "C" fn lua_pcallk(
             L,
             Some(f_call),
             &mut c as *mut CallS as *mut lua_void,
-            (c.func as *mut lua_char).wrapping_offset_from((*L).stack as *mut lua_char)
-                as lua_long,
+            (c.func as *mut lua_char).wrapping_offset_from((*L).stack as *mut lua_char) as lua_long,
             func,
         )
     } else {
@@ -2301,9 +2218,8 @@ pub unsafe extern "C" fn lua_pcallk(
         /* save context */
         (*ci).u.c.ctx = ctx;
         /* save information for error recovery */
-        (*ci).extra = (c.func as *mut lua_char)
-            .wrapping_offset_from((*L).stack as *mut lua_char)
-            as lua_long;
+        (*ci).extra =
+            (c.func as *mut lua_char).wrapping_offset_from((*L).stack as *mut lua_char) as lua_long;
         (*ci).u.c.old_errfunc = (*L).errfunc;
         (*L).errfunc = func;
         /* save value of 'allowhook' */
@@ -2424,10 +2340,7 @@ pub unsafe extern "C" fn lua_gc(
             /* GC values are expressed in Kbytes: #bytes/2^10 */
             res = (((*g).totalbytes + (*g).GCdebt) as lu_mem >> 10i32) as lua_int
         }
-        4 => {
-            res = (((*g).totalbytes + (*g).GCdebt) as lu_mem & 0x3ffi32 as lua_ulong)
-                as lua_int
-        }
+        4 => res = (((*g).totalbytes + (*g).GCdebt) as lu_mem & 0x3ffi32 as lua_ulong) as lua_int,
         5 => {
             /* =1 to signal that it did an actual step */
             let mut debt: l_mem = 1i32 as l_mem;
@@ -2651,8 +2564,7 @@ pub unsafe extern "C" fn lua_setupvalue(
         if !owner.is_null() {
             if 0 != (*(*L).top).tt_ & 1i32 << 6i32
                 && 0 != (*owner).marked as lua_int & 1i32 << 2i32
-                && 0 != (*(*(*L).top).value_.gc).marked as lua_int
-                    & (1i32 << 0i32 | 1i32 << 1i32)
+                && 0 != (*(*(*L).top).value_.gc).marked as lua_int & (1i32 << 0i32 | 1i32 << 1i32)
             {
                 luaC_barrier_(L, &mut (*(owner as *mut GCUnion)).gc, (*(*L).top).value_.gc);
             } else {

@@ -1,4 +1,5 @@
 use types::*;
+
 extern "C" {
     /*
      ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
@@ -48,10 +49,7 @@ extern "C" {
     #[no_mangle]
     fn luaC_fullgc(L: *mut lua_State, isemergency: lua_int) -> ();
 }
-pub type ptrdiff_t = lua_long;
-pub type size_t = lua_ulong;
-pub type __sig_atomic_t = lua_int;
-pub type intptr_t = lua_long;
+
 /*
 ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
 ** Lua - A Scripting Language
@@ -464,8 +462,7 @@ pub type l_mem = ptrdiff_t;
 ** Type for memory-allocation functions
 */
 pub type lua_Alloc = Option<
-    unsafe extern "C" fn(_: *mut lua_void, _: *mut lua_void, _: size_t, _: size_t)
-        -> *mut lua_void,
+    unsafe extern "C" fn(_: *mut lua_void, _: *mut lua_void, _: size_t, _: size_t) -> *mut lua_void,
 >;
 /*
 ** $Id: lmem.h,v 1.43.1.1 2017/04/19 17:20:42 roberto Exp $
@@ -553,8 +550,7 @@ pub unsafe extern "C" fn luaM_growaux_(
             newsize = 4i32
         }
     }
-    if ::std::mem::size_of::<lua_int>() as lua_ulong
-        >= ::std::mem::size_of::<size_t>() as lua_ulong
+    if ::std::mem::size_of::<lua_int>() as lua_ulong >= ::std::mem::size_of::<size_t>() as lua_ulong
         && (newsize as size_t).wrapping_add(1i32 as lua_ulong)
             > (!(0i32 as size_t)).wrapping_div(size_elems)
     {

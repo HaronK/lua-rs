@@ -1,4 +1,5 @@
 use types::*;
+
 extern "C" {
     /*
      ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
@@ -36,12 +37,7 @@ extern "C" {
     #[no_mangle]
     fn lua_toboolean(L: *mut lua_State, idx: lua_int) -> lua_int;
     #[no_mangle]
-    fn lua_compare(
-        L: *mut lua_State,
-        idx1: lua_int,
-        idx2: lua_int,
-        op: lua_int,
-    ) -> lua_int;
+    fn lua_compare(L: *mut lua_State, idx1: lua_int, idx2: lua_int, op: lua_int) -> lua_int;
     /*
      ** push functions (C -> stack)
      */
@@ -77,11 +73,7 @@ extern "C" {
     #[no_mangle]
     fn luaL_checkversion_(L: *mut lua_State, ver: lua_Number, sz: size_t) -> ();
     #[no_mangle]
-    fn luaL_argerror(
-        L: *mut lua_State,
-        arg: lua_int,
-        extramsg: *const lua_char,
-    ) -> lua_int;
+    fn luaL_argerror(L: *mut lua_State, arg: lua_int, extramsg: *const lua_char) -> lua_int;
     #[no_mangle]
     fn luaL_optlstring(
         L: *mut lua_State,
@@ -112,10 +104,7 @@ extern "C" {
     #[no_mangle]
     fn clock() -> clock_t;
 }
-pub type size_t = lua_ulong;
-pub type __clock_t = lua_long;
-pub type __time_t = lua_long;
-pub type intptr_t = lua_long;
+
 /*
 ** basic types
 */
@@ -219,8 +208,8 @@ unsafe extern "C" fn sort(mut L: *mut lua_State) -> lua_int {
     let mut n: lua_Integer = luaL_len(L, 1i32);
     if n > 1i32 as lua_longlong {
         /* non-trivial interval? */
-        (n < 2147483647i32 as lua_longlong
-            || 0 != luaL_argerror(L, 1i32, s!(b"array too big\x00"))) as lua_int;
+        (n < 2147483647i32 as lua_longlong || 0 != luaL_argerror(L, 1i32, s!(b"array too big\x00")))
+            as lua_int;
         /* is there a 2nd argument? */
         if !(lua_type(L, 2i32) <= 0i32) {
             /* must be a function */
@@ -236,11 +225,7 @@ unsafe extern "C" fn sort(mut L: *mut lua_State) -> lua_int {
 ** Check that 'arg' either is a table or can behave like one (that is,
 ** has a metatable with the required metamethods)
 */
-unsafe extern "C" fn checktab(
-    mut L: *mut lua_State,
-    mut arg: lua_int,
-    mut what: lua_int,
-) -> () {
+unsafe extern "C" fn checktab(mut L: *mut lua_State, mut arg: lua_int, mut what: lua_int) -> () {
     if lua_type(L, arg) != 5i32 {
         /* is it not a table? */
         /* number of elements to pop */
@@ -354,11 +339,7 @@ unsafe extern "C" fn auxsort(
                 /* push Pivot */
                 lua_pushvalue(L, -1i32);
                 /* push a[up - 1] */
-                lua_geti(
-                    L,
-                    1i32,
-                    up.wrapping_sub(1i32 as lua_uint) as lua_Integer,
-                );
+                lua_geti(L, 1i32, up.wrapping_sub(1i32 as lua_uint) as lua_Integer);
                 /* swap Pivot (a[p]) with a[up - 1] */
                 set2(L, p, up.wrapping_sub(1i32 as lua_uint));
                 p = partition(L, lo, up);
@@ -419,8 +400,7 @@ unsafe extern "C" fn l_randomizePivot() -> lua_uint {
     memcpy(
         buff.as_mut_ptr().offset(
             (::std::mem::size_of::<clock_t>() as lua_ulong)
-                .wrapping_div(::std::mem::size_of::<lua_uint>() as lua_ulong)
-                as isize,
+                .wrapping_div(::std::mem::size_of::<lua_uint>() as lua_ulong) as isize,
         ) as *mut lua_void,
         &mut t as *mut time_t as *const lua_void,
         (::std::mem::size_of::<time_t>() as lua_ulong)
@@ -505,11 +485,7 @@ unsafe extern "C" fn set2(mut L: *mut lua_State, mut i: IdxT, mut j: IdxT) -> ()
 ** Return true iff value at stack index 'a' is less than the value at
 ** index 'b' (according to the order of the sort).
 */
-unsafe extern "C" fn sort_comp(
-    mut L: *mut lua_State,
-    mut a: lua_int,
-    mut b: lua_int,
-) -> lua_int {
+unsafe extern "C" fn sort_comp(mut L: *mut lua_State, mut a: lua_int, mut b: lua_int) -> lua_int {
     /* no function? */
     if lua_type(L, 2i32) == 0i32 {
         /* a < b */
@@ -573,8 +549,7 @@ unsafe extern "C" fn tmove(mut L: *mut lua_State) -> lua_int {
         /* number of elements to move */
         n = e - f + 1i32 as lua_longlong;
         (t <= 9223372036854775807i64 - n + 1i32 as lua_longlong
-            || 0 != luaL_argerror(L, 4i32, s!(b"destination wrap around\x00")))
-            as lua_int;
+            || 0 != luaL_argerror(L, 4i32, s!(b"destination wrap around\x00"))) as lua_int;
         if t > e || t <= f || tt != 1i32 && 0 == lua_compare(L, 1i32, tt, 0i32) {
             i = 0i32 as lua_Integer;
             while i < n {
@@ -602,8 +577,7 @@ unsafe extern "C" fn tremove(mut L: *mut lua_State) -> lua_int {
     /* validate 'pos' if given */
     if pos != size {
         (1i32 as lua_longlong <= pos && pos <= size + 1i32 as lua_longlong
-            || 0 != luaL_argerror(L, 1i32, s!(b"position out of bounds\x00")))
-            as lua_int;
+            || 0 != luaL_argerror(L, 1i32, s!(b"position out of bounds\x00"))) as lua_int;
     }
     /* result = t[pos] */
     lua_geti(L, 1i32, pos);

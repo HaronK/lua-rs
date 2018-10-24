@@ -1,4 +1,5 @@
 use types::*;
+
 extern "C" {
     /*
      ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
@@ -87,10 +88,7 @@ extern "C" {
     #[no_mangle]
     fn luaS_clearcache(g: *mut global_State) -> ();
 }
-pub type size_t = lua_ulong;
-pub type ptrdiff_t = lua_long;
-pub type __sig_atomic_t = lua_int;
-pub type intptr_t = lua_long;
+
 /*
 ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
 ** Lua - A Scripting Language
@@ -526,8 +524,7 @@ pub type l_mem = ptrdiff_t;
 ** Type for memory-allocation functions
 */
 pub type lua_Alloc = Option<
-    unsafe extern "C" fn(_: *mut lua_void, _: *mut lua_void, _: size_t, _: size_t)
-        -> *mut lua_void,
+    unsafe extern "C" fn(_: *mut lua_void, _: *mut lua_void, _: size_t, _: size_t) -> *mut lua_void,
 >;
 /* maximum value for size_t */
 /* maximum size visible for Lua (must be representable in a lua_Integer */
@@ -790,8 +787,8 @@ pub unsafe extern "C" fn luaC_fix(mut L: *mut lua_State, mut o: *mut GCObject) -
     let mut g: *mut global_State = (*L).l_G;
     /* object must be 1st in 'allgc' list! */
     /* they will be gray forever */
-    (*o).marked = ((*o).marked as lua_int
-        & !(1i32 << 0i32 | 1i32 << 1i32) as lu_byte as lua_int) as lu_byte;
+    (*o).marked =
+        ((*o).marked as lua_int & !(1i32 << 0i32 | 1i32 << 1i32) as lu_byte as lua_int) as lu_byte;
     /* remove object from 'allgc' list */
     (*g).allgc = (*o).next;
     /* link it to 'fixedgc' list */
@@ -820,8 +817,8 @@ unsafe extern "C" fn sweeplist(
     let mut g: *mut global_State = (*L).l_G;
     let mut ow: lua_int = (*g).currentwhite as lua_int ^ (1i32 << 0i32 | 1i32 << 1i32);
     /* current white */
-    let mut white: lua_int = ((*g).currentwhite as lua_int & (1i32 << 0i32 | 1i32 << 1i32))
-        as lu_byte as lua_int;
+    let mut white: lua_int =
+        ((*g).currentwhite as lua_int & (1i32 << 0i32 | 1i32 << 1i32)) as lu_byte as lua_int;
     while !(*p).is_null() && {
         let fresh0 = count;
         count = count.wrapping_sub(1);
@@ -863,8 +860,7 @@ unsafe extern "C" fn freeobj(mut L: *mut lua_State, mut o: *mut GCObject) -> () 
                 o as *mut lua_void,
                 (::std::mem::size_of::<CClosure>() as lua_ulong as lua_int
                     + (::std::mem::size_of::<TValue>() as lua_ulong).wrapping_mul(
-                        ((*(o as *mut GCUnion)).cl.c.nupvalues as lua_int - 1i32)
-                            as lua_ulong,
+                        ((*(o as *mut GCUnion)).cl.c.nupvalues as lua_int - 1i32) as lua_ulong,
                     ) as lua_int) as size_t,
                 0i32 as size_t,
             );
@@ -989,8 +985,7 @@ unsafe extern "C" fn GCTM(mut L: *mut lua_State, mut propagateerrors: lua_int) -
         /* and (next line) call the finalizer */
         (*L).top = (*L).top.offset(2isize);
         /* will run a finalizer */
-        (*(*L).ci).callstatus =
-            ((*(*L).ci).callstatus as lua_int | 1i32 << 8i32) as lua_ushort;
+        (*(*L).ci).callstatus = ((*(*L).ci).callstatus as lua_int | 1i32 << 8i32) as lua_ushort;
         status = luaD_pcall(
             L,
             Some(dothecall),
@@ -1000,8 +995,7 @@ unsafe extern "C" fn GCTM(mut L: *mut lua_State, mut propagateerrors: lua_int) -
             0i32 as ptrdiff_t,
         );
         /* not running a finalizer anymore */
-        (*(*L).ci).callstatus =
-            ((*(*L).ci).callstatus as lua_int & !(1i32 << 8i32)) as lua_ushort;
+        (*(*L).ci).callstatus = ((*(*L).ci).callstatus as lua_int & !(1i32 << 8i32)) as lua_ushort;
         /* restore hooks */
         (*L).allowhook = oldah;
         /* restore state */
@@ -1038,13 +1032,12 @@ unsafe extern "C" fn udata2finalize(mut g: *mut global_State) -> *mut GCObject {
     (*o).next = (*g).allgc;
     (*g).allgc = o;
     /* object is "normal" again */
-    (*o).marked =
-        ((*o).marked as lua_int & !(1i32 << 3i32) as lu_byte as lua_int) as lu_byte;
+    (*o).marked = ((*o).marked as lua_int & !(1i32 << 3i32) as lu_byte as lua_int) as lu_byte;
     if 2i32 <= (*g).gcstate as lua_int && (*g).gcstate as lua_int <= 5i32 {
         /* "sweep" object */
         (*o).marked = ((*o).marked as lua_int & !(1i32 << 2i32 | (1i32 << 0i32 | 1i32 << 1i32))
-            | ((*g).currentwhite as lua_int & (1i32 << 0i32 | 1i32 << 1i32)) as lu_byte
-                as lua_int) as lu_byte
+            | ((*g).currentwhite as lua_int & (1i32 << 0i32 | 1i32 << 1i32)) as lu_byte as lua_int)
+            as lu_byte
     }
     return o;
 }
@@ -1096,8 +1089,7 @@ pub unsafe extern "C" fn luaC_step(mut L: *mut lua_State) -> () {
         /* avoid being called too often */
         luaE_setdebt(
             g,
-            (-((100i32 as lua_ulong)
-                .wrapping_mul(::std::mem::size_of::<TString>() as lua_ulong)
+            (-((100i32 as lua_ulong).wrapping_mul(::std::mem::size_of::<TString>() as lua_ulong)
                 as lua_int)
                 * 10i32) as l_mem,
         );
@@ -1108,9 +1100,10 @@ pub unsafe extern "C" fn luaC_step(mut L: *mut lua_State) -> () {
             /* perform one single step */
             work = singlestep(L);
             debt = (debt as lua_ulong).wrapping_sub(work) as l_mem as l_mem;
-            if !(debt > -((100i32 as lua_ulong)
-                .wrapping_mul(::std::mem::size_of::<TString>() as lua_ulong)
-                as lua_int) as lua_long
+            if !(debt
+                > -((100i32 as lua_ulong)
+                    .wrapping_mul(::std::mem::size_of::<TString>() as lua_ulong)
+                    as lua_int) as lua_long
                 && (*g).gcstate as lua_int != 7i32)
             {
                 break;
@@ -1187,16 +1180,15 @@ unsafe extern "C" fn setpause(mut g: *mut global_State) -> () {
     /* adjust 'estimate' */
     let mut estimate: l_mem = (*g).GCestimate.wrapping_div(100i32 as lua_ulong) as l_mem;
     /* overflow? */
-    threshold = if ((*g).gcpause as lua_long) < (!(0i32 as lu_mem) >> 1i32) as l_mem / estimate
-    {
+    threshold = if ((*g).gcpause as lua_long) < (!(0i32 as lu_mem) >> 1i32) as l_mem / estimate {
         estimate * (*g).gcpause as lua_long
     } else {
         (!(0i32 as lu_mem) >> 1i32) as l_mem
     };
     /* no overflow */
     /* overflow; truncate to maximum */
-    debt = (((*g).totalbytes + (*g).GCdebt) as lu_mem).wrapping_sub(threshold as lua_ulong)
-        as l_mem;
+    debt =
+        (((*g).totalbytes + (*g).GCdebt) as lu_mem).wrapping_sub(threshold as lua_ulong) as l_mem;
     luaE_setdebt(g, debt);
 }
 unsafe extern "C" fn singlestep(mut L: *mut lua_State) -> lu_mem {
@@ -1292,8 +1284,8 @@ unsafe extern "C" fn checkSizes(mut L: *mut lua_State, mut g: *mut global_State)
         }
         /* update estimate */
         (*g).GCestimate = ((*g).GCestimate as lua_ulong)
-            .wrapping_add(((*g).GCdebt - olddebt) as lua_ulong)
-            as lu_mem as lu_mem
+            .wrapping_add(((*g).GCdebt - olddebt) as lua_ulong) as lu_mem
+            as lu_mem
     };
 }
 unsafe extern "C" fn sweepstep(
@@ -1307,8 +1299,7 @@ unsafe extern "C" fn sweepstep(
         (*g).sweepgc = sweeplist(
             L,
             (*g).sweepgc,
-            ((100i32 as lua_ulong)
-                .wrapping_mul(::std::mem::size_of::<TString>() as lua_ulong)
+            ((100i32 as lua_ulong).wrapping_mul(::std::mem::size_of::<TString>() as lua_ulong)
                 as lua_int as lua_ulong)
                 .wrapping_div(
                     (::std::mem::size_of::<TString>() as lua_ulong)
@@ -1319,8 +1310,8 @@ unsafe extern "C" fn sweepstep(
         );
         /* update estimate */
         (*g).GCestimate = ((*g).GCestimate as lua_ulong)
-            .wrapping_add(((*g).GCdebt - olddebt) as lua_ulong)
-            as lu_mem as lu_mem;
+            .wrapping_add(((*g).GCdebt - olddebt) as lua_ulong) as lu_mem
+            as lu_mem;
         /* is there still something to sweep? */
         if !(*g).sweepgc.is_null() {
             return (((100i32 as lua_ulong)
@@ -1331,8 +1322,7 @@ unsafe extern "C" fn sweepstep(
                         .wrapping_add(4i32 as lua_ulong)
                         .wrapping_div(4i32 as lua_ulong),
                 )
-                .wrapping_div(4i32 as lua_ulong) as lua_int
-                as lua_ulong)
+                .wrapping_div(4i32 as lua_ulong) as lua_int as lua_ulong)
                 .wrapping_mul(
                     (::std::mem::size_of::<TString>() as lua_ulong)
                         .wrapping_add(4i32 as lua_ulong)
@@ -1421,8 +1411,7 @@ unsafe extern "C" fn atomic(mut L: *mut lua_State) -> l_mem {
     clearvalues(g, (*g).allweak, origall);
     luaS_clearcache(g);
     /* flip current white */
-    (*g).currentwhite =
-        ((*g).currentwhite as lua_int ^ (1i32 << 0i32 | 1i32 << 1i32)) as lu_byte;
+    (*g).currentwhite = ((*g).currentwhite as lua_int ^ (1i32 << 0i32 | 1i32 << 1i32)) as lu_byte;
     /* complete counting */
     work = (work as lua_ulong).wrapping_add((*g).GCmemtrav) as l_mem as l_mem;
     /* estimate of memory marked by 'atomic' */
@@ -1616,8 +1605,7 @@ unsafe extern "C" fn reallymarkobject(mut g: *mut global_State, mut o: *mut GCOb
                 (*io).value_ = (*iu).user_;
                 (*io).tt_ = (*iu).ttuv_ as lua_int;
                 if !(0 != uvalue.tt_ & 1i32 << 6i32
-                    && 0 != (*uvalue.value_.gc).marked as lua_int
-                        & (1i32 << 0i32 | 1i32 << 1i32))
+                    && 0 != (*uvalue.value_.gc).marked as lua_int & (1i32 << 0i32 | 1i32 << 1i32))
                 {
                     break;
                 }
@@ -1794,8 +1782,7 @@ unsafe extern "C" fn propagatemark(mut g: *mut global_State) -> () {
 */
 unsafe extern "C" fn traverseproto(mut g: *mut global_State, mut f: *mut Proto) -> lua_int {
     let mut i: lua_int = 0;
-    if !(*f).cache.is_null()
-        && 0 != (*(*f).cache).marked as lua_int & (1i32 << 0i32 | 1i32 << 1i32)
+    if !(*f).cache.is_null() && 0 != (*(*f).cache).marked as lua_int & (1i32 << 0i32 | 1i32 << 1i32)
     {
         /* allow cache to be collected */
         (*f).cache = 0 as *mut LClosure
@@ -1835,8 +1822,7 @@ unsafe extern "C" fn traverseproto(mut g: *mut global_State, mut f: *mut Proto) 
     i = 0i32;
     while i < (*f).sizep {
         if !(*(*f).p.offset(i as isize)).is_null() {
-            if 0 != (**(*f).p.offset(i as isize)).marked as lua_int
-                & (1i32 << 0i32 | 1i32 << 1i32)
+            if 0 != (**(*f).p.offset(i as isize)).marked as lua_int & (1i32 << 0i32 | 1i32 << 1i32)
             {
                 reallymarkobject(g, &mut (*(*(*f).p.offset(i as isize) as *mut GCUnion)).gc);
             }
@@ -1868,8 +1854,7 @@ unsafe extern "C" fn traverseproto(mut g: *mut global_State, mut f: *mut Proto) 
                 .wrapping_mul((*f).sizep as lua_ulong),
         )
         .wrapping_add(
-            (::std::mem::size_of::<TValue>() as lua_ulong)
-                .wrapping_mul((*f).sizek as lua_ulong),
+            (::std::mem::size_of::<TValue>() as lua_ulong).wrapping_mul((*f).sizek as lua_ulong),
         )
         .wrapping_add(
             (::std::mem::size_of::<lua_int>() as lua_ulong)
@@ -1944,8 +1929,8 @@ unsafe extern "C" fn traverseCclosure(mut g: *mut global_State, mut cl: *mut CCl
     }
     return (::std::mem::size_of::<CClosure>() as lua_ulong as lua_int
         + (::std::mem::size_of::<TValue>() as lua_ulong)
-            .wrapping_mul(((*cl).nupvalues as lua_int - 1i32) as lua_ulong)
-            as lua_int) as lu_mem;
+            .wrapping_mul(((*cl).nupvalues as lua_int - 1i32) as lua_ulong) as lua_int)
+        as lu_mem;
 }
 /*
 ** open upvalues point to values in a thread, so those values should
@@ -1972,8 +1957,7 @@ unsafe extern "C" fn traverseLclosure(mut g: *mut global_State, mut cl: *mut LCl
                 /* can be marked in 'remarkupvals' */
                 (*uv).u.open.touched = 1i32
             } else if 0 != (*(*uv).v).tt_ & 1i32 << 6i32
-                && 0 != (*(*(*uv).v).value_.gc).marked as lua_int
-                    & (1i32 << 0i32 | 1i32 << 1i32)
+                && 0 != (*(*(*uv).v).value_.gc).marked as lua_int & (1i32 << 0i32 | 1i32 << 1i32)
             {
                 reallymarkobject(g, (*(*uv).v).value_.gc);
             }
@@ -1982,8 +1966,8 @@ unsafe extern "C" fn traverseLclosure(mut g: *mut global_State, mut cl: *mut LCl
     }
     return (::std::mem::size_of::<LClosure>() as lua_ulong as lua_int
         + (::std::mem::size_of::<*mut TValue>() as lua_ulong)
-            .wrapping_mul(((*cl).nupvalues as lua_int - 1i32) as lua_ulong)
-            as lua_int) as lu_mem;
+            .wrapping_mul(((*cl).nupvalues as lua_int - 1i32) as lua_ulong) as lua_int)
+        as lu_mem;
 }
 unsafe extern "C" fn traversetable(mut g: *mut global_State, mut h: *mut Table) -> lu_mem {
     let mut weakkey: *const lua_char = 0 as *const lua_char;
@@ -2020,8 +2004,7 @@ unsafe extern "C" fn traversetable(mut g: *mut global_State, mut h: *mut Table) 
     } {
         /* is really weak? */
         /* keep table gray */
-        (*h).marked =
-            ((*h).marked as lua_int & !(1i32 << 2i32) as lu_byte as lua_int) as lu_byte;
+        (*h).marked = ((*h).marked as lua_int & !(1i32 << 2i32) as lu_byte as lua_int) as lu_byte;
         /* strong keys? */
         if weakkey.is_null() {
             traverseweakvalue(g, h);
@@ -2042,15 +2025,13 @@ unsafe extern "C" fn traversetable(mut g: *mut global_State, mut h: *mut Table) 
             (::std::mem::size_of::<TValue>() as lua_ulong)
                 .wrapping_mul((*h).sizearray as lua_ulong),
         )
-        .wrapping_add(
-            (::std::mem::size_of::<Node>() as lua_ulong).wrapping_mul(
-                (if (*h).lastfree.is_null() {
-                    0i32
-                } else {
-                    1i32 << (*h).lsizenode as lua_int
-                }) as size_t,
-            ),
-        );
+        .wrapping_add((::std::mem::size_of::<Node>() as lua_ulong).wrapping_mul(
+            (if (*h).lastfree.is_null() {
+                0i32
+            } else {
+                1i32 << (*h).lsizenode as lua_int
+            }) as size_t,
+        ));
 }
 unsafe extern "C" fn traversestrongtable(mut g: *mut global_State, mut h: *mut Table) -> () {
     let mut n: *mut Node = 0 as *mut Node;
@@ -2094,8 +2075,7 @@ unsafe extern "C" fn traversestrongtable(mut g: *mut global_State, mut h: *mut T
             }
             /* mark key */
             if 0 != (*n).i_val.tt_ & 1i32 << 6i32
-                && 0 != (*(*n).i_val.value_.gc).marked as lua_int
-                    & (1i32 << 0i32 | 1i32 << 1i32)
+                && 0 != (*(*n).i_val.value_.gc).marked as lua_int & (1i32 << 0i32 | 1i32 << 1i32)
             {
                 reallymarkobject(g, (*n).i_val.value_.gc);
             }
@@ -2152,8 +2132,7 @@ unsafe extern "C" fn traverseephemeron(mut g: *mut global_State, mut h: *mut Tab
             hasclears = 1i32;
             /* value not marked yet? */
             if 0 != (*n).i_val.tt_ & 1i32 << 6i32
-                && 0 != (*(*n).i_val.value_.gc).marked as lua_int
-                    & (1i32 << 0i32 | 1i32 << 1i32)
+                && 0 != (*(*n).i_val.value_.gc).marked as lua_int & (1i32 << 0i32 | 1i32 << 1i32)
             {
                 /* white-white entry */
                 hasww = 1i32
@@ -2340,10 +2319,7 @@ unsafe extern "C" fn restartcollection(mut g: *mut global_State) -> () {
     markbeingfnz(g);
 }
 #[no_mangle]
-pub unsafe extern "C" fn luaC_runtilstate(
-    mut L: *mut lua_State,
-    mut statesmask: lua_int,
-) -> () {
+pub unsafe extern "C" fn luaC_runtilstate(mut L: *mut lua_State, mut statesmask: lua_int) -> () {
     let mut g: *mut global_State = (*L).l_G;
     while 0 == statesmask & 1i32 << (*g).gcstate as lua_int {
         singlestep(L);
@@ -2401,16 +2377,15 @@ pub unsafe extern "C" fn luaC_barrier_(
         reallymarkobject(g, v);
     } else {
         (*o).marked = ((*o).marked as lua_int & !(1i32 << 2i32 | (1i32 << 0i32 | 1i32 << 1i32))
-            | ((*g).currentwhite as lua_int & (1i32 << 0i32 | 1i32 << 1i32)) as lu_byte
-                as lua_int) as lu_byte
+            | ((*g).currentwhite as lua_int & (1i32 << 0i32 | 1i32 << 1i32)) as lu_byte as lua_int)
+            as lu_byte
     };
 }
 #[no_mangle]
 pub unsafe extern "C" fn luaC_barrierback_(mut L: *mut lua_State, mut t: *mut Table) -> () {
     let mut g: *mut global_State = (*L).l_G;
     /* make table gray (again) */
-    (*t).marked =
-        ((*t).marked as lua_int & !(1i32 << 2i32) as lu_byte as lua_int) as lu_byte;
+    (*t).marked = ((*t).marked as lua_int & !(1i32 << 2i32) as lu_byte as lua_int) as lu_byte;
     (*t).gclist = (*g).grayagain;
     (*g).grayagain = &mut (*(t as *mut GCUnion)).gc;
 }
@@ -2433,14 +2408,15 @@ pub unsafe extern "C" fn luaC_checkfinalizer(
 ) -> () {
     let mut g: *mut global_State = (*L).l_G;
     /* obj. is already marked... */
-    if 0 != (*o).marked as lua_int & 1i32 << 3i32 || if mt.is_null() {
-        0 as *const TValue
-    } else if 0 != (*mt).flags as lua_uint & 1u32 << TM_GC as lua_int {
-        0 as *const TValue
-    } else {
-        luaT_gettm(mt, TM_GC, (*g).tmname[TM_GC as lua_int as usize])
-    }
-    .is_null()
+    if 0 != (*o).marked as lua_int & 1i32 << 3i32
+        || if mt.is_null() {
+            0 as *const TValue
+        } else if 0 != (*mt).flags as lua_uint & 1u32 << TM_GC as lua_int {
+            0 as *const TValue
+        } else {
+            luaT_gettm(mt, TM_GC, (*g).tmname[TM_GC as lua_int as usize])
+        }
+        .is_null()
     {
         /* or has no finalizer? */
         /* nothing to be done */
@@ -2450,8 +2426,7 @@ pub unsafe extern "C" fn luaC_checkfinalizer(
         let mut p: *mut *mut GCObject = 0 as *mut *mut GCObject;
         if 2i32 <= (*g).gcstate as lua_int && (*g).gcstate as lua_int <= 5i32 {
             /* "sweep" object 'o' */
-            (*o).marked = ((*o).marked as lua_int
-                & !(1i32 << 2i32 | (1i32 << 0i32 | 1i32 << 1i32))
+            (*o).marked = ((*o).marked as lua_int & !(1i32 << 2i32 | (1i32 << 0i32 | 1i32 << 1i32))
                 | ((*g).currentwhite as lua_int & (1i32 << 0i32 | 1i32 << 1i32)) as lu_byte
                     as lua_int) as lu_byte;
             /* should not remove 'sweepgc' object */

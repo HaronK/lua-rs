@@ -13,6 +13,7 @@
 #[macro_use]
 pub mod macros;
 
+pub mod stdc;
 pub mod types;
 
 pub mod lapi;
@@ -53,8 +54,8 @@ pub mod lutf8lib;
 pub mod lvm;
 pub mod lzio;
 
-use types::*;
 use luac::main_0;
+use types::*;
 
 fn main() -> () {
     let mut args: Vec<*mut lua_char> = Vec::new();

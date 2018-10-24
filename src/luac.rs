@@ -1,10 +1,9 @@
-use types::*;
 use lua::*;
 use luaconf::*;
+use stdc::prelude::*;
+use types::*;
+
 extern "C" {
-    pub type _IO_wide_data;
-    pub type _IO_codecvt;
-    pub type _IO_marker;
     /*
      ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
      ** Global State
@@ -48,10 +47,6 @@ extern "C" {
      ** Lua Upvalues
      */
     pub type UpVal;
-    #[no_mangle]
-    fn __ctype_b_loc() -> *mut *const lua_ushort;
-    #[no_mangle]
-    fn __errno_location() -> *mut lua_int;
     #[no_mangle]
     static mut stdout: *mut FILE;
     #[no_mangle]
@@ -134,60 +129,7 @@ extern "C" {
     #[no_mangle]
     static luaP_opnames: [*const lua_char; 48];
 }
-pub type __off_t = lua_long;
-pub type __off64_t = lua_long;
-pub type __sig_atomic_t = lua_int;
-pub type unnamed = lua_uint;
-pub const _ISalnum: unnamed = 8;
-pub const _ISpunct: unnamed = 4;
-pub const _IScntrl: unnamed = 2;
-pub const _ISblank: unnamed = 1;
-pub const _ISgraph: unnamed = 32768;
-pub const _ISprint: unnamed = 16384;
-pub const _ISspace: unnamed = 8192;
-pub const _ISxdigit: unnamed = 4096;
-pub const _ISdigit: unnamed = 2048;
-pub const _ISalpha: unnamed = 1024;
-pub const _ISlower: unnamed = 512;
-pub const _ISupper: unnamed = 256;
-pub type size_t = lua_ulong;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct _IO_FILE {
-    pub _flags: lua_int,
-    pub _IO_read_ptr: *mut lua_char,
-    pub _IO_read_end: *mut lua_char,
-    pub _IO_read_base: *mut lua_char,
-    pub _IO_write_base: *mut lua_char,
-    pub _IO_write_ptr: *mut lua_char,
-    pub _IO_write_end: *mut lua_char,
-    pub _IO_buf_base: *mut lua_char,
-    pub _IO_buf_end: *mut lua_char,
-    pub _IO_save_base: *mut lua_char,
-    pub _IO_backup_base: *mut lua_char,
-    pub _IO_save_end: *mut lua_char,
-    pub _markers: *mut _IO_marker,
-    pub _chain: *mut _IO_FILE,
-    pub _fileno: lua_int,
-    pub _flags2: lua_int,
-    pub _old_offset: __off_t,
-    pub _cur_column: lua_ushort,
-    pub _vtable_offset: lua_schar,
-    pub _shortbuf: [lua_char; 1],
-    pub _lock: *mut lua_void,
-    pub _offset: __off64_t,
-    pub _codecvt: *mut _IO_codecvt,
-    pub _wide_data: *mut _IO_wide_data,
-    pub _freeres_list: *mut _IO_FILE,
-    pub _freeres_buf: *mut lua_void,
-    pub __pad5: size_t,
-    pub _mode: lua_int,
-    pub _unused2: [lua_char; 20],
-}
-pub type _IO_lock_t = ();
-pub type FILE = _IO_FILE;
-pub type ptrdiff_t = lua_long;
-pub type intptr_t = lua_long;
+
 /*
 ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
 ** Lua - A Scripting Language
@@ -600,23 +542,17 @@ pub type l_mem = ptrdiff_t;
 ** Type for memory-allocation functions
 */
 pub type lua_Alloc = Option<
-    unsafe extern "C" fn(_: *mut lua_void, _: *mut lua_void, _: size_t, _: size_t)
-        -> *mut lua_void,
+    unsafe extern "C" fn(_: *mut lua_void, _: *mut lua_void, _: size_t, _: size_t) -> *mut lua_void,
 >;
 /*
 ** Type for functions that read/write blocks when loading/dumping Lua chunks
 */
 pub type lua_Reader = Option<
-    unsafe extern "C" fn(_: *mut lua_State, _: *mut lua_void, _: *mut size_t)
-        -> *const lua_char,
+    unsafe extern "C" fn(_: *mut lua_State, _: *mut lua_void, _: *mut size_t) -> *const lua_char,
 >;
 pub type lua_Writer = Option<
-    unsafe extern "C" fn(
-        _: *mut lua_State,
-        _: *const lua_void,
-        _: size_t,
-        _: *mut lua_void,
-    ) -> lua_int,
+    unsafe extern "C" fn(_: *mut lua_State, _: *const lua_void, _: size_t, _: *mut lua_void)
+        -> lua_int,
 >;
 /* maximum value for size_t */
 /* maximum size visible for Lua (must be representable in a lua_Integer */
@@ -989,11 +925,7 @@ unsafe extern "C" fn PrintDebug(mut f: *const Proto) -> () {
     let mut i: lua_int = 0;
     let mut n: lua_int = 0;
     n = (*f).sizek;
-    printf(
-        s!(b"constants (%d) for %p:\n\x00"),
-        n,
-        f as *const lua_void,
-    );
+    printf(s!(b"constants (%d) for %p:\n\x00"), n, f as *const lua_void);
     i = 0i32;
     while i < n {
         printf(s!(b"\t%d\t\x00"), i + 1i32);
@@ -1002,11 +934,7 @@ unsafe extern "C" fn PrintDebug(mut f: *const Proto) -> () {
         i += 1
     }
     n = (*f).sizelocvars;
-    printf(
-        s!(b"locals (%d) for %p:\n\x00"),
-        n,
-        f as *const lua_void,
-    );
+    printf(s!(b"locals (%d) for %p:\n\x00"), n, f as *const lua_void);
     i = 0i32;
     while i < n {
         printf(
@@ -1020,11 +948,7 @@ unsafe extern "C" fn PrintDebug(mut f: *const Proto) -> () {
         i += 1
     }
     n = (*f).sizeupvalues;
-    printf(
-        s!(b"upvalues (%d) for %p:\n\x00"),
-        n,
-        f as *const lua_void,
-    );
+    printf(s!(b"upvalues (%d) for %p:\n\x00"), n, f as *const lua_void);
     i = 0i32;
     while i < n {
         printf(
@@ -1082,8 +1006,8 @@ unsafe extern "C" fn PrintConstant(mut f: *const Proto, mut i: lua_int) -> () {
 ** See Copyright Notice in lua.h
 */
 unsafe extern "C" fn PrintString(mut ts: *const TString) -> () {
-    let mut s: *const lua_char = (ts as *mut lua_char)
-        .offset(::std::mem::size_of::<UTString>() as lua_ulong as isize);
+    let mut s: *const lua_char =
+        (ts as *mut lua_char).offset(::std::mem::size_of::<UTString>() as lua_ulong as isize);
     let mut i: size_t = 0;
     let mut n: size_t = if (*ts).tt as lua_int == 4i32 | 0i32 << 4i32 {
         (*ts).shrlen as lua_ulong
@@ -1123,9 +1047,7 @@ unsafe extern "C" fn PrintString(mut ts: *const TString) -> () {
                 printf(s!(b"\\v\x00"));
             }
             _ => {
-                if 0 != *(*__ctype_b_loc()).offset(c as isize) as lua_int
-                    & _ISprint as lua_int as lua_ushort as lua_int
-                {
+                if 0 != isprint(c) {
                     printf(s!(b"%c\x00"), c);
                 } else {
                     printf(s!(b"\\%03d\x00"), c);
@@ -1147,8 +1069,7 @@ unsafe extern "C" fn PrintCode(mut f: *const Proto) -> () {
         let mut a: lua_int =
             (i >> 0i32 + 6i32 & !((!(0i32 as Instruction)) << 8i32) << 0i32) as lua_int;
         let mut b: lua_int = (i >> 0i32 + 6i32 + 8i32 + 9i32
-            & !((!(0i32 as Instruction)) << 9i32) << 0i32)
-            as lua_int;
+            & !((!(0i32 as Instruction)) << 9i32) << 0i32) as lua_int;
         let mut c: lua_int =
             (i >> 0i32 + 6i32 + 8i32 & !((!(0i32 as Instruction)) << 9i32) << 0i32) as lua_int;
         let mut ax: lua_int = (i >> 0i32 + 6i32
@@ -1176,8 +1097,7 @@ unsafe extern "C" fn PrintCode(mut f: *const Proto) -> () {
         match (luaP_opmodes[o as usize] as lua_int & 3i32) as OpMode as lua_uint {
             0 => {
                 printf(s!(b"%d\x00"), a);
-                if (luaP_opmodes[o as usize] as lua_int >> 4i32 & 3i32) as OpArgMask
-                    as lua_uint
+                if (luaP_opmodes[o as usize] as lua_int >> 4i32 & 3i32) as OpArgMask as lua_uint
                     != OpArgN as lua_int as lua_uint
                 {
                     printf(
@@ -1189,8 +1109,7 @@ unsafe extern "C" fn PrintCode(mut f: *const Proto) -> () {
                         },
                     );
                 }
-                if (luaP_opmodes[o as usize] as lua_int >> 2i32 & 3i32) as OpArgMask
-                    as lua_uint
+                if (luaP_opmodes[o as usize] as lua_int >> 2i32 & 3i32) as OpArgMask as lua_uint
                     != OpArgN as lua_int as lua_uint
                 {
                     printf(
@@ -1205,14 +1124,12 @@ unsafe extern "C" fn PrintCode(mut f: *const Proto) -> () {
             }
             1 => {
                 printf(s!(b"%d\x00"), a);
-                if (luaP_opmodes[o as usize] as lua_int >> 4i32 & 3i32) as OpArgMask
-                    as lua_uint
+                if (luaP_opmodes[o as usize] as lua_int >> 4i32 & 3i32) as OpArgMask as lua_uint
                     == OpArgK as lua_int as lua_uint
                 {
                     printf(s!(b" %d\x00"), -1i32 - bx);
                 }
-                if (luaP_opmodes[o as usize] as lua_int >> 4i32 & 3i32) as OpArgMask
-                    as lua_uint
+                if (luaP_opmodes[o as usize] as lua_int >> 4i32 & 3i32) as OpArgMask as lua_uint
                     == OpArgU as lua_int as lua_uint
                 {
                     printf(s!(b" %d\x00"), bx);
@@ -1335,8 +1252,7 @@ unsafe extern "C" fn PrintHeader(mut f: *const Proto) -> () {
     if *s as lua_int == '@' as i32 || *s as lua_int == '=' as i32 {
         s = s.offset(1isize)
     } else if *s as lua_int
-        == (*::std::mem::transmute::<&[u8; 5], &[lua_char; 5]>(b"\x1bLua\x00"))[0usize]
-            as lua_int
+        == (*::std::mem::transmute::<&[u8; 5], &[lua_char; 5]>(b"\x1bLua\x00"))[0usize] as lua_int
     {
         s = s!(b"(bstring)\x00")
     } else {
@@ -1433,7 +1349,7 @@ unsafe extern "C" fn cannot(mut what: *const lua_char) -> () {
         progname,
         what,
         output,
-        strerror(*__errno_location()),
+        strerror(errno()),
     );
     exit(1i32);
 }
@@ -1453,10 +1369,7 @@ unsafe extern "C" fn usage(mut message: *const lua_char) -> () {
             Output.as_mut_ptr());
     exit(1i32);
 }
-unsafe extern "C" fn doargs(
-    mut argc: lua_int,
-    mut argv: *mut *mut lua_char,
-) -> lua_int {
+unsafe extern "C" fn doargs(mut argc: lua_int, mut argv: *mut *mut lua_char) -> lua_int {
     let mut i: lua_int = 0;
     let mut version: lua_int = 0i32;
     if !(*argv.offset(0isize)).is_null() && **argv.offset(0isize) as lua_int != 0i32 {
@@ -1489,8 +1402,7 @@ unsafe extern "C" fn doargs(
                 output = *argv.offset(i as isize);
                 if output.is_null()
                     || *output as lua_int == 0i32
-                    || *output as lua_int == '-' as i32
-                        && *output.offset(1isize) as lua_int != 0i32
+                    || *output as lua_int == '-' as i32 && *output.offset(1isize) as lua_int != 0i32
                 {
                     usage(s!(b"\'-o\' needs argument\x00"));
                 }
@@ -1536,8 +1448,8 @@ unsafe extern "C" fn reader(
     let fresh2 = *fresh1;
     *fresh1 = *fresh1 - 1;
     if 0 != fresh2 {
-        *size = (::std::mem::size_of::<[lua_char; 19]>() as lua_ulong)
-            .wrapping_sub(1i32 as lua_ulong);
+        *size =
+            (::std::mem::size_of::<[lua_char; 19]>() as lua_ulong).wrapping_sub(1i32 as lua_ulong);
         return s!(b"(function()end)();\x00");
     } else {
         *size = 0i32 as size_t;
@@ -1636,10 +1548,7 @@ unsafe extern "C" fn pmain(mut L: *mut lua_State) -> lua_int {
     }
     return 0i32;
 }
-pub(crate) unsafe fn main_0(
-    mut argc: lua_int,
-    mut argv: *mut *mut lua_char,
-) -> lua_int {
+pub(crate) unsafe fn main_0(mut argc: lua_int, mut argv: *mut *mut lua_char) -> lua_int {
     let mut L = 0 as *mut lua_State;
     let mut i = doargs(argc, argv);
     argc -= i;

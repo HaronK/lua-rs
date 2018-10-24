@@ -1,8 +1,7 @@
+use stdc::prelude::*;
 use types::*;
+
 extern "C" {
-    pub type _IO_wide_data;
-    pub type _IO_codecvt;
-    pub type _IO_marker;
     /*
      ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
      ** Lua - A Scripting Language
@@ -20,8 +19,6 @@ extern "C" {
     pub type lua_State;
     /* private part */
     pub type CallInfo;
-    #[no_mangle]
-    fn __errno_location() -> *mut lua_int;
     #[no_mangle]
     static mut stdin: *mut FILE;
     #[no_mangle]
@@ -127,11 +124,7 @@ extern "C" {
     #[no_mangle]
     fn lua_pushinteger(L: *mut lua_State, n: lua_Integer) -> ();
     #[no_mangle]
-    fn lua_pushlstring(
-        L: *mut lua_State,
-        s: *const lua_char,
-        len: size_t,
-    ) -> *const lua_char;
+    fn lua_pushlstring(L: *mut lua_State, s: *const lua_char, len: size_t) -> *const lua_char;
     #[no_mangle]
     fn lua_pushstring(L: *mut lua_State, s: *const lua_char) -> *const lua_char;
     #[no_mangle]
@@ -202,58 +195,9 @@ extern "C" {
     #[no_mangle]
     fn lua_getstack(L: *mut lua_State, level: lua_int, ar: *mut lua_Debug) -> lua_int;
     #[no_mangle]
-    fn lua_getinfo(L: *mut lua_State, what: *const lua_char, ar: *mut lua_Debug)
-        -> lua_int;
+    fn lua_getinfo(L: *mut lua_State, what: *const lua_char, ar: *mut lua_Debug) -> lua_int;
 }
-pub type __builtin_va_list = [__va_list_tag; 1];
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct __va_list_tag {
-    pub gp_offset: lua_uint,
-    pub fp_offset: lua_uint,
-    pub overflow_arg_area: *mut lua_void,
-    pub reg_save_area: *mut lua_void,
-}
-pub type va_list = __builtin_va_list;
-pub type size_t = lua_ulong;
-pub type __off_t = lua_long;
-pub type __off64_t = lua_long;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct _IO_FILE {
-    pub _flags: lua_int,
-    pub _IO_read_ptr: *mut lua_char,
-    pub _IO_read_end: *mut lua_char,
-    pub _IO_read_base: *mut lua_char,
-    pub _IO_write_base: *mut lua_char,
-    pub _IO_write_ptr: *mut lua_char,
-    pub _IO_write_end: *mut lua_char,
-    pub _IO_buf_base: *mut lua_char,
-    pub _IO_buf_end: *mut lua_char,
-    pub _IO_save_base: *mut lua_char,
-    pub _IO_backup_base: *mut lua_char,
-    pub _IO_save_end: *mut lua_char,
-    pub _markers: *mut _IO_marker,
-    pub _chain: *mut _IO_FILE,
-    pub _fileno: lua_int,
-    pub _flags2: lua_int,
-    pub _old_offset: __off_t,
-    pub _cur_column: lua_ushort,
-    pub _vtable_offset: lua_schar,
-    pub _shortbuf: [lua_char; 1],
-    pub _lock: *mut lua_void,
-    pub _offset: __off64_t,
-    pub _codecvt: *mut _IO_codecvt,
-    pub _wide_data: *mut _IO_wide_data,
-    pub _freeres_list: *mut _IO_FILE,
-    pub _freeres_buf: *mut lua_void,
-    pub __pad5: size_t,
-    pub _mode: lua_int,
-    pub _unused2: [lua_char; 20],
-}
-pub type _IO_lock_t = ();
-pub type FILE = _IO_FILE;
-pub type intptr_t = lua_long;
+
 /*
 ** basic types
 */
@@ -278,15 +222,13 @@ pub type lua_KFunction =
 ** Type for functions that read/write blocks when loading/dumping Lua chunks
 */
 pub type lua_Reader = Option<
-    unsafe extern "C" fn(_: *mut lua_State, _: *mut lua_void, _: *mut size_t)
-        -> *const lua_char,
+    unsafe extern "C" fn(_: *mut lua_State, _: *mut lua_void, _: *mut size_t) -> *const lua_char,
 >;
 /*
 ** Type for memory-allocation functions
 */
 pub type lua_Alloc = Option<
-    unsafe extern "C" fn(_: *mut lua_void, _: *mut lua_void, _: size_t, _: size_t)
-        -> *mut lua_void,
+    unsafe extern "C" fn(_: *mut lua_void, _: *mut lua_void, _: size_t, _: size_t) -> *mut lua_void,
 >;
 /*
 ** {==============================================================
@@ -516,17 +458,9 @@ pub unsafe extern "C" fn luaL_tolstring(
         match lua_type(L, idx) {
             3 => {
                 if 0 != lua_isinteger(L, idx) {
-                    lua_pushfstring!(
-                        L,
-                        s!(b"%I\x00"),
-                        lua_tointegerx(L, idx, 0 as *mut lua_int),
-                    );
+                    lua_pushfstring!(L, s!(b"%I\x00"), lua_tointegerx(L, idx, 0 as *mut lua_int),);
                 } else {
-                    lua_pushfstring!(
-                        L,
-                        s!(b"%f\x00"),
-                        lua_tonumberx(L, idx, 0 as *mut lua_int),
-                    );
+                    lua_pushfstring!(L, s!(b"%f\x00"), lua_tonumberx(L, idx, 0 as *mut lua_int),);
                 }
             }
             4 => {
@@ -623,10 +557,7 @@ pub unsafe extern "C" fn luaL_argerror(
 /*
 ** Search for a name for a function in all loaded modules
 */
-unsafe extern "C" fn pushglobalfuncname(
-    mut L: *mut lua_State,
-    mut ar: *mut lua_Debug,
-) -> lua_int {
+unsafe extern "C" fn pushglobalfuncname(mut L: *mut lua_State, mut ar: *mut lua_Debug) -> lua_int {
     let mut top: lua_int = lua_gettop(L);
     /* push function */
     lua_getinfo(L, s!(b"f\x00"), ar);
@@ -723,11 +654,7 @@ pub unsafe extern "C" fn luaL_checklstring(
     }
     return s;
 }
-unsafe extern "C" fn tag_error(
-    mut L: *mut lua_State,
-    mut arg: lua_int,
-    mut tag: lua_int,
-) -> () {
+unsafe extern "C" fn tag_error(mut L: *mut lua_State, mut arg: lua_int, mut tag: lua_int) -> () {
     typeerror(L, arg, lua_typename(L, tag));
 }
 unsafe extern "C" fn typeerror(
@@ -771,10 +698,7 @@ pub unsafe extern "C" fn luaL_optlstring(
     };
 }
 #[no_mangle]
-pub unsafe extern "C" fn luaL_checknumber(
-    mut L: *mut lua_State,
-    mut arg: lua_int,
-) -> lua_Number {
+pub unsafe extern "C" fn luaL_checknumber(mut L: *mut lua_State, mut arg: lua_int) -> lua_Number {
     let mut isnum: lua_int = 0;
     let mut d: lua_Number = lua_tonumberx(L, arg, &mut isnum);
     if 0 == isnum {
@@ -795,10 +719,7 @@ pub unsafe extern "C" fn luaL_optnumber(
     };
 }
 #[no_mangle]
-pub unsafe extern "C" fn luaL_checkinteger(
-    mut L: *mut lua_State,
-    mut arg: lua_int,
-) -> lua_Integer {
+pub unsafe extern "C" fn luaL_checkinteger(mut L: *mut lua_State, mut arg: lua_int) -> lua_Integer {
     let mut isnum: lua_int = 0;
     let mut d: lua_Integer = lua_tointegerx(L, arg, &mut isnum);
     if 0 == isnum {
@@ -957,7 +878,7 @@ pub unsafe extern "C" fn luaL_fileresult(
     mut fname: *const lua_char,
 ) -> lua_int {
     /* calls to Lua API may change this value */
-    let mut en: lua_int = *__errno_location();
+    let mut en: lua_int = errno();
     if 0 != stat {
         lua_pushboolean(L, 1i32);
         return 1i32;
@@ -973,10 +894,7 @@ pub unsafe extern "C" fn luaL_fileresult(
     };
 }
 #[no_mangle]
-pub unsafe extern "C" fn luaL_execresult(
-    mut L: *mut lua_State,
-    mut stat: lua_int,
-) -> lua_int {
+pub unsafe extern "C" fn luaL_execresult(mut L: *mut lua_State, mut stat: lua_int) -> lua_int {
     /* type of termination */
     let mut what: *const lua_char = s!(b"exit\x00");
     /* error? */
@@ -1081,8 +999,7 @@ pub unsafe extern "C" fn luaL_loadfilex(
         lf.n = lf.n + 1;
         lf.buff[fresh0 as usize] = '\n' as i32 as lua_char
     }
-    if c == (*::std::mem::transmute::<&[u8; 5], &[lua_char; 5]>(b"\x1bLua\x00"))[0usize]
-        as lua_int
+    if c == (*::std::mem::transmute::<&[u8; 5], &[lua_char; 5]>(b"\x1bLua\x00"))[0usize] as lua_int
         && !filename.is_null()
     {
         /* binary file? */
@@ -1128,7 +1045,7 @@ unsafe extern "C" fn errfile(
     mut what: *const lua_char,
     mut fnameindex: lua_int,
 ) -> lua_int {
-    let mut serr: *const lua_char = strerror(*__errno_location());
+    let mut serr: *const lua_char = strerror(errno());
     let mut filename: *const lua_char =
         lua_tolstring(L, fnameindex, 0 as *mut size_t).offset(1isize);
     lua_pushfstring!(L, s!(b"cannot %s %s: %s\x00"), what, filename, serr,);
@@ -1254,10 +1171,7 @@ unsafe extern "C" fn getS(
     };
 }
 #[no_mangle]
-pub unsafe extern "C" fn luaL_loadstring(
-    mut L: *mut lua_State,
-    mut s: *const lua_char,
-) -> lua_int {
+pub unsafe extern "C" fn luaL_loadstring(mut L: *mut lua_State, mut s: *const lua_char) -> lua_int {
     return luaL_loadbufferx(L, s, strlen(s), s, 0 as *const lua_char);
 }
 #[no_mangle]
@@ -1458,8 +1372,8 @@ pub unsafe extern "C" fn luaL_buffinit(mut L: *mut lua_State, mut B: *mut luaL_B
     (*B).n = 0i32 as size_t;
     (*B).size = (0x80i32 as lua_ulong)
         .wrapping_mul(::std::mem::size_of::<*mut lua_void>() as lua_ulong)
-        .wrapping_mul(::std::mem::size_of::<lua_Integer>() as lua_ulong)
-        as lua_int as size_t;
+        .wrapping_mul(::std::mem::size_of::<lua_Integer>() as lua_ulong) as lua_int
+        as size_t;
 }
 #[no_mangle]
 pub unsafe extern "C" fn luaL_setfuncs(

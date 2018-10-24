@@ -1,9 +1,7 @@
-use types::*;
 use luaconf::*;
+use types::*;
+
 extern "C" {
-    pub type _IO_wide_data;
-    pub type _IO_codecvt;
-    pub type _IO_marker;
     /*
      ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
      ** Lua - A Scripting Language
@@ -58,11 +56,7 @@ extern "C" {
     #[no_mangle]
     fn lua_pushinteger(L: *mut lua_State, n: lua_Integer) -> ();
     #[no_mangle]
-    fn lua_pushlstring(
-        L: *mut lua_State,
-        s: *const lua_char,
-        len: size_t,
-    ) -> *const lua_char;
+    fn lua_pushlstring(L: *mut lua_State, s: *const lua_char, len: size_t) -> *const lua_char;
     #[no_mangle]
     fn lua_pushstring(L: *mut lua_State, s: *const lua_char) -> *const lua_char;
     #[no_mangle]
@@ -143,46 +137,6 @@ extern "C" {
     #[no_mangle]
     fn add_history(_: *const lua_char) -> ();
 }
-pub type __off_t = lua_long;
-pub type __off64_t = lua_long;
-pub type __sighandler_t = Option<unsafe extern "C" fn(_: lua_int) -> ()>;
-pub type size_t = lua_ulong;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct _IO_FILE {
-    pub _flags: lua_int,
-    pub _IO_read_ptr: *mut lua_char,
-    pub _IO_read_end: *mut lua_char,
-    pub _IO_read_base: *mut lua_char,
-    pub _IO_write_base: *mut lua_char,
-    pub _IO_write_ptr: *mut lua_char,
-    pub _IO_write_end: *mut lua_char,
-    pub _IO_buf_base: *mut lua_char,
-    pub _IO_buf_end: *mut lua_char,
-    pub _IO_save_base: *mut lua_char,
-    pub _IO_backup_base: *mut lua_char,
-    pub _IO_save_end: *mut lua_char,
-    pub _markers: *mut _IO_marker,
-    pub _chain: *mut _IO_FILE,
-    pub _fileno: lua_int,
-    pub _flags2: lua_int,
-    pub _old_offset: __off_t,
-    pub _cur_column: lua_ushort,
-    pub _vtable_offset: lua_schar,
-    pub _shortbuf: [lua_char; 1],
-    pub _lock: *mut lua_void,
-    pub _offset: __off64_t,
-    pub _codecvt: *mut _IO_codecvt,
-    pub _wide_data: *mut _IO_wide_data,
-    pub _freeres_list: *mut _IO_FILE,
-    pub _freeres_buf: *mut lua_void,
-    pub __pad5: size_t,
-    pub _mode: lua_int,
-    pub _unused2: [lua_char; 20],
-}
-pub type _IO_lock_t = ();
-pub type FILE = _IO_FILE;
-pub type intptr_t = lua_long;
 
 // ----------- Header declarations -----------
 
@@ -532,10 +486,7 @@ unsafe extern "C" fn dostring(
 ** Calls 'require(name)' and stores the result in a global variable
 ** with the given name.
 */
-unsafe extern "C" fn dolibrary(
-    mut L: *mut lua_State,
-    mut name: *const lua_char,
-) -> lua_int {
+unsafe extern "C" fn dolibrary(mut L: *mut lua_State, mut name: *const lua_char) -> lua_int {
     let mut status: lua_int = 0;
     lua_getglobal(L, s!(b"require\x00"));
     lua_pushstring(L, name);
@@ -550,10 +501,7 @@ unsafe extern "C" fn dolibrary(
 /*
 ** Returns the string to be used as a prompt by the interpreter.
 */
-unsafe extern "C" fn get_prompt(
-    mut L: *mut lua_State,
-    mut firstline: lua_int,
-) -> *const lua_char {
+unsafe extern "C" fn get_prompt(mut L: *mut lua_State, mut firstline: lua_int) -> *const lua_char {
     let mut p: *const lua_char = 0 as *const lua_char;
     lua_getglobal(
         L,
@@ -612,8 +560,7 @@ unsafe extern "C" fn pushline(mut L: *mut lua_State, mut firstline: lua_int) -> 
     let mut l: size_t = 0;
     let mut prmt: *const lua_char = get_prompt(L, firstline);
     b = readline(prmt);
-    let mut readstatus: lua_int =
-        (b != 0 as *mut lua_void as *mut lua_char) as lua_int;
+    let mut readstatus: lua_int = (b != 0 as *mut lua_void as *mut lua_char) as lua_int;
     if readstatus == 0i32 {
         /* no input (prompt will be popped by caller) */
         return 0i32;
@@ -623,8 +570,7 @@ unsafe extern "C" fn pushline(mut L: *mut lua_State, mut firstline: lua_int) -> 
         l = strlen(b);
         /* line ends with newline? */
         if l > 0i32 as lua_ulong
-            && *b.offset(l.wrapping_sub(1i32 as lua_ulong) as isize) as lua_int
-                == '\n' as i32
+            && *b.offset(l.wrapping_sub(1i32 as lua_ulong) as isize) as lua_int == '\n' as i32
         {
             /* remove it */
             l = l.wrapping_sub(1);
@@ -800,10 +746,7 @@ unsafe extern "C" fn pushargs(mut L: *mut lua_State) -> lua_int {
     lua_settop(L, -1i32 - 1i32);
     return n;
 }
-unsafe extern "C" fn handle_script(
-    mut L: *mut lua_State,
-    mut argv: *mut *mut lua_char,
-) -> lua_int {
+unsafe extern "C" fn handle_script(mut L: *mut lua_State, mut argv: *mut *mut lua_char) -> lua_int {
     let mut n: lua_int = 0;
     let mut status: lua_int = 0;
     let mut fname: *const lua_char = *argv.offset(0isize);
@@ -833,10 +776,7 @@ unsafe extern "C" fn handle_script(
 ** any invalid argument). 'first' returns the first not-handled argument
 ** (either the script name or a bad argument in case of error).
 */
-unsafe extern "C" fn collectargs(
-    mut argv: *mut *mut lua_char,
-    mut first: *mut lua_int,
-) -> lua_int {
+unsafe extern "C" fn collectargs(mut argv: *mut *mut lua_char, mut first: *mut lua_int) -> lua_int {
     let mut current_block: u64;
     let mut args: lua_int = 0i32;
     let mut i: lua_int = 0;
@@ -899,8 +839,7 @@ unsafe extern "C" fn collectargs(
                         /* try next 'argv' */
                         i += 1;
                         if (*argv.offset(i as isize)).is_null()
-                            || *(*argv.offset(i as isize)).offset(0isize) as lua_int
-                                == '-' as i32
+                            || *(*argv.offset(i as isize)).offset(0isize) as lua_int == '-' as i32
                         {
                             /* no next argument or it is another option */
                             return 1i32;
@@ -993,9 +932,7 @@ unsafe extern "C" fn pmain(mut L: *mut lua_State) -> lua_int {
             .wrapping_mul(16i32 as lua_ulong)
             .wrapping_add(::std::mem::size_of::<lua_Number>() as lua_ulong),
     );
-    if !(*argv.offset(0isize)).is_null()
-        && 0 != *(*argv.offset(0isize)).offset(0isize) as lua_int
-    {
+    if !(*argv.offset(0isize)).is_null() && 0 != *(*argv.offset(0isize)).offset(0isize) as lua_int {
         progname = *argv.offset(0isize)
     }
     if args == 1i32 {

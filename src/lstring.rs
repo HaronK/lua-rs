@@ -1,4 +1,5 @@
 use types::*;
+
 extern "C" {
     /*
      ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
@@ -141,10 +142,7 @@ extern "C" {
     #[no_mangle]
     fn luaC_newobj(L: *mut lua_State, tt: lua_int, sz: size_t) -> *mut GCObject;
 }
-pub type size_t = lua_ulong;
-pub type ptrdiff_t = lua_long;
-pub type __sig_atomic_t = lua_int;
-pub type intptr_t = lua_long;
+
 /*
 ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
 ** Lua - A Scripting Language
@@ -557,8 +555,7 @@ pub type l_mem = ptrdiff_t;
 ** Type for memory-allocation functions
 */
 pub type lua_Alloc = Option<
-    unsafe extern "C" fn(_: *mut lua_void, _: *mut lua_void, _: size_t, _: size_t)
-        -> *mut lua_void,
+    unsafe extern "C" fn(_: *mut lua_void, _: *mut lua_void, _: size_t, _: size_t) -> *mut lua_void,
 >;
 /* maximum value for size_t */
 /* maximum size visible for Lua (must be representable in a lua_Integer */
@@ -750,8 +747,7 @@ pub unsafe extern "C" fn luaS_hashlongstr(mut ts: *mut TString) -> lua_uint {
     if (*ts).extra as lua_int == 0i32 {
         /* no hash? */
         (*ts).hash = luaS_hash(
-            (ts as *mut lua_char)
-                .offset(::std::mem::size_of::<UTString>() as lua_ulong as isize),
+            (ts as *mut lua_char).offset(::std::mem::size_of::<UTString>() as lua_ulong as isize),
             (*ts).u.lnglen,
             (*ts).hash,
         );
@@ -767,11 +763,9 @@ pub unsafe extern "C" fn luaS_eqlngstr(mut a: *mut TString, mut b: *mut TString)
     return (a == b
         || len == (*b).u.lnglen
             && memcmp(
-                (a as *mut lua_char)
-                    .offset(::std::mem::size_of::<UTString>() as lua_ulong as isize)
+                (a as *mut lua_char).offset(::std::mem::size_of::<UTString>() as lua_ulong as isize)
                     as *const lua_void,
-                (b as *mut lua_char)
-                    .offset(::std::mem::size_of::<UTString>() as lua_ulong as isize)
+                (b as *mut lua_char).offset(::std::mem::size_of::<UTString>() as lua_ulong as isize)
                     as *const lua_void,
                 len,
             ) == 0i32) as lua_int;
@@ -796,8 +790,7 @@ pub unsafe extern "C" fn luaS_resize(mut L: *mut lua_State, mut newsize: lua_int
             (*tb).hash as *mut lua_void,
             ((*tb).size as lua_ulong)
                 .wrapping_mul(::std::mem::size_of::<*mut TString>() as lua_ulong),
-            (newsize as lua_ulong)
-                .wrapping_mul(::std::mem::size_of::<*mut TString>() as lua_ulong),
+            (newsize as lua_ulong).wrapping_mul(::std::mem::size_of::<*mut TString>() as lua_ulong),
         ) as *mut *mut TString;
         i = (*tb).size;
         while i < newsize {
@@ -817,8 +810,7 @@ pub unsafe extern "C" fn luaS_resize(mut L: *mut lua_State, mut newsize: lua_int
             /* save next */
             let mut hnext: *mut TString = (*p).u.hnext;
             /* new position */
-            let mut h: lua_uint =
-                ((*p).hash & (newsize - 1i32) as lua_uint) as lua_int as lua_uint;
+            let mut h: lua_uint = ((*p).hash & (newsize - 1i32) as lua_uint) as lua_int as lua_uint;
             /* chain it */
             (*p).u.hnext = *(*tb).hash.offset(h as isize);
             let ref mut fresh2 = *(*tb).hash.offset(h as isize);
@@ -844,8 +836,7 @@ pub unsafe extern "C" fn luaS_resize(mut L: *mut lua_State, mut newsize: lua_int
             (*tb).hash as *mut lua_void,
             ((*tb).size as lua_ulong)
                 .wrapping_mul(::std::mem::size_of::<*mut TString>() as lua_ulong),
-            (newsize as lua_ulong)
-                .wrapping_mul(::std::mem::size_of::<*mut TString>() as lua_ulong),
+            (newsize as lua_ulong).wrapping_mul(::std::mem::size_of::<*mut TString>() as lua_ulong),
         ) as *mut *mut TString
     }
     (*tb).size = newsize;
@@ -1003,8 +994,7 @@ unsafe extern "C" fn internshrstr(
                 & ((*g).currentwhite as lua_int ^ (1i32 << 0i32 | 1i32 << 1i32))
             {
                 /* resurrect it */
-                (*ts).marked =
-                    ((*ts).marked as lua_int ^ (1i32 << 0i32 | 1i32 << 1i32)) as lu_byte
+                (*ts).marked = ((*ts).marked as lua_int ^ (1i32 << 0i32 | 1i32 << 1i32)) as lu_byte
             }
             return ts;
         } else {
@@ -1022,8 +1012,7 @@ unsafe extern "C" fn internshrstr(
     }
     ts = createstrobj(L, l, 4i32 | 0i32 << 4i32, h);
     memcpy(
-        (ts as *mut lua_char)
-            .offset(::std::mem::size_of::<UTString>() as lua_ulong as isize)
+        (ts as *mut lua_char).offset(::std::mem::size_of::<UTString>() as lua_ulong as isize)
             as *mut lua_void,
         str as *const lua_void,
         l.wrapping_mul(::std::mem::size_of::<lua_char>() as lua_ulong),
@@ -1080,10 +1069,7 @@ pub unsafe extern "C" fn luaS_newudata(mut L: *mut lua_State, mut s: size_t) -> 
     };
 }
 #[no_mangle]
-pub unsafe extern "C" fn luaS_new(
-    mut L: *mut lua_State,
-    mut str: *const lua_char,
-) -> *mut TString {
+pub unsafe extern "C" fn luaS_new(mut L: *mut lua_State, mut str: *const lua_char) -> *mut TString {
     /* hash */
     let mut i: lua_uint = ((str as size_t
         & (2147483647i32 as lua_uint)

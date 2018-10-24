@@ -1,8 +1,6 @@
 use types::*;
+
 extern "C" {
-    pub type _IO_wide_data;
-    pub type _IO_codecvt;
-    pub type _IO_marker;
     /*
      ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
      ** Lua - A Scripting Language
@@ -50,11 +48,7 @@ extern "C" {
     #[no_mangle]
     fn lua_pushnil(L: *mut lua_State) -> ();
     #[no_mangle]
-    fn lua_pushlstring(
-        L: *mut lua_State,
-        s: *const lua_char,
-        len: size_t,
-    ) -> *const lua_char;
+    fn lua_pushlstring(L: *mut lua_State, s: *const lua_char, len: size_t) -> *const lua_char;
     #[no_mangle]
     fn lua_pushstring(L: *mut lua_State, s: *const lua_char) -> *const lua_char;
     #[no_mangle]
@@ -93,11 +87,7 @@ extern "C" {
     #[no_mangle]
     fn luaL_checkversion_(L: *mut lua_State, ver: lua_Number, sz: size_t) -> ();
     #[no_mangle]
-    fn luaL_checklstring(
-        L: *mut lua_State,
-        arg: lua_int,
-        l: *mut size_t,
-    ) -> *const lua_char;
+    fn luaL_checklstring(L: *mut lua_State, arg: lua_int, l: *mut size_t) -> *const lua_char;
     #[no_mangle]
     fn luaL_optlstring(
         L: *mut lua_State,
@@ -123,11 +113,7 @@ extern "C" {
     #[no_mangle]
     fn luaL_setfuncs(L: *mut lua_State, l: *const luaL_Reg, nup: lua_int) -> ();
     #[no_mangle]
-    fn luaL_getsubtable(
-        L: *mut lua_State,
-        idx: lua_int,
-        fname: *const lua_char,
-    ) -> lua_int;
+    fn luaL_getsubtable(L: *mut lua_State, idx: lua_int, fname: *const lua_char) -> lua_int;
     #[no_mangle]
     fn luaL_buffinit(L: *mut lua_State, B: *mut luaL_Buffer) -> ();
     #[no_mangle]
@@ -143,45 +129,7 @@ extern "C" {
     #[no_mangle]
     fn dlclose(__handle: *mut lua_void) -> lua_int;
 }
-pub type size_t = lua_ulong;
-pub type __off_t = lua_long;
-pub type __off64_t = lua_long;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct _IO_FILE {
-    pub _flags: lua_int,
-    pub _IO_read_ptr: *mut lua_char,
-    pub _IO_read_end: *mut lua_char,
-    pub _IO_read_base: *mut lua_char,
-    pub _IO_write_base: *mut lua_char,
-    pub _IO_write_ptr: *mut lua_char,
-    pub _IO_write_end: *mut lua_char,
-    pub _IO_buf_base: *mut lua_char,
-    pub _IO_buf_end: *mut lua_char,
-    pub _IO_save_base: *mut lua_char,
-    pub _IO_backup_base: *mut lua_char,
-    pub _IO_save_end: *mut lua_char,
-    pub _markers: *mut _IO_marker,
-    pub _chain: *mut _IO_FILE,
-    pub _fileno: lua_int,
-    pub _flags2: lua_int,
-    pub _old_offset: __off_t,
-    pub _cur_column: lua_ushort,
-    pub _vtable_offset: lua_schar,
-    pub _shortbuf: [lua_char; 1],
-    pub _lock: *mut lua_void,
-    pub _offset: __off64_t,
-    pub _codecvt: *mut _IO_codecvt,
-    pub _wide_data: *mut _IO_wide_data,
-    pub _freeres_list: *mut _IO_FILE,
-    pub _freeres_buf: *mut lua_void,
-    pub __pad5: size_t,
-    pub _mode: lua_int,
-    pub _unused2: [lua_char; 20],
-}
-pub type _IO_lock_t = ();
-pub type FILE = _IO_FILE;
-pub type intptr_t = lua_long;
+
 /*
 ** basic types
 */
@@ -387,8 +335,7 @@ unsafe extern "C" fn setpath(
     mut envname: *const lua_char,
     mut dft: *const lua_char,
 ) -> () {
-    let mut nver: *const lua_char =
-        lua_pushfstring!(L, s!(b"%s%s\x00"), envname, s!(b"_5_3\x00"),);
+    let mut nver: *const lua_char = lua_pushfstring!(L, s!(b"%s%s\x00"), envname, s!(b"_5_3\x00"),);
     /* use versioned name */
     let mut path: *const lua_char = getenv(nver);
     /* no environment variable? */
@@ -475,11 +422,7 @@ unsafe extern "C" fn searcher_Croot(mut L: *mut lua_State) -> lua_int {
         /* is root */
         return 0i32;
     } else {
-        lua_pushlstring(
-            L,
-            name,
-            p.wrapping_offset_from(name) as lua_long as size_t,
-        );
+        lua_pushlstring(L, name, p.wrapping_offset_from(name) as lua_long as size_t);
         filename = findfile(
             L,
             lua_tolstring(L, -1i32, 0 as *mut size_t),
@@ -622,10 +565,7 @@ unsafe extern "C" fn lookforfunc(
 /*
 ** return registry.CLIBS[path]
 */
-unsafe extern "C" fn checkclib(
-    mut L: *mut lua_State,
-    mut path: *const lua_char,
-) -> *mut lua_void {
+unsafe extern "C" fn checkclib(mut L: *mut lua_State, mut path: *const lua_char) -> *mut lua_void {
     let mut plib: *mut lua_void = 0 as *mut lua_void;
     lua_rawgetp(
         L,
@@ -716,8 +656,7 @@ unsafe extern "C" fn lsys_load(
     mut path: *const lua_char,
     mut seeglb: lua_int,
 ) -> *mut lua_void {
-    let mut lib: *mut lua_void =
-        dlopen(path, 0x2i32 | if 0 != seeglb { 0x100i32 } else { 0i32 });
+    let mut lib: *mut lua_void = dlopen(path, 0x2i32 | if 0 != seeglb { 0x100i32 } else { 0i32 });
     if lib.is_null() {
         lua_pushstring(L, dlerror());
     }
@@ -825,11 +764,7 @@ unsafe extern "C" fn pushnexttemplate(
             l = path.offset(strlen(path) as isize)
         }
         /* template */
-        lua_pushlstring(
-            L,
-            path,
-            l.wrapping_offset_from(path) as lua_long as size_t,
-        );
+        lua_pushlstring(L, path, l.wrapping_offset_from(path) as lua_long as size_t);
         return l;
     };
 }

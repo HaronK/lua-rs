@@ -1,4 +1,6 @@
+use stdc::prelude::*;
 use types::*;
+
 extern "C" {
     /*
      ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
@@ -16,16 +18,9 @@ extern "C" {
     /* thread status */
     pub type lua_State;
     #[no_mangle]
-    fn __ctype_b_loc() -> *mut *const lua_ushort;
-    #[no_mangle]
-    fn __ctype_tolower_loc() -> *mut *const __int32_t;
-    #[no_mangle]
-    fn __ctype_toupper_loc() -> *mut *const __int32_t;
-    #[no_mangle]
     fn localeconv() -> *mut lconv;
     #[no_mangle]
-    fn snprintf(_: *mut lua_char, _: lua_ulong, _: *const lua_char, ...)
-        -> lua_int;
+    fn snprintf(_: *mut lua_char, _: lua_ulong, _: *const lua_char, ...) -> lua_int;
     #[no_mangle]
     fn memcpy(_: *mut lua_void, _: *const lua_void, _: lua_ulong) -> *mut lua_void;
     #[no_mangle]
@@ -76,11 +71,7 @@ extern "C" {
     #[no_mangle]
     fn lua_pushinteger(L: *mut lua_State, n: lua_Integer) -> ();
     #[no_mangle]
-    fn lua_pushlstring(
-        L: *mut lua_State,
-        s: *const lua_char,
-        len: size_t,
-    ) -> *const lua_char;
+    fn lua_pushlstring(L: *mut lua_State, s: *const lua_char, len: size_t) -> *const lua_char;
     #[no_mangle]
     fn lua_pushstring(L: *mut lua_State, s: *const lua_char) -> *const lua_char;
     #[no_mangle]
@@ -116,20 +107,11 @@ extern "C" {
     #[no_mangle]
     fn luaL_checkversion_(L: *mut lua_State, ver: lua_Number, sz: size_t) -> ();
     #[no_mangle]
-    fn luaL_tolstring(L: *mut lua_State, idx: lua_int, len: *mut size_t)
-        -> *const lua_char;
+    fn luaL_tolstring(L: *mut lua_State, idx: lua_int, len: *mut size_t) -> *const lua_char;
     #[no_mangle]
-    fn luaL_argerror(
-        L: *mut lua_State,
-        arg: lua_int,
-        extramsg: *const lua_char,
-    ) -> lua_int;
+    fn luaL_argerror(L: *mut lua_State, arg: lua_int, extramsg: *const lua_char) -> lua_int;
     #[no_mangle]
-    fn luaL_checklstring(
-        L: *mut lua_State,
-        arg: lua_int,
-        l: *mut size_t,
-    ) -> *const lua_char;
+    fn luaL_checklstring(L: *mut lua_State, arg: lua_int, l: *mut size_t) -> *const lua_char;
     #[no_mangle]
     fn luaL_optlstring(
         L: *mut lua_State,
@@ -166,51 +148,7 @@ extern "C" {
     #[no_mangle]
     fn luaL_buffinitsize(L: *mut lua_State, B: *mut luaL_Buffer, sz: size_t) -> *mut lua_char;
 }
-pub type __int32_t = lua_int;
-pub type unnamed = lua_uint;
-pub const _ISalnum: unnamed = 8;
-pub const _ISpunct: unnamed = 4;
-pub const _IScntrl: unnamed = 2;
-pub const _ISblank: unnamed = 1;
-pub const _ISgraph: unnamed = 32768;
-pub const _ISprint: unnamed = 16384;
-pub const _ISspace: unnamed = 8192;
-pub const _ISxdigit: unnamed = 4096;
-pub const _ISdigit: unnamed = 2048;
-pub const _ISalpha: unnamed = 1024;
-pub const _ISlower: unnamed = 512;
-pub const _ISupper: unnamed = 256;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct lconv {
-    pub decimal_point: *mut lua_char,
-    pub thousands_sep: *mut lua_char,
-    pub grouping: *mut lua_char,
-    pub int_curr_symbol: *mut lua_char,
-    pub currency_symbol: *mut lua_char,
-    pub mon_decimal_point: *mut lua_char,
-    pub mon_thousands_sep: *mut lua_char,
-    pub mon_grouping: *mut lua_char,
-    pub positive_sign: *mut lua_char,
-    pub negative_sign: *mut lua_char,
-    pub int_frac_digits: lua_char,
-    pub frac_digits: lua_char,
-    pub p_cs_precedes: lua_char,
-    pub p_sep_by_space: lua_char,
-    pub n_cs_precedes: lua_char,
-    pub n_sep_by_space: lua_char,
-    pub p_sign_posn: lua_char,
-    pub n_sign_posn: lua_char,
-    pub int_p_cs_precedes: lua_char,
-    pub int_p_sep_by_space: lua_char,
-    pub int_n_cs_precedes: lua_char,
-    pub int_n_sep_by_space: lua_char,
-    pub int_p_sign_posn: lua_char,
-    pub int_n_sign_posn: lua_char,
-}
-pub type ptrdiff_t = lua_long;
-pub type size_t = lua_ulong;
-pub type intptr_t = lua_long;
+
 /*
 ** basic types
 */
@@ -234,12 +172,8 @@ pub type lua_CFunction = Option<unsafe extern "C" fn(_: *mut lua_State) -> lua_i
 pub type lua_KFunction =
     Option<unsafe extern "C" fn(_: *mut lua_State, _: lua_int, _: lua_KContext) -> lua_int>;
 pub type lua_Writer = Option<
-    unsafe extern "C" fn(
-        _: *mut lua_State,
-        _: *const lua_void,
-        _: size_t,
-        _: *mut lua_void,
-    ) -> lua_int,
+    unsafe extern "C" fn(_: *mut lua_State, _: *const lua_void, _: size_t, _: *mut lua_void)
+        -> lua_int,
 >;
 /*
 ** $Id: lauxlib.h,v 1.131.1.1 2017/04/19 17:20:42 roberto Exp $
@@ -366,20 +300,6 @@ pub struct GMatchState {
     pub lastmatch: *const lua_char,
     pub ms: MatchState,
 }
-unsafe extern "C" fn tolower(mut __c: lua_int) -> lua_int {
-    return if __c >= -128i32 && __c < 256i32 {
-        *(*__ctype_tolower_loc()).offset(__c as isize)
-    } else {
-        __c
-    };
-}
-unsafe extern "C" fn toupper(mut __c: lua_int) -> lua_int {
-    return if __c >= -128i32 && __c < 256i32 {
-        *(*__ctype_toupper_loc()).offset(__c as isize)
-    } else {
-        __c
-    };
-}
 #[no_mangle]
 pub unsafe extern "C" fn luaopen_string(mut L: *mut lua_State) -> lua_int {
     luaL_checkversion_(
@@ -492,12 +412,9 @@ unsafe extern "C" fn str_unpack(mut L: *mut lua_State) -> lua_int {
                     size,
                     h.islittle,
                 );
-                if size as lua_ulong == ::std::mem::size_of::<lua_float>() as lua_ulong
-                {
+                if size as lua_ulong == ::std::mem::size_of::<lua_float>() as lua_ulong {
                     num = u.f as lua_Number
-                } else if size as lua_ulong
-                    == ::std::mem::size_of::<lua_double>() as lua_ulong
-                {
+                } else if size as lua_ulong == ::std::mem::size_of::<lua_double>() as lua_ulong {
                     num = u.d
                 } else {
                     num = u.n
@@ -563,17 +480,17 @@ unsafe extern "C" fn unpackint(
 ) -> lua_Integer {
     let mut res: lua_Unsigned = 0i32 as lua_Unsigned;
     let mut i: lua_int = 0;
-    let mut limit: lua_int =
-        if size <= ::std::mem::size_of::<lua_Integer>() as lua_ulong as lua_int {
-            size
-        } else {
-            ::std::mem::size_of::<lua_Integer>() as lua_ulong as lua_int
-        };
+    let mut limit: lua_int = if size <= ::std::mem::size_of::<lua_Integer>() as lua_ulong as lua_int
+    {
+        size
+    } else {
+        ::std::mem::size_of::<lua_Integer>() as lua_ulong as lua_int
+    };
     i = limit - 1i32;
     while i >= 0i32 {
         res <<= 8i32;
-        res |= *str.offset((if 0 != islittle { i } else { size - 1i32 - i }) as isize)
-            as lua_uchar as lua_Unsigned;
+        res |= *str.offset((if 0 != islittle { i } else { size - 1i32 - i }) as isize) as lua_uchar
+            as lua_Unsigned;
         i -= 1
     }
     if size < ::std::mem::size_of::<lua_Integer>() as lua_ulong as lua_int {
@@ -586,16 +503,15 @@ unsafe extern "C" fn unpackint(
         }
     } else if size > ::std::mem::size_of::<lua_Integer>() as lua_ulong as lua_int {
         /* must check unread bytes */
-        let mut mask_0: lua_int =
-            if 0 == issigned || res as lua_Integer >= 0i32 as lua_longlong {
-                0i32
-            } else {
-                (1i32 << 8i32) - 1i32
-            };
+        let mut mask_0: lua_int = if 0 == issigned || res as lua_Integer >= 0i32 as lua_longlong {
+            0i32
+        } else {
+            (1i32 << 8i32) - 1i32
+        };
         i = limit;
         while i < size {
-            if *str.offset((if 0 != islittle { i } else { size - 1i32 - i }) as isize)
-                as lua_uchar as lua_int
+            if *str.offset((if 0 != islittle { i } else { size - 1i32 - i }) as isize) as lua_uchar
+                as lua_int
                 != mask_0
             {
                 luaL_error!(
@@ -697,8 +613,7 @@ unsafe extern "C" fn getdetails(
                 s!(b"format asks for alignment not power of 2\x00"),
             );
         }
-        *ntoalign =
-            align - (totalsize & (align - 1i32) as lua_ulong) as lua_int & align - 1i32
+        *ntoalign = align - (totalsize & (align - 1i32) as lua_ulong) as lua_int & align - 1i32
     }
     return opt;
 }
@@ -893,18 +808,17 @@ unsafe extern "C" fn str_packsize(mut L: *mut lua_State) -> lua_int {
         let mut opt: KOption = getdetails(&mut h, totalsize, &mut fmt, &mut size, &mut ntoalign);
         /* total space used by option */
         size += ntoalign;
-        (totalsize <= if (::std::mem::size_of::<size_t>() as lua_ulong)
-            < ::std::mem::size_of::<lua_int>() as lua_ulong
-        {
-            !(0i32 as size_t)
-        } else {
-            2147483647i32 as size_t
-        }
-        .wrapping_sub(size as lua_ulong)
-            || 0 != luaL_argerror(L, 1i32, s!(b"format result too large\x00")))
-            as lua_int;
-        totalsize =
-            (totalsize as lua_ulong).wrapping_add(size as lua_ulong) as size_t as size_t;
+        (totalsize
+            <= if (::std::mem::size_of::<size_t>() as lua_ulong)
+                < ::std::mem::size_of::<lua_int>() as lua_ulong
+            {
+                !(0i32 as size_t)
+            } else {
+                2147483647i32 as size_t
+            }
+            .wrapping_sub(size as lua_ulong)
+            || 0 != luaL_argerror(L, 1i32, s!(b"format result too large\x00"))) as lua_int;
+        totalsize = (totalsize as lua_ulong).wrapping_add(size as lua_ulong) as size_t as size_t;
         match opt as lua_uint {
             4 => {}
             5 => {}
@@ -948,8 +862,8 @@ unsafe extern "C" fn str_pack(mut L: *mut lua_State) -> lua_int {
         let mut size: lua_int = 0;
         let mut ntoalign: lua_int = 0;
         let mut opt: KOption = getdetails(&mut h, totalsize, &mut fmt, &mut size, &mut ntoalign);
-        totalsize = (totalsize as lua_ulong).wrapping_add((ntoalign + size) as lua_ulong)
-            as size_t as size_t;
+        totalsize = (totalsize as lua_ulong).wrapping_add((ntoalign + size) as lua_ulong) as size_t
+            as size_t;
         loop {
             let fresh8 = ntoalign;
             ntoalign = ntoalign - 1;
@@ -1001,26 +915,17 @@ unsafe extern "C" fn str_pack(mut L: *mut lua_State) -> lua_int {
                 let mut buff: *mut lua_char = luaL_prepbuffsize(&mut b, size as size_t);
                 /* get argument */
                 let mut n_1: lua_Number = luaL_checknumber(L, arg);
-                if size as lua_ulong == ::std::mem::size_of::<lua_float>() as lua_ulong
-                {
+                if size as lua_ulong == ::std::mem::size_of::<lua_float>() as lua_ulong {
                     /* copy it into 'u' */
                     ::std::ptr::write_volatile(&mut u.f as *mut lua_float, n_1 as lua_float)
-                } else if size as lua_ulong
-                    == ::std::mem::size_of::<lua_double>() as lua_ulong
-                {
+                } else if size as lua_ulong == ::std::mem::size_of::<lua_double>() as lua_ulong {
                     ::std::ptr::write_volatile(&mut u.d as *mut lua_double, n_1)
                 } else {
                     ::std::ptr::write_volatile(&mut u.n as *mut lua_Number, n_1)
                 }
                 /* move 'u' to final result, correcting endianness if needed */
-                copywithendian(
-                    buff as *mut lua_char,
-                    u.buff.as_mut_ptr(),
-                    size,
-                    h.islittle,
-                );
-                b.n =
-                    (b.n as lua_ulong).wrapping_add(size as lua_ulong) as size_t as size_t;
+                copywithendian(buff as *mut lua_char, u.buff.as_mut_ptr(), size, h.islittle);
+                b.n = (b.n as lua_ulong).wrapping_add(size as lua_ulong) as size_t as size_t;
                 continue;
             }
             3 => {
@@ -1072,8 +977,7 @@ unsafe extern "C" fn str_pack(mut L: *mut lua_State) -> lua_int {
                     as lua_int;
                 luaL_addlstring(&mut b, s_1, len_1);
                 /* add zero at the end */
-                (b.n < b.size || !luaL_prepbuffsize(&mut b, 1i32 as size_t).is_null())
-                    as lua_int;
+                (b.n < b.size || !luaL_prepbuffsize(&mut b, 1i32 as size_t).is_null()) as lua_int;
                 let fresh12 = b.n;
                 b.n = b.n.wrapping_add(1);
                 *b.b.offset(fresh12 as isize) = '\u{0}' as i32 as lua_char;
@@ -1084,8 +988,7 @@ unsafe extern "C" fn str_pack(mut L: *mut lua_State) -> lua_int {
             }
             6 => {
                 /* FALLTHROUGH */
-                (b.n < b.size || !luaL_prepbuffsize(&mut b, 1i32 as size_t).is_null())
-                    as lua_int;
+                (b.n < b.size || !luaL_prepbuffsize(&mut b, 1i32 as size_t).is_null()) as lua_int;
                 let fresh13 = b.n;
                 b.n = b.n.wrapping_add(1);
                 *b.b.offset(fresh13 as isize) = 0i32 as lua_char
@@ -1162,14 +1065,13 @@ unsafe extern "C" fn str_upper(mut L: *mut lua_State) -> lua_int {
                     __res = if __c < -128i32 || __c > 255i32 {
                         __c
                     } else {
-                        *(*__ctype_toupper_loc()).offset(__c as isize)
+                        toupper(__c)
                     }
                 } else {
                     __res = toupper(*s.offset(i as isize) as lua_uchar as lua_int)
                 }
             } else {
-                __res = *(*__ctype_toupper_loc())
-                    .offset(*s.offset(i as isize) as lua_uchar as lua_int as isize)
+                __res = toupper(*s.offset(i as isize) as lua_uchar as lua_int)
             }
             __res
         } as lua_char;
@@ -1356,19 +1258,12 @@ unsafe extern "C" fn str_find_aux(mut L: *mut lua_State, mut find: lua_int) -> l
                     /* start */
                     lua_pushinteger(
                         L,
-                        (s1.wrapping_offset_from(s) as lua_long + 1i32 as lua_long)
-                            as lua_Integer,
+                        (s1.wrapping_offset_from(s) as lua_long + 1i32 as lua_long) as lua_Integer,
                     );
                     /* end */
-                    lua_pushinteger(
-                        L,
-                        res.wrapping_offset_from(s) as lua_long as lua_Integer,
-                    );
-                    return push_captures(
-                        &mut ms,
-                        0 as *const lua_char,
-                        0 as *const lua_char,
-                    ) + 2i32;
+                    lua_pushinteger(L, res.wrapping_offset_from(s) as lua_long as lua_Integer);
+                    return push_captures(&mut ms, 0 as *const lua_char, 0 as *const lua_char)
+                        + 2i32;
                 } else {
                     return push_captures(&mut ms, s1, res);
                 }
@@ -1415,11 +1310,7 @@ unsafe extern "C" fn push_onecapture(
         /* ms->level == 0, too */
         if i == 0i32 {
             /* add whole match */
-            lua_pushlstring(
-                (*ms).L,
-                s,
-                e.wrapping_offset_from(s) as lua_long as size_t,
-            );
+            lua_pushlstring((*ms).L, s, e.wrapping_offset_from(s) as lua_long as size_t);
         } else {
             luaL_error!((*ms).L, s!(b"invalid capture index %%%d\x00"), i + 1i32);
         }
@@ -1534,11 +1425,12 @@ unsafe extern "C" fn match_0(
                                     previous as lua_uchar as lua_int,
                                     p,
                                     ep.offset(-1isize),
-                                ) && 0 != matchbracketclass(
-                                    *s as lua_uchar as lua_int,
-                                    p,
-                                    ep.offset(-1isize),
-                                ) {
+                                ) && 0
+                                    != matchbracketclass(
+                                        *s as lua_uchar as lua_int,
+                                        p,
+                                        ep.offset(-1isize),
+                                    ) {
                                     p = ep;
                                     /* return match(ms, s, ep); */
                                     continue;
@@ -1551,11 +1443,7 @@ unsafe extern "C" fn match_0(
                             }
                             _ => {
                                 /* capture results (%0-%9)? */
-                                s = match_capture(
-                                    ms,
-                                    s,
-                                    *p.offset(1isize) as lua_uchar as lua_int,
-                                );
+                                s = match_capture(ms, s, *p.offset(1isize) as lua_uchar as lua_int);
                                 if s.is_null() {
                                     current_block = 11174649648027449784;
                                     break;
@@ -1604,11 +1492,12 @@ unsafe extern "C" fn match_0(
                                     previous as lua_uchar as lua_int,
                                     p,
                                     ep.offset(-1isize),
-                                ) && 0 != matchbracketclass(
-                                    *s as lua_uchar as lua_int,
-                                    p,
-                                    ep.offset(-1isize),
-                                ) {
+                                ) && 0
+                                    != matchbracketclass(
+                                        *s as lua_uchar as lua_int,
+                                        p,
+                                        ep.offset(-1isize),
+                                    ) {
                                     p = ep;
                                     /* return match(ms, s, ep); */
                                     continue;
@@ -1621,11 +1510,7 @@ unsafe extern "C" fn match_0(
                             }
                             _ => {
                                 /* capture results (%0-%9)? */
-                                s = match_capture(
-                                    ms,
-                                    s,
-                                    *p.offset(1isize) as lua_uchar as lua_int,
-                                );
+                                s = match_capture(ms, s, *p.offset(1isize) as lua_uchar as lua_int);
                                 if s.is_null() {
                                     current_block = 11174649648027449784;
                                     break;
@@ -1674,11 +1559,12 @@ unsafe extern "C" fn match_0(
                                     previous as lua_uchar as lua_int,
                                     p,
                                     ep.offset(-1isize),
-                                ) && 0 != matchbracketclass(
-                                    *s as lua_uchar as lua_int,
-                                    p,
-                                    ep.offset(-1isize),
-                                ) {
+                                ) && 0
+                                    != matchbracketclass(
+                                        *s as lua_uchar as lua_int,
+                                        p,
+                                        ep.offset(-1isize),
+                                    ) {
                                     p = ep;
                                     /* return match(ms, s, ep); */
                                     continue;
@@ -1691,11 +1577,7 @@ unsafe extern "C" fn match_0(
                             }
                             _ => {
                                 /* capture results (%0-%9)? */
-                                s = match_capture(
-                                    ms,
-                                    s,
-                                    *p.offset(1isize) as lua_uchar as lua_int,
-                                );
+                                s = match_capture(ms, s, *p.offset(1isize) as lua_uchar as lua_int);
                                 if s.is_null() {
                                     current_block = 11174649648027449784;
                                     break;
@@ -1779,10 +1661,7 @@ unsafe extern "C" fn match_0(
     (*ms).matchdepth += 1;
     return s;
 }
-unsafe extern "C" fn classend(
-    mut ms: *mut MatchState,
-    mut p: *const lua_char,
-) -> *const lua_char {
+unsafe extern "C" fn classend(mut ms: *mut MatchState, mut p: *const lua_char) -> *const lua_char {
     let fresh17 = p;
     p = p.offset(1);
     match *fresh17 as lua_int {
@@ -1879,8 +1758,7 @@ unsafe extern "C" fn matchbracketclass(
             return sig;
         } else if *p.offset(1isize) as lua_int == '-' as i32 && p.offset(2isize) < ec {
             p = p.offset(2isize);
-            if !(*p.offset(-2isize) as lua_uchar as lua_int <= c
-                && c <= *p as lua_uchar as lua_int)
+            if !(*p.offset(-2isize) as lua_uchar as lua_int <= c && c <= *p as lua_uchar as lua_int)
             {
                 continue;
             }
@@ -1905,66 +1783,33 @@ unsafe extern "C" fn match_class(mut c: lua_int, mut cl: lua_int) -> lua_int {
                 __res = if __c < -128i32 || __c > 255i32 {
                     __c
                 } else {
-                    *(*__ctype_tolower_loc()).offset(__c as isize)
+                    tolower(__c)
                 }
             } else {
                 __res = tolower(cl)
             }
         } else {
-            __res = *(*__ctype_tolower_loc()).offset(cl as isize)
+            __res = tolower(cl)
         }
         __res
     } {
-        97 => {
-            res = *(*__ctype_b_loc()).offset(c as isize) as lua_int
-                & _ISalpha as lua_int as lua_ushort as lua_int
-        }
-        99 => {
-            res = *(*__ctype_b_loc()).offset(c as isize) as lua_int
-                & _IScntrl as lua_int as lua_ushort as lua_int
-        }
-        100 => {
-            res = *(*__ctype_b_loc()).offset(c as isize) as lua_int
-                & _ISdigit as lua_int as lua_ushort as lua_int
-        }
-        103 => {
-            res = *(*__ctype_b_loc()).offset(c as isize) as lua_int
-                & _ISgraph as lua_int as lua_ushort as lua_int
-        }
-        108 => {
-            res = *(*__ctype_b_loc()).offset(c as isize) as lua_int
-                & _ISlower as lua_int as lua_ushort as lua_int
-        }
-        112 => {
-            res = *(*__ctype_b_loc()).offset(c as isize) as lua_int
-                & _ISpunct as lua_int as lua_ushort as lua_int
-        }
-        115 => {
-            res = *(*__ctype_b_loc()).offset(c as isize) as lua_int
-                & _ISspace as lua_int as lua_ushort as lua_int
-        }
-        117 => {
-            res = *(*__ctype_b_loc()).offset(c as isize) as lua_int
-                & _ISupper as lua_int as lua_ushort as lua_int
-        }
-        119 => {
-            res = *(*__ctype_b_loc()).offset(c as isize) as lua_int
-                & _ISalnum as lua_int as lua_ushort as lua_int
-        }
-        120 => {
-            res = *(*__ctype_b_loc()).offset(c as isize) as lua_int
-                & _ISxdigit as lua_int as lua_ushort as lua_int
-        }
+        97 => res = isalpha(c),
+        99 => res = iscntrl(c),
+        100 => res = isdigit(c),
+        103 => res = isgraph(c),
+        108 => res = islower(c),
+        112 => res = ispunct(c),
+        115 => res = isspace(c),
+        117 => res = isupper(c),
+        119 => res = isalnum(c),
+        120 => res = isxdigit(c),
         122 => res = (c == 0i32) as lua_int,
         _ => {
             /* deprecated option */
             return (cl == c) as lua_int;
         }
     }
-    return if 0
-        != *(*__ctype_b_loc()).offset(cl as isize) as lua_int
-            & _ISlower as lua_int as lua_ushort as lua_int
-    {
+    return if 0 != islower(cl) {
         res
     } else {
         (0 == res) as lua_int
@@ -2015,9 +1860,7 @@ unsafe extern "C" fn match_capture(
 /* maximum recursion depth for 'match' */
 unsafe extern "C" fn check_capture(mut ms: *mut MatchState, mut l: lua_int) -> lua_int {
     l -= '1' as i32;
-    if l < 0i32
-        || l >= (*ms).level as lua_int
-        || (*ms).capture[l as usize].len == -1i32 as lua_long
+    if l < 0i32 || l >= (*ms).level as lua_int || (*ms).capture[l as usize].len == -1i32 as lua_long
     {
         return luaL_error!((*ms).L, s!(b"invalid capture index %%%d\x00"), l + 1i32);
     } else {
@@ -2219,14 +2062,13 @@ unsafe extern "C" fn str_lower(mut L: *mut lua_State) -> lua_int {
                     __res = if __c < -128i32 || __c > 255i32 {
                         __c
                     } else {
-                        *(*__ctype_tolower_loc()).offset(__c as isize)
+                        tolower(__c)
                     }
                 } else {
                     __res = tolower(*s.offset(i as isize) as lua_uchar as lua_int)
                 }
             } else {
-                __res = *(*__ctype_tolower_loc())
-                    .offset(*s.offset(i as isize) as lua_uchar as lua_int as isize)
+                __res = tolower(*s.offset(i as isize) as lua_uchar as lua_int)
             }
             __res
         } as lua_char;
@@ -2268,11 +2110,8 @@ unsafe extern "C" fn str_gsub(mut L: *mut lua_State) -> lua_int {
     /* replacement type */
     let mut tr: lua_int = lua_type(L, 3i32);
     /* max replacements */
-    let mut max_s: lua_Integer = luaL_optinteger(
-        L,
-        4i32,
-        srcl.wrapping_add(1i32 as lua_ulong) as lua_Integer,
-    );
+    let mut max_s: lua_Integer =
+        luaL_optinteger(L, 4i32, srcl.wrapping_add(1i32 as lua_ulong) as lua_Integer);
     let mut anchor: lua_int = (*p as lua_int == '^' as i32) as lua_int;
     /* replacement count */
     let mut n: lua_Integer = 0i32 as lua_Integer;
@@ -2299,8 +2138,7 @@ unsafe extern "C" fn str_gsub(mut L: *mut lua_State) -> lua_int {
         || tr == 4i32
         || tr == 6i32
         || tr == 5i32
-        || 0 != luaL_argerror(L, 3i32, s!(b"string/function/table expected\x00")))
-        as lua_int;
+        || 0 != luaL_argerror(L, 3i32, s!(b"string/function/table expected\x00"))) as lua_int;
     luaL_buffinit(L, &mut b);
     if 0 != anchor {
         p = p.offset(1isize);
@@ -2405,11 +2243,7 @@ unsafe extern "C" fn add_s(
         } else {
             /* skip ESC */
             i = i.wrapping_add(1);
-            if 0 == *(*__ctype_b_loc())
-                .offset(*news.offset(i as isize) as lua_uchar as lua_int as isize)
-                as lua_int
-                & _ISdigit as lua_int as lua_ushort as lua_int
-            {
+            if 0 == isdigit(*news.offset(i as isize) as lua_uchar as lua_int) {
                 if *news.offset(i as isize) as lua_int != '%' as i32 {
                     luaL_error!(
                         L,
@@ -2417,20 +2251,14 @@ unsafe extern "C" fn add_s(
                         '%' as i32,
                     );
                 }
-                ((*b).n < (*b).size || !luaL_prepbuffsize(b, 1i32 as size_t).is_null())
-                    as lua_int;
+                ((*b).n < (*b).size || !luaL_prepbuffsize(b, 1i32 as size_t).is_null()) as lua_int;
                 let fresh22 = (*b).n;
                 (*b).n = (*b).n.wrapping_add(1);
                 *(*b).b.offset(fresh22 as isize) = *news.offset(i as isize)
             } else if *news.offset(i as isize) as lua_int == '0' as i32 {
                 luaL_addlstring(b, s, e.wrapping_offset_from(s) as lua_long as size_t);
             } else {
-                push_onecapture(
-                    ms,
-                    *news.offset(i as isize) as lua_int - '1' as i32,
-                    s,
-                    e,
-                );
+                push_onecapture(ms, *news.offset(i as isize) as lua_int - '1' as i32, s, e);
                 /* if number, convert it to string */
                 luaL_tolstring(L, -1i32, 0 as *mut size_t);
                 /* remove original value */
@@ -2451,8 +2279,7 @@ unsafe extern "C" fn gmatch(mut L: *mut lua_State) -> lua_int {
     let mut gm: *mut GMatchState = 0 as *mut GMatchState;
     /* keep them on closure to avoid being collected */
     lua_settop(L, 2i32);
-    gm = lua_newuserdata(L, ::std::mem::size_of::<GMatchState>() as lua_ulong)
-        as *mut GMatchState;
+    gm = lua_newuserdata(L, ::std::mem::size_of::<GMatchState>() as lua_ulong) as *mut GMatchState;
     prepstate(&mut (*gm).ms, L, s, ls, p, lp);
     (*gm).src = s;
     (*gm).p = p;
@@ -2507,8 +2334,7 @@ unsafe extern "C" fn str_format(mut L: *mut lua_State) -> lua_int {
             strfrmt = strfrmt.offset(1isize);
             if *strfrmt as lua_int == '%' as i32 {
                 /* %% */
-                (b.n < b.size || !luaL_prepbuffsize(&mut b, 1i32 as size_t).is_null())
-                    as lua_int;
+                (b.n < b.size || !luaL_prepbuffsize(&mut b, 1i32 as size_t).is_null()) as lua_int;
                 let fresh26 = b.n;
                 b.n = b.n.wrapping_add(1);
                 let fresh25 = strfrmt;
@@ -2542,12 +2368,7 @@ unsafe extern "C" fn str_format(mut L: *mut lua_State) -> lua_int {
                     100 | 105 | 111 | 117 | 120 | 88 => {
                         let mut n: lua_Integer = luaL_checkinteger(L, arg);
                         addlenmod(form.as_mut_ptr(), s!(b"ll\x00"));
-                        nb = snprintf(
-                            buff,
-                            (120i32 + 308i32) as lua_ulong,
-                            form.as_mut_ptr(),
-                            n,
-                        )
+                        nb = snprintf(buff, (120i32 + 308i32) as lua_ulong, form.as_mut_ptr(), n)
                     }
                     97 | 65 => {
                         addlenmod(form.as_mut_ptr(), s!(b"\x00"));
@@ -2561,12 +2382,7 @@ unsafe extern "C" fn str_format(mut L: *mut lua_State) -> lua_int {
                     101 | 69 | 102 | 103 | 71 => {
                         let mut n_0: lua_Number = luaL_checknumber(L, arg);
                         addlenmod(form.as_mut_ptr(), s!(b"\x00"));
-                        nb = snprintf(
-                            buff,
-                            (120i32 + 308i32) as lua_ulong,
-                            form.as_mut_ptr(),
-                            n_0,
-                        )
+                        nb = snprintf(buff, (120i32 + 308i32) as lua_ulong, form.as_mut_ptr(), n_0)
                     }
                     113 => {
                         addliteral(L, &mut b, arg);
@@ -2673,11 +2489,8 @@ unsafe extern "C" fn checkdp(mut buff: *mut lua_char, mut nb: lua_int) -> () {
         /* no dot? */
         /* try locale point */
         let mut point: lua_char = *(*localeconv()).decimal_point.offset(0isize);
-        let mut ppoint: *mut lua_char = memchr(
-            buff as *const lua_void,
-            point as lua_int,
-            nb as lua_ulong,
-        ) as *mut lua_char;
+        let mut ppoint: *mut lua_char =
+            memchr(buff as *const lua_void, point as lua_int, nb as lua_ulong) as *mut lua_char;
         if !ppoint.is_null() {
             /* change it to a dot */
             *ppoint = '.' as i32 as lua_char
@@ -2730,17 +2543,9 @@ unsafe extern "C" fn addquoted(
             let fresh31 = (*b).n;
             (*b).n = (*b).n.wrapping_add(1);
             *(*b).b.offset(fresh31 as isize) = *s
-        } else if 0
-            != *(*__ctype_b_loc()).offset(*s as lua_uchar as lua_int as isize)
-                as lua_int
-                & _IScntrl as lua_int as lua_ushort as lua_int
-        {
+        } else if 0 != iscntrl(*s as lua_uchar as lua_int) {
             let mut buff: [lua_char; 10] = [0; 10];
-            if 0 == *(*__ctype_b_loc())
-                .offset(*s.offset(1isize) as lua_uchar as lua_int as isize)
-                as lua_int
-                & _ISdigit as lua_int as lua_ushort as lua_int
-            {
+            if 0 == isdigit(*s.offset(1isize) as lua_uchar as lua_int) {
                 snprintf(
                     buff.as_mut_ptr(),
                     ::std::mem::size_of::<[lua_char; 10]>() as lua_ulong,
@@ -2786,9 +2591,7 @@ unsafe extern "C" fn scanformat(
     mut form: *mut lua_char,
 ) -> *const lua_char {
     let mut p: *const lua_char = strfrmt;
-    while *p as lua_int != '\u{0}' as i32
-        && !strchr(s!(b"-+ #0\x00"), *p as lua_int).is_null()
-    {
+    while *p as lua_int != '\u{0}' as i32 && !strchr(s!(b"-+ #0\x00"), *p as lua_int).is_null() {
         /* skip flags */
         p = p.offset(1isize)
     }
@@ -2798,38 +2601,26 @@ unsafe extern "C" fn scanformat(
     {
         luaL_error!(L, s!(b"invalid format (repeated flags)\x00"));
     }
-    if 0 != *(*__ctype_b_loc()).offset(*p as lua_uchar as lua_int as isize) as lua_int
-        & _ISdigit as lua_int as lua_ushort as lua_int
-    {
+    if 0 != isdigit(*p as lua_uchar as lua_int) {
         /* skip width */
         p = p.offset(1isize)
     }
-    if 0 != *(*__ctype_b_loc()).offset(*p as lua_uchar as lua_int as isize) as lua_int
-        & _ISdigit as lua_int as lua_ushort as lua_int
-    {
+    if 0 != isdigit(*p as lua_uchar as lua_int) {
         /* (2 digits at most) */
         p = p.offset(1isize)
     }
     if *p as lua_int == '.' as i32 {
         p = p.offset(1isize);
-        if 0 != *(*__ctype_b_loc()).offset(*p as lua_uchar as lua_int as isize)
-            as lua_int
-            & _ISdigit as lua_int as lua_ushort as lua_int
-        {
+        if 0 != isdigit(*p as lua_uchar as lua_int) {
             /* skip precision */
             p = p.offset(1isize)
         }
-        if 0 != *(*__ctype_b_loc()).offset(*p as lua_uchar as lua_int as isize)
-            as lua_int
-            & _ISdigit as lua_int as lua_ushort as lua_int
-        {
+        if 0 != isdigit(*p as lua_uchar as lua_int) {
             /* (2 digits at most) */
             p = p.offset(1isize)
         }
     }
-    if 0 != *(*__ctype_b_loc()).offset(*p as lua_uchar as lua_int as isize) as lua_int
-        & _ISdigit as lua_int as lua_ushort as lua_int
-    {
+    if 0 != isdigit(*p as lua_uchar as lua_int) {
         luaL_error!(L, s!(b"invalid format (width or precision too long)\x00"));
     }
     let fresh34 = form;
@@ -2841,8 +2632,7 @@ unsafe extern "C" fn scanformat(
         ((p.wrapping_offset_from(strfrmt) as lua_long + 1i32 as lua_long) as lua_ulong)
             .wrapping_mul(::std::mem::size_of::<lua_char>() as lua_ulong),
     );
-    form = form
-        .offset((p.wrapping_offset_from(strfrmt) as lua_long + 1i32 as lua_long) as isize);
+    form = form.offset((p.wrapping_offset_from(strfrmt) as lua_long + 1i32 as lua_long) as isize);
     *form = '\u{0}' as i32 as lua_char;
     return p;
 }
@@ -2931,8 +2721,8 @@ unsafe extern "C" fn str_byte(mut L: *mut lua_State) -> lua_int {
         while i < n {
             lua_pushinteger(
                 L,
-                *s.offset((posi + i as lua_longlong - 1i32 as lua_longlong) as isize)
-                    as lua_uchar as lua_Integer,
+                *s.offset((posi + i as lua_longlong - 1i32 as lua_longlong) as isize) as lua_uchar
+                    as lua_Integer,
             );
             i += 1
         }
