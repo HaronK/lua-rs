@@ -16,12 +16,7 @@ extern "C" {
     fn luaV_execute(L: *mut lua_State) -> ();
     #[no_mangle]
     fn luaV_finishOp(L: *mut lua_State) -> ();
-    /*
-     ** 'module' operation for hashing (size is always a power of 2)
-     */
-    /*
-     ** (address of) a fixed nil value
-     */
+
     #[no_mangle]
     static luaO_nilobject_: TValue;
     /* not to be called directly */
@@ -32,27 +27,7 @@ extern "C" {
         oldsize: size_t,
         size: size_t,
     ) -> *mut lua_void;
-    /*
-     ** $Id: lmem.h,v 1.43.1.1 2017/04/19 17:20:42 roberto Exp $
-     ** Interface to Memory Manager
-     ** See Copyright Notice in lua.h
-     */
-    /*
-     ** This macro reallocs a vector 'b' from 'on' to 'n' elements, where
-     ** each element has size 'e'. In case of arithmetic overflow of the
-     ** product 'n'*'e', it raises an error (calling 'luaM_toobig'). Because
-     ** 'e' is always constant, it avoids the runtime division MAX_SIZET/(e).
-     **
-     ** (The macro is somewhat complex to avoid warnings:  The 'sizeof'
-     ** comparison avoids a runtime comparison when overflow cannot occur.
-     ** The compiler should be able to optimize the real test by itself, but
-     ** when it does it, it may give a warning about "comparison is always
-     ** false due to limited range of data type"; the +1 tricks the compiler,
-     ** avoiding this warning but also this optimization.)
-     */
-    /*
-     ** Arrays of chars do not need any test
-     */
+
     #[no_mangle]
     fn luaM_toobig(L: *mut lua_State) -> !;
     #[no_mangle]

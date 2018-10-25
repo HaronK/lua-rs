@@ -1,4 +1,5 @@
 use types::prelude::*;
+
 extern "C" {
     #[no_mangle]
     fn lua_settop(L: *mut lua_State, idx: lua_int) -> ();

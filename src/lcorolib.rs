@@ -2,20 +2,6 @@ use lua::*;
 use types::prelude::*;
 
 extern "C" {
-    /*
-     ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
-     ** Lua - A Scripting Language
-     ** Lua.org, PUC-Rio, Brazil (http://www.lua.org)
-     ** See Copyright Notice at the end of this file
-     */
-    /* mark for precompiled code ('<esc>Lua') */
-    /* option for multiple returns in 'lua_pcall' and 'lua_call' */
-    /*
-     ** Pseudo-indices
-     ** (-LUAI_MAXSTACK is the minimum valid index; we keep some free empty
-     ** space after that to help overflow detection)
-     */
-
     #[no_mangle]
     fn lua_newthread(L: *mut lua_State) -> *mut lua_State;
     #[no_mangle]

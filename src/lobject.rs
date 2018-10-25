@@ -140,11 +140,6 @@ pub type l_uacNumber = lua_double;
 pub type l_uacInt = lua_longlong;
 
 /*
-** $Id: ltm.h,v 2.22.1.1 2017/04/19 17:20:42 roberto Exp $
-** Tag methods
-** See Copyright Notice in lua.h
-*/
-/*
 * WARNING: if you change the order of this enumeration,
 * grep "ORDER TM" and "ORDER OP"
 */

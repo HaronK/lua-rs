@@ -3,12 +3,6 @@ use lua::*;
 use types::prelude::*;
 
 extern "C" {
-    /*
-     ** 'module' operation for hashing (size is always a power of 2)
-     */
-    /*
-     ** (address of) a fixed nil value
-     */
     #[no_mangle]
     static luaO_nilobject_: TValue;
     #[no_mangle]
@@ -37,37 +31,7 @@ extern "C" {
         p2: *const TValue,
         res: *mut TValue,
     ) -> ();
-    /*
-     ** $Id: lvm.h,v 2.41.1.1 2017/04/19 17:20:42 roberto Exp $
-     ** Lua virtual machine
-     ** See Copyright Notice in lua.h
-     */
-    /*
-     ** You can define LUA_FLOORN2I if you want to convert floats to integers
-     ** by flooring them (instead of raising an error if they are not
-     ** integral values)
-     */
-    /*
-     ** fast track for 'gettable': if 't' is a table and 't[k]' is not nil,
-     ** return 1 with 'slot' pointing to 't[k]' (final result).  Otherwise,
-     ** return 0 (meaning it will have to check metamethod) with 'slot'
-     ** pointing to a nil 't[k]' (if 't' is a table) or NULL (otherwise).
-     ** 'f' is the raw get function to use.
-     */
-    /* not a table; 'slot' is NULL and result is 0 */
-    /* else, do raw access */
-    /* result not nil? */
-    /*
-     ** standard implementation for 'gettable'
-     */
-    /*
-     ** Fast track for set table. If 't' is a table and 't[k]' is not nil,
-     ** call GC barrier, do a raw 't[k]=v', and return true; otherwise,
-     ** return false with 'slot' equal to NULL (if 't' is not a table) or
-     ** 'nil'. (This is needed by 'luaV_finishget'.) Note that, if the macro
-     ** returns true, there is no need to 'invalidateTMcache', because the
-     ** call is not creating a new entry.
-     */
+
     #[no_mangle]
     fn luaV_equalobj(L: *mut lua_State, t1: *const TValue, t2: *const TValue) -> lua_int;
     #[no_mangle]
@@ -86,19 +50,7 @@ extern "C" {
     ) -> *const lua_char;
     #[no_mangle]
     fn luaF_newCclosure(L: *mut lua_State, nelems: lua_int) -> *mut CClosure;
-    /*
-     ** $Id: ltable.h,v 2.23.1.2 2018/05/24 19:39:05 roberto Exp $
-     ** Lua tables (hash)
-     ** See Copyright Notice in lua.h
-     */
-    /* 'const' to avoid wrong writings that can mess up field 'next' */
-    /*
-     ** writable version of 'gkey'; allows updates to individual fields,
-     ** but not to the whole (which has incompatible type)
-     */
-    /* true when 't' is using 'dummynode' as its hash part */
-    /* allocated size for hash nodes */
-    /* returns the key, given the value of a table entry */
+
     #[no_mangle]
     fn luaH_getint(t: *mut Table, key: lua_Integer) -> *const TValue;
     #[no_mangle]

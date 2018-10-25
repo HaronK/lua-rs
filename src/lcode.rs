@@ -1,47 +1,6 @@
 use types::prelude::*;
 
 extern "C" {
-    /*
-     ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
-     ** Global State
-     ** See Copyright Notice in lua.h
-     */
-    /*
-    
-    ** Some notes about garbage-collected objects: All objects in Lua must
-    ** be kept somehow accessible until being freed, so all objects always
-    ** belong to one (and only one) of these lists, using field 'next' of
-    ** the 'CommonHeader' for the link:
-    **
-    ** 'allgc': all objects not marked for finalization;
-    ** 'finobj': all objects marked for finalization;
-    ** 'tobefnz': all objects ready to be finalized;
-    ** 'fixedgc': all objects that are not to be collected (currently
-    ** only small strings, such as reserved words).
-    **
-    ** Moreover, there is another set of lists that control gray objects.
-    ** These lists are linked by fields 'gclist'. (All objects that
-    ** can become gray have such a field. The field is not the same
-    ** in all objects, but it always has this name.)  Any gray object
-    ** must belong to one of these lists, and all objects in these lists
-    ** must be gray:
-    **
-    ** 'gray': regular gray objects, still waiting to be visited.
-    ** 'grayagain': objects that must be revisited at the atomic phase.
-    **   That includes
-    **   - black objects got in a write barrier;
-    **   - all kinds of weak tables during propagation phase;
-    **   - all threads.
-    ** 'weak': tables with weak values to be cleared;
-    ** 'ephemeron': ephemeron tables with white->white entries;
-    ** 'allweak': tables with weak keys and/or weak values to be cleared.
-    ** The last three lists are used only during the atomic phase.
-    
-    */
-
-    /* control of blocks */
-    /* defined in lparser.c */
-    pub type BlockCnt;
     #[no_mangle]
     fn abs(_: lua_int) -> lua_int;
     #[no_mangle]
@@ -69,37 +28,7 @@ extern "C" {
     fn luaC_barrier_(L: *mut lua_State, o: *mut GCObject, v: *mut GCObject) -> ();
     #[no_mangle]
     fn luaH_set(L: *mut lua_State, t: *mut Table, key: *const TValue) -> *mut TValue;
-    /*
-     ** $Id: lvm.h,v 2.41.1.1 2017/04/19 17:20:42 roberto Exp $
-     ** Lua virtual machine
-     ** See Copyright Notice in lua.h
-     */
-    /*
-     ** You can define LUA_FLOORN2I if you want to convert floats to integers
-     ** by flooring them (instead of raising an error if they are not
-     ** integral values)
-     */
-    /*
-     ** fast track for 'gettable': if 't' is a table and 't[k]' is not nil,
-     ** return 1 with 'slot' pointing to 't[k]' (final result).  Otherwise,
-     ** return 0 (meaning it will have to check metamethod) with 'slot'
-     ** pointing to a nil 't[k]' (if 't' is a table) or NULL (otherwise).
-     ** 'f' is the raw get function to use.
-     */
-    /* not a table; 'slot' is NULL and result is 0 */
-    /* else, do raw access */
-    /* result not nil? */
-    /*
-     ** standard implementation for 'gettable'
-     */
-    /*
-     ** Fast track for set table. If 't' is a table and 't[k]' is not nil,
-     ** call GC barrier, do a raw 't[k]=v', and return true; otherwise,
-     ** return false with 'slot' equal to NULL (if 't' is not a table) or
-     ** 'nil'. (This is needed by 'luaV_finishget'.) Note that, if the macro
-     ** returns true, there is no need to 'invalidateTMcache', because the
-     ** call is not creating a new entry.
-     */
+
     #[no_mangle]
     fn luaV_equalobj(L: *mut lua_State, t1: *const TValue, t2: *const TValue) -> lua_int;
     #[no_mangle]
