@@ -191,95 +191,6 @@ extern "C" {
     fn lua_getinfo(L: *mut lua_State, what: *const lua_char, ar: *mut lua_Debug) -> lua_int;
 }
 
-/*
-** {==============================================================
-** some useful macros
-** ===============================================================
-*/
-/* }============================================================== */
-/*
-** {==============================================================
-** compatibility macros for unsigned conversions
-** ===============================================================
-*/
-/* }============================================================== */
-/*
-** {======================================================================
-** Debug API
-** =======================================================================
-*/
-/*
-** Event codes
-*/
-/*
-** Event masks
-*/
-
-/*
-** $Id: lauxlib.h,v 1.131.1.1 2017/04/19 17:20:42 roberto Exp $
-** Auxiliary functions for building Lua libraries
-** See Copyright Notice in lua.h
-*/
-/* extra error code for 'luaL_loadfilex' */
-/* key, in the registry, for table of loaded modules */
-/* key, in the registry, for table of preloaded loaders */
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct luaL_Reg {
-    pub name: *const lua_char,
-    pub func: lua_CFunction,
-}
-/* }====================================================== */
-/*
-** {======================================================
-** Load functions
-** =======================================================
-*/
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct LoadF {
-    pub n: lua_int,
-    pub f: *mut FILE,
-    pub buff: [lua_char; 8192],
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct LoadS {
-    pub s: *const lua_char,
-    pub size: size_t,
-}
-/*
-** ===============================================================
-** some useful macros
-** ===============================================================
-*/
-/*
-** {======================================================
-** Generic Buffer manipulation
-** =======================================================
-*/
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct luaL_Buffer {
-    pub b: *mut lua_char,
-    pub size: size_t,
-    pub n: size_t,
-    pub L: *mut lua_State,
-    pub initb: [lua_char; 8192],
-}
-/* }====================================================== */
-/*
-** {======================================================
-** Generic Buffer manipulation
-** =======================================================
-*/
-/* userdata to box arbitrary data */
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct UBox {
-    pub box_0: *mut lua_void,
-    pub bsize: size_t,
-}
 #[no_mangle]
 pub unsafe extern "C" fn luaL_checkversion_(
     mut L: *mut lua_State,
@@ -997,6 +908,20 @@ unsafe extern "C" fn errfile(
     lua_settop(L, -1i32 - 1i32);
     return 6i32 + 1i32;
 }
+
+/*
+** {======================================================
+** Load functions
+** =======================================================
+*/
+#[derive(Copy, Clone)]
+#[repr(C)]
+pub struct LoadF {
+    pub n: lua_int,
+    pub f: *mut FILE,
+    pub buff: [lua_char; 8192],
+}
+
 unsafe extern "C" fn getF(
     mut _L: *mut lua_State,
     mut ud: *mut lua_void,
@@ -1077,6 +1002,14 @@ unsafe extern "C" fn skipBOM(mut lf: *mut LoadF) -> lua_int {
     /* return next character */
     return getc((*lf).f);
 }
+
+#[derive(Copy, Clone)]
+#[repr(C)]
+pub struct LoadS {
+    pub s: *const lua_char,
+    pub size: size_t,
+}
+
 #[no_mangle]
 pub unsafe extern "C" fn luaL_loadbufferx(
     mut L: *mut lua_State,

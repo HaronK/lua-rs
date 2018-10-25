@@ -2,20 +2,6 @@ use stdc::prelude::*;
 use types::prelude::*;
 
 extern "C" {
-    /*
-     ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
-     ** Lua - A Scripting Language
-     ** Lua.org, PUC-Rio, Brazil (http://www.lua.org)
-     ** See Copyright Notice at the end of this file
-     */
-    /* mark for precompiled code ('<esc>Lua') */
-    /* option for multiple returns in 'lua_pcall' and 'lua_call' */
-    /*
-     ** Pseudo-indices
-     ** (-LUAI_MAXSTACK is the minimum valid index; we keep some free empty
-     ** space after that to help overflow detection)
-     */
-
     #[no_mangle]
     fn setlocale(__category: lua_int, __locale: *const lua_char) -> *mut lua_char;
     #[no_mangle]
@@ -119,39 +105,6 @@ extern "C" {
     fn close(__fd: lua_int) -> lua_int;
 }
 
-/*
-** $Id: lauxlib.h,v 1.131.1.1 2017/04/19 17:20:42 roberto Exp $
-** Auxiliary functions for building Lua libraries
-** See Copyright Notice in lua.h
-*/
-/* extra error code for 'luaL_loadfilex' */
-/* key, in the registry, for table of loaded modules */
-/* key, in the registry, for table of preloaded loaders */
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct luaL_Reg {
-    pub name: *const lua_char,
-    pub func: lua_CFunction,
-}
-/*
-** ===============================================================
-** some useful macros
-** ===============================================================
-*/
-/*
-** {======================================================
-** Generic Buffer manipulation
-** =======================================================
-*/
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct luaL_Buffer {
-    pub b: *mut lua_char,
-    pub size: size_t,
-    pub n: size_t,
-    pub L: *mut lua_State,
-    pub initb: [lua_char; 8192],
-}
 #[no_mangle]
 pub unsafe extern "C" fn luaopen_os(mut L: *mut lua_State) -> lua_int {
     luaL_checkversion_(
@@ -399,30 +352,7 @@ unsafe extern "C" fn os_exit(mut L: *mut lua_State) -> lua_int {
         return 0i32;
     };
 }
-/* } */
-/* { */
-/*
-** By default, Lua uses gmtime/localtime, except when POSIX is available,
-** where it uses gmtime_r/localtime_r
-*/
-/* { */
-/* }{ */
-/* } */
-/* } */
-/* }================================================================== */
-/*
-** {==================================================================
-** Configuration for 'tmpnam':
-** By default, Lua uses tmpnam except when POSIX is available, where
-** it uses mkstemp.
-** ===================================================================
-*/
-/* { */
-/* { */
-/* }{ */
-/* } */
-/* } */
-/* }================================================================== */
+
 unsafe extern "C" fn os_execute(mut L: *mut lua_State) -> lua_int {
     let mut cmd: *const lua_char = luaL_optlstring(L, 1i32, 0 as *const lua_char, 0 as *mut size_t);
     let mut stat: lua_int = system(cmd);
@@ -440,35 +370,7 @@ unsafe extern "C" fn os_difftime(mut L: *mut lua_State) -> lua_int {
     lua_pushnumber(L, difftime(t1, t2));
     return 1i32;
 }
-/*
-** $Id: loslib.c,v 1.65.1.1 2017/04/19 17:29:57 roberto Exp $
-** Standard Operating System library
-** See Copyright Notice in lua.h
-*/
-/*
-** {==================================================================
-** List of valid conversion specifiers for the 'strftime' function;
-** options are grouped by length; group of length 2 start with '||'.
-** ===================================================================
-*/
-/* { */
-/* options for ANSI C 89 (only 1-char options) */
-/* options for ISO C 99 and POSIX */
-/* two-char options */
-/* options for Windows */
-/* two-char options */
-/* C99 specification */
-/* } */
-/* }================================================================== */
-/*
-** {==================================================================
-** Configuration for time-related stuff
-** ===================================================================
-*/
-/* { */
-/*
-** type to represent time_t in Lua
-*/
+
 unsafe extern "C" fn l_checktime(mut L: *mut lua_State, mut arg: lua_int) -> time_t {
     let mut t: lua_Integer = luaL_checkinteger(L, arg);
     (t as time_t as lua_longlong == t || 0 != luaL_argerror(L, arg, s!(b"time out-of-bounds\x00")))

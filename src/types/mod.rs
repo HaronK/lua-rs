@@ -1,12 +1,19 @@
+pub mod lauxlib;
 pub mod ldo;
 pub mod lfunc;
+pub mod llex;
 pub mod llimits;
 pub mod lobject;
+pub mod lparser;
 pub mod lstate;
 pub mod lua;
+pub mod lzio;
 
 pub mod prelude {
-    pub use super::{ldo::*, lfunc::*, llimits::*, lobject::*, lstate::*, lua::*, *};
+    pub use super::{
+        lauxlib::*, ldo::*, lfunc::*, llex::*, llimits::*, lobject::*, lparser::*, lstate::*,
+        lua::*, lzio::*, *,
+    };
     pub use stdc::common::*;
 }
 

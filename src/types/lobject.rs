@@ -1,5 +1,13 @@
 use super::prelude::*;
 
+#[no_mangle]
+pub static mut luaO_nilobject_: TValue = lua_TValue {
+    value_: Value {
+        gc: 0 as *const GCObject as *mut GCObject,
+    },
+    tt_: 0i32,
+};
+
 /*
 ** Common type has only the common header
 */

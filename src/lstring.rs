@@ -1,43 +1,6 @@
 use types::prelude::*;
 
 extern "C" {
-    /*
-     ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
-     ** Global State
-     ** See Copyright Notice in lua.h
-     */
-    /*
-    
-    ** Some notes about garbage-collected objects: All objects in Lua must
-    ** be kept somehow accessible until being freed, so all objects always
-    ** belong to one (and only one) of these lists, using field 'next' of
-    ** the 'CommonHeader' for the link:
-    **
-    ** 'allgc': all objects not marked for finalization;
-    ** 'finobj': all objects marked for finalization;
-    ** 'tobefnz': all objects ready to be finalized;
-    ** 'fixedgc': all objects that are not to be collected (currently
-    ** only small strings, such as reserved words).
-    **
-    ** Moreover, there is another set of lists that control gray objects.
-    ** These lists are linked by fields 'gclist'. (All objects that
-    ** can become gray have such a field. The field is not the same
-    ** in all objects, but it always has this name.)  Any gray object
-    ** must belong to one of these lists, and all objects in these lists
-    ** must be gray:
-    **
-    ** 'gray': regular gray objects, still waiting to be visited.
-    ** 'grayagain': objects that must be revisited at the atomic phase.
-    **   That includes
-    **   - black objects got in a write barrier;
-    **   - all kinds of weak tables during propagation phase;
-    **   - all threads.
-    ** 'weak': tables with weak values to be cleared;
-    ** 'ephemeron': ephemeron tables with white->white entries;
-    ** 'allweak': tables with weak keys and/or weak values to be cleared.
-    ** The last three lists are used only during the atomic phase.
-    
-    */
     #[no_mangle]
     fn memcpy(_: *mut lua_void, _: *const lua_void, _: lua_ulong) -> *mut lua_void;
     #[no_mangle]
@@ -47,34 +10,10 @@ extern "C" {
     #[no_mangle]
     fn strlen(_: *const lua_char) -> lua_ulong;
     /*
-     ** 'module' operation for hashing (size is always a power of 2)
-     */
-    /*
      ** (address of) a fixed nil value
      */
     #[no_mangle]
     static luaO_nilobject_: TValue;
-    /*
-     ** $Id: lmem.h,v 1.43.1.1 2017/04/19 17:20:42 roberto Exp $
-     ** Interface to Memory Manager
-     ** See Copyright Notice in lua.h
-     */
-    /*
-     ** This macro reallocs a vector 'b' from 'on' to 'n' elements, where
-     ** each element has size 'e'. In case of arithmetic overflow of the
-     ** product 'n'*'e', it raises an error (calling 'luaM_toobig'). Because
-     ** 'e' is always constant, it avoids the runtime division MAX_SIZET/(e).
-     **
-     ** (The macro is somewhat complex to avoid warnings:  The 'sizeof'
-     ** comparison avoids a runtime comparison when overflow cannot occur.
-     ** The compiler should be able to optimize the real test by itself, but
-     ** when it does it, it may give a warning about "comparison is always
-     ** false due to limited range of data type"; the +1 tricks the compiler,
-     ** avoiding this warning but also this optimization.)
-     */
-    /*
-     ** Arrays of chars do not need any test
-     */
     #[no_mangle]
     fn luaM_toobig(L: *mut lua_State) -> !;
     /* not to be called directly */
@@ -85,219 +24,13 @@ extern "C" {
         oldsize: size_t,
         size: size_t,
     ) -> *mut lua_void;
-    /*
-     ** $Id: lgc.h,v 2.91.1.1 2017/04/19 17:39:34 roberto Exp $
-     ** Garbage Collector
-     ** See Copyright Notice in lua.h
-     */
-    /*
-     ** Collectable objects may have one of three colors: white, which
-     ** means the object is not marked; gray, which means the
-     ** object is marked, but its references may be not marked; and
-     ** black, which means that the object and all its references are marked.
-     ** The main invariant of the garbage collector, while marking objects,
-     ** is that a black object can never point to a white one. Moreover,
-     ** any gray object must be in a "gray list" (gray, grayagain, weak,
-     ** allweak, ephemeron) so that it can be visited again before finishing
-     ** the collection cycle. These lists have no meaning when the invariant
-     ** is not being enforced (e.g., sweep phase).
-     */
-    /* how much to allocate before next GC step */
-    /* ~100 small strings */
-    /*
-     ** Possible states of the Garbage Collector
-     */
-    /*
-     ** macro to tell when main invariant (white objects cannot point to black
-     ** ones) must be kept. During a collection, the sweep
-     ** phase may break the invariant, as objects turned white may point to
-     ** still-black objects. The invariant is restored when sweep ends and
-     ** all objects are white again.
-     */
-    /*
-     ** some useful bit tricks
-     */
-    /* Layout for bit use in 'marked' field: */
-    /* object is white (type 0) */
-    /* object is white (type 1) */
-    /* object is black */
-    /* object has been marked for finalization */
-    /* bit 7 is currently used by tests (luaL_checkmemory) */
-    /* neither white nor black */
-    /*
-     ** Does one step of collection when debt becomes positive. 'pre'/'pos'
-     ** allows some adjustments to be done only when needed. macro
-     ** 'condchangemem' is used only for heavy tests (forcing a full
-     ** GC cycle on every opportunity)
-     */
-    /* more often than not, 'pre'/'pos' are empty */
+
     #[no_mangle]
     fn luaC_fix(L: *mut lua_State, o: *mut GCObject) -> ();
     #[no_mangle]
     fn luaC_newobj(L: *mut lua_State, tt: lua_int, sz: size_t) -> *mut GCObject;
 }
 
-/*
-** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
-** Lua - A Scripting Language
-** Lua.org, PUC-Rio, Brazil (http://www.lua.org)
-** See Copyright Notice at the end of this file
-*/
-/* mark for precompiled code ('<esc>Lua') */
-/* option for multiple returns in 'lua_pcall' and 'lua_call' */
-/*
-** Pseudo-indices
-** (-LUAI_MAXSTACK is the minimum valid index; we keep some free empty
-** space after that to help overflow detection)
-*/
-
-/*
-** {==============================================================
-** some useful macros
-** ===============================================================
-*/
-/* }============================================================== */
-/*
-** {==============================================================
-** compatibility macros for unsigned conversions
-** ===============================================================
-*/
-/* }============================================================== */
-/*
-** {======================================================================
-** Debug API
-** =======================================================================
-*/
-/*
-** Event codes
-*/
-/*
-** Event masks
-*/
-
-/* internal assertions for in-house debugging */
-/*
-** assertion for checking API calls
-*/
-/* macro to avoid warnings about unused variables */
-/* type casts (a macro highlights casts in the code) */
-/* cast a signed lua_Integer to lua_Unsigned */
-/*
-** cast a lua_Unsigned to a signed lua_Integer; this cast is
-** not strict ISO C, but two-complement architectures should
-** work fine.
-*/
-/*
-** non-return type
-*/
-/*
-** maximum depth for nested C calls and syntactical nested non-terminals
-** in a program. (Value must fit in an unsigned short int.)
-*/
-
-/* macro defining a nil value */
-/* raw type tag of a TValue */
-/* tag with no variants (bits 0-3) */
-/* type tag of a TValue (bits 0-3 for tags + variant bits 4-5) */
-/* type tag of a TValue with no variants (bits 0-3) */
-/* Macros to test type */
-/* Macros to access values */
-/* a dead value may get the 'gc' field, but cannot access its contents */
-/* Macros for internal tests */
-/* Macros to set values */
-/*
-** different types of assignments, according to destination
-*/
-/* from stack to (same) stack */
-/* to stack (not from same stack) */
-/* from table to same table */
-/* to new object */
-/* to table (define it as an expression to be used in macros) */
-/*
-** {======================================================
-** types and prototypes
-** =======================================================
-*/
-
-/*
-** $Id: lobject.h,v 2.117.1.1 2017/04/19 17:39:34 roberto Exp $
-** Type definitions for Lua objects
-** See Copyright Notice in lua.h
-*/
-/*
-** Extra tags for non-values
-*/
-/* function prototypes */
-/* removed keys in tables */
-/*
-** number of all possible tags (including LUA_TNONE but excluding DEADKEY)
-*/
-/*
-** tags for Tagged Values have the following use of bits:
-** bits 0-3: actual tag (a LUA_T* value)
-** bits 4-5: variant bits
-** bit 6: whether value is collectable
-*/
-/*
-** LUA_TFUNCTION variants:
-** 0 - Lua function
-** 1 - light C function
-** 2 - regular C function (closure)
-*/
-/* Variant tags for functions */
-/* Lua closure */
-/* light C function */
-/* C closure */
-/* Variant tags for strings */
-/* short strings */
-/* long strings */
-/* Variant tags for numbers */
-/* float numbers */
-/* integer numbers */
-/* Bit mark for collectable types */
-/* mark a tag as collectable */
-/*
-** Common type for all collectable objects
-*/
-
-/*
-** Bits in CallInfo status
-*/
-/* original value of 'allowhook' */
-/* call is running a Lua function */
-/* call is running a debug hook */
-/* call is running on a fresh invocation
-of luaV_execute */
-/* call is a yieldable protected call */
-/* call was tail called */
-/* last hook called yielded */
-/* using __lt for __le */
-/* call is running a finalizer */
-/* assume that CIST_OAH has offset 0 and that 'v' is strictly 0/1 */
-
-/*
-** $Id: llimits.h,v 1.141.1.1 2017/04/19 17:20:42 roberto Exp $
-** Limits, basic types, and some other 'installation-dependent' definitions
-** See Copyright Notice in lua.h
-*/
-
-/* maximum value for size_t */
-/* maximum size visible for Lua (must be representable in a lua_Integer */
-/* maximum value of an int */
-/*
-** conversion of pointer to unsigned integer:
-** this is for hashing only; there is no problem if the integer
-** cannot hold the whole pointer value
-*/
-
-/*
-** $Id: lstring.h,v 1.61.1.1 2017/04/19 17:20:42 roberto Exp $
-** String table (keep all strings handled by Lua)
-** See Copyright Notice in lua.h
-*/
-/*
-** test whether a string is a reserved word
-*/
 /*
 ** equality for short strings, which are always internalized
 */

@@ -189,29 +189,6 @@ extern "C" {
 }
 
 /*
-** $Id: ldo.h,v 2.29.1.1 2017/04/19 17:20:42 roberto Exp $
-** Stack and Call structure of Lua
-** See Copyright Notice in lua.h
-*/
-/*
-** Macro to check stack size and grow stack if needed.  Parameters
-** 'pre'/'pos' allow the macro to preserve a pointer into the
-** stack across reallocations, doing the work only when needed.
-** 'condmovestack' is used in heavy tests to force a stack reallocation
-** at every check.
-*/
-/* In general, 'pre'/'pos' are empty (nothing to save) */
-
-/* maximum value for size_t */
-/* maximum size visible for Lua (must be representable in a lua_Integer */
-/* maximum value of an int */
-/*
-** conversion of pointer to unsigned integer:
-** this is for hashing only; there is no problem if the integer
-** cannot hold the whole pointer value
-*/
-
-/*
 ** Execute a protected call.
 */
 /* data to 'f_call' */
@@ -221,34 +198,6 @@ pub struct CallS {
     pub func: StkId,
     pub nresults: lua_int,
 }
-pub type ZIO = Zio;
-/*
-** $Id: lzio.h,v 1.31.1.1 2017/04/19 17:20:42 roberto Exp $
-** Buffered streams
-** See Copyright Notice in lua.h
-*/
-/* end of stream */
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct Zio {
-    pub n: size_t,
-    pub p: *const lua_char,
-    pub reader: lua_Reader,
-    pub data: *mut lua_void,
-    pub L: *mut lua_State,
-}
-/*
-** generic extra include file
-*/
-/*
-** RCS ident string
-*/
-
-/*
-** $Id: lapi.c,v 2.259.1.2 2017/12/06 18:35:12 roberto Exp $
-** Lua API
-** See Copyright Notice in lua.h
-*/
 
 /* value at a non-valid index */
 //#define NONVALIDVALUE		cast(TValue *, luaO_nilobject)

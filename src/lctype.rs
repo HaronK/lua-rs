@@ -1,26 +1,5 @@
 use types::prelude::*;
 
-/*
-** $Id: lctype.h,v 1.12.1.1 2013/04/12 18:48:47 roberto Exp $
-** 'ctype' functions for Lua
-** See Copyright Notice in lua.h
-*/
-/*
-** WARNING: the functions defined here do not necessarily correspond
-** to the similar functions in the standard C ctype.h. They are
-** optimized for the specific needs of Lua
-*/
-/* ASCII case: can use its own tables; faster and fixed */
-/* { */
-/*
-** add 1 to char to allow index -1 (EOZ)
-*/
-/*
-** 'lalpha' (Lua alphabetic) and 'lalnum' (Lua alphanumeric) both include '_'
-*/
-/*
-** this 'ltolower' only works for alphabetic characters
-*/
 /* two more entries for 0 and -1 (EOZ) */
 #[no_mangle]
 pub static mut luai_ctype_: [lu_byte; 257] = [

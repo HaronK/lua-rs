@@ -2,43 +2,6 @@ use lua::*;
 use types::prelude::*;
 
 extern "C" {
-    /*
-     ** $Id: lstate.h,v 2.133.1.1 2017/04/19 17:39:34 roberto Exp $
-     ** Global State
-     ** See Copyright Notice in lua.h
-     */
-    /*
-    
-    ** Some notes about garbage-collected objects: All objects in Lua must
-    ** be kept somehow accessible until being freed, so all objects always
-    ** belong to one (and only one) of these lists, using field 'next' of
-    ** the 'CommonHeader' for the link:
-    **
-    ** 'allgc': all objects not marked for finalization;
-    ** 'finobj': all objects marked for finalization;
-    ** 'tobefnz': all objects ready to be finalized;
-    ** 'fixedgc': all objects that are not to be collected (currently
-    ** only small strings, such as reserved words).
-    **
-    ** Moreover, there is another set of lists that control gray objects.
-    ** These lists are linked by fields 'gclist'. (All objects that
-    ** can become gray have such a field. The field is not the same
-    ** in all objects, but it always has this name.)  Any gray object
-    ** must belong to one of these lists, and all objects in these lists
-    ** must be gray:
-    **
-    ** 'gray': regular gray objects, still waiting to be visited.
-    ** 'grayagain': objects that must be revisited at the atomic phase.
-    **   That includes
-    **   - black objects got in a write barrier;
-    **   - all kinds of weak tables during propagation phase;
-    **   - all threads.
-    ** 'weak': tables with weak values to be cleared;
-    ** 'ephemeron': ephemeron tables with white->white entries;
-    ** 'allweak': tables with weak keys and/or weak values to be cleared.
-    ** The last three lists are used only during the atomic phase.
-    
-    */
     #[no_mangle]
     fn localeconv() -> *mut lconv;
     #[no_mangle]
@@ -63,28 +26,7 @@ extern "C" {
     fn strpbrk(_: *const lua_char, _: *const lua_char) -> *mut lua_char;
     #[no_mangle]
     fn strlen(_: *const lua_char) -> lua_ulong;
-    /*
-     ** $Id: lctype.h,v 1.12.1.1 2013/04/12 18:48:47 roberto Exp $
-     ** 'ctype' functions for Lua
-     ** See Copyright Notice in lua.h
-     */
-    /*
-     ** WARNING: the functions defined here do not necessarily correspond
-     ** to the similar functions in the standard C ctype.h. They are
-     ** optimized for the specific needs of Lua
-     */
-    /* ASCII case: can use its own tables; faster and fixed */
-    /* { */
-    /*
-     ** add 1 to char to allow index -1 (EOZ)
-     */
-    /*
-     ** 'lalpha' (Lua alphabetic) and 'lalnum' (Lua alphanumeric) both include '_'
-     */
-    /*
-     ** this 'ltolower' only works for alphabetic characters
-     */
-    /* two more entries for 0 and -1 (EOZ) */
+
     #[no_mangle]
     static luai_ctype_: [lu_byte; 257];
     #[no_mangle]
@@ -153,94 +95,6 @@ pub struct lconv {
 }
 
 /*
-** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
-** Lua - A Scripting Language
-** Lua.org, PUC-Rio, Brazil (http://www.lua.org)
-** See Copyright Notice at the end of this file
-*/
-/* mark for precompiled code ('<esc>Lua') */
-/* option for multiple returns in 'lua_pcall' and 'lua_call' */
-/*
-** Pseudo-indices
-** (-LUAI_MAXSTACK is the minimum valid index; we keep some free empty
-** space after that to help overflow detection)
-*/
-
-/*
-** {==============================================================
-** some useful macros
-** ===============================================================
-*/
-/* }============================================================== */
-/*
-** {==============================================================
-** compatibility macros for unsigned conversions
-** ===============================================================
-*/
-/* }============================================================== */
-/*
-** {======================================================================
-** Debug API
-** =======================================================================
-*/
-/*
-** Event codes
-*/
-/*
-** Event masks
-*/
-
-/* internal assertions for in-house debugging */
-/*
-** assertion for checking API calls
-*/
-/* macro to avoid warnings about unused variables */
-/* type casts (a macro highlights casts in the code) */
-/* cast a signed lua_Integer to lua_Unsigned */
-/*
-** cast a lua_Unsigned to a signed lua_Integer; this cast is
-** not strict ISO C, but two-complement architectures should
-** work fine.
-*/
-/*
-** non-return type
-*/
-/*
-** maximum depth for nested C calls and syntactical nested non-terminals
-** in a program. (Value must fit in an unsigned short int.)
-*/
-
-/* macro defining a nil value */
-/* raw type tag of a TValue */
-/* tag with no variants (bits 0-3) */
-/* type tag of a TValue (bits 0-3 for tags + variant bits 4-5) */
-/* type tag of a TValue with no variants (bits 0-3) */
-/* Macros to test type */
-/* Macros to access values */
-/* a dead value may get the 'gc' field, but cannot access its contents */
-/* Macros for internal tests */
-/* Macros to set values */
-/*
-** different types of assignments, according to destination
-*/
-/* from stack to (same) stack */
-/* to stack (not from same stack) */
-/* from table to same table */
-/* to new object */
-/* to table (define it as an expression to be used in macros) */
-/*
-** {======================================================
-** types and prototypes
-** =======================================================
-*/
-
-/*
-** $Id: lobject.h,v 2.117.1.1 2017/04/19 17:39:34 roberto Exp $
-** Type definitions for Lua objects
-** See Copyright Notice in lua.h
-*/
-
-/*
 ** Extra tags for non-values
 */
 pub const LUA_TPROTO: i32 = LUA_NUMTAGS; /* function prototypes */
@@ -280,53 +134,6 @@ pub const LUA_TNUMINT: i32 = (LUA_TNUMBER | (1 << 4)); /* integer numbers */
 
 /* Bit mark for collectable types */
 pub const BIT_ISCOLLECTABLE: i32 = (1 << 6);
-
-/* mark a tag as collectable */
-
-/* function prototypes */
-
-/* removed keys in tables */
-
-/* Lua closure */
-/* light C function */
-/* C closure */
-/* short strings */
-/* long strings */
-/* float numbers */
-/* integer numbers */
-/*
-** Common type for all collectable objects
-*/
-
-/*
-** Bits in CallInfo status
-*/
-/* original value of 'allowhook' */
-/* call is running a Lua function */
-/* call is running a debug hook */
-/* call is running on a fresh invocation
-of luaV_execute */
-/* call is a yieldable protected call */
-/* call was tail called */
-/* last hook called yielded */
-/* using __lt for __le */
-/* call is running a finalizer */
-/* assume that CIST_OAH has offset 0 and that 'v' is strictly 0/1 */
-
-/*
-** $Id: llimits.h,v 1.141.1.1 2017/04/19 17:20:42 roberto Exp $
-** Limits, basic types, and some other 'installation-dependent' definitions
-** See Copyright Notice in lua.h
-*/
-
-/* maximum value for size_t */
-/* maximum size visible for Lua (must be representable in a lua_Integer */
-/* maximum value of an int */
-/*
-** conversion of pointer to unsigned integer:
-** this is for hashing only; there is no problem if the integer
-** cannot hold the whole pointer value
-*/
 
 /* types of 'usual argument conversions' for lua_Number and lua_Integer */
 pub type l_uacNumber = lua_double;
@@ -376,13 +183,7 @@ pub const TM_INDEX: TMS = 0;
 /*
 ** (address of) a fixed nil value
 */
-#[no_mangle]
-pub static mut luaO_nilobject_: TValue = lua_TValue {
-    value_: Value {
-        gc: 0 as *const GCObject as *mut GCObject,
-    },
-    tt_: 0i32,
-};
+
 /* size of buffer for 'luaO_utf8esc' function */
 #[no_mangle]
 pub unsafe extern "C" fn luaO_int2fb(mut x: lua_uint) -> lua_int {

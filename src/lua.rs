@@ -2,13 +2,6 @@ use luaconf::*;
 use types::prelude::*;
 
 extern "C" {
-    /*
-     ** $Id: lua.h,v 1.332.1.2 2018/06/13 16:58:17 roberto Exp $
-     ** Lua - A Scripting Language
-     ** Lua.org, PUC-Rio, Brazil (http://www.lua.org)
-     ** See Copyright Notice at the end of this file
-     */
-
     #[no_mangle]
     fn signal(__sig: lua_int, __handler: __sighandler_t) -> __sighandler_t;
     #[no_mangle]
@@ -198,55 +191,6 @@ pub const LUA_RIDX_MAINTHREAD: i32 = 1;
 pub const LUA_RIDX_GLOBALS: i32 = 2;
 pub const LUA_RIDX_LAST: i32 = LUA_RIDX_GLOBALS;
 
-/*
-** {==============================================================
-** some useful macros
-** ===============================================================
-*/
-/* }============================================================== */
-/*
-** {==============================================================
-** compatibility macros for unsigned conversions
-** ===============================================================
-*/
-/* }============================================================== */
-/*
-** {======================================================================
-** Debug API
-** =======================================================================
-*/
-/*
-** Event codes
-*/
-/*
-** Event masks
-*/
-
-/*
-** $Id: lua.c,v 1.230.1.1 2017/04/19 17:29:57 roberto Exp $
-** Lua stand-alone interpreter
-** See Copyright Notice in lua.h
-*/
-/*
-** lua_stdin_is_tty detects whether the standard input is a 'tty' (that
-** is, whether we're running lua interactively).
-*/
-/* { */
-/* { */
-/* }{ */
-/* } */
-/* } */
-/*
-** lua_readline defines how to show a prompt and then read a line from
-** the standard input.
-** lua_saveline defines how to "save" a read line in a "history".
-** lua_freeline defines how to free a line read by lua_readline.
-*/
-/* { */
-/* { */
-/* }{ */
-/* } */
-/* } */
 static mut globalL: *mut lua_State = 0 as *const lua_State as *mut lua_State;
 static mut progname: *const lua_char = s!(b"lua\x00");
 /*

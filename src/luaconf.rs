@@ -5,26 +5,6 @@ pub const EXIT_FAILURE: i32 = 1; /* Failing exit status.  */
 pub const EXIT_SUCCESS: i32 = 0; /* Successful exit status.  */
 
 /*
-** $Id: luaconf.h,v 1.259.1.1 2017/04/19 17:29:57 roberto Exp $
-** Configuration file for Lua
-** See Copyright Notice in lua.h
-*/
-
-/*
-** ===================================================================
-** Search for "@@" to find all configurable definitions.
-** ===================================================================
-*/
-
-/*
-** {====================================================================
-** System Configuration: macros to adapt (if needed) Lua to some
-** particular platform, for instance compiling it with 32-bit numbers or
-** restricting it to C89.
-** =====================================================================
-*/
-
-/*
 @@ LUA_INT_TYPE defines the type for Lua integers.
 @@ LUA_FLOAT_TYPE defines the type for Lua floats.
 ** Lua should work fine with any mix of these options (if supported

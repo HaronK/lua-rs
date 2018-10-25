@@ -35,21 +35,6 @@ extern "C" {
     fn luaL_setfuncs(L: *mut lua_State, l: *const luaL_Reg, nup: lua_int) -> ();
 }
 
-/*
-** $Id: lauxlib.h,v 1.131.1.1 2017/04/19 17:20:42 roberto Exp $
-** Auxiliary functions for building Lua libraries
-** See Copyright Notice in lua.h
-*/
-
-/* extra error code for 'luaL_loadfilex' */
-/* key, in the registry, for table of loaded modules */
-/* key, in the registry, for table of preloaded loaders */
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct luaL_Reg {
-    pub name: *const lua_char,
-    pub func: lua_CFunction,
-}
 #[no_mangle]
 pub unsafe extern "C" fn luaopen_bit32(mut L: *mut lua_State) -> lua_int {
     luaL_checkversion_(

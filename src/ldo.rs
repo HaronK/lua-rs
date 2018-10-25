@@ -485,71 +485,8 @@ name		args	description
 ------------------------------------------------------------------------*/
 /*	A B	R(A) := R(B)					*/
 pub const OP_MOVE: OpCode = 0;
-/*
-** $Id: lzio.h,v 1.31.1.1 2017/04/19 17:20:42 roberto Exp $
-** Buffered streams
-** See Copyright Notice in lua.h
-*/
 /* end of stream */
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct Zio {
-    pub n: size_t,
-    pub p: *const lua_char,
-    pub reader: lua_Reader,
-    pub data: *mut lua_void,
-    pub L: *mut lua_State,
-}
-pub type ZIO = Zio;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct Mbuffer {
-    pub buffer: *mut lua_char,
-    pub n: size_t,
-    pub buffsize: size_t,
-}
-/* description of pending goto statements and label statements */
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct Labeldesc {
-    pub name: *mut TString,
-    pub pc: lua_int,
-    pub line: lua_int,
-    pub nactvar: lu_byte,
-}
-/* list of labels or gotos */
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct Labellist {
-    pub arr: *mut Labeldesc,
-    pub n: lua_int,
-    pub size: lua_int,
-}
-/* dynamic structures used by the parser */
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct Dyndata {
-    pub actvar: unnamed_6,
-    pub gt: Labellist,
-    pub label: Labellist,
-}
-/* list of active local variables */
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct unnamed_6 {
-    pub arr: *mut Vardesc,
-    pub n: lua_int,
-    pub size: lua_int,
-}
-/* description of active local variable */
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct Vardesc {
-    pub idx: lua_short,
-}
-/*
-** Execute a protected parser.
-*/
+
 /* data to 'f_parser' */
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -560,6 +497,7 @@ pub struct SParser {
     pub mode: *const lua_char,
     pub name: *const lua_char,
 }
+
 /*
 ** coroutine functions
 */
