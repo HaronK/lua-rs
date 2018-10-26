@@ -1,109 +1,4 @@
-use stdc::prelude::*;
-use types::prelude::*;
-
-extern "C" {
-    #[no_mangle]
-    fn setlocale(__category: lua_int, __locale: *const lua_char) -> *mut lua_char;
-    #[no_mangle]
-    fn exit(_: lua_int) -> !;
-    #[no_mangle]
-    fn getenv(__name: *const lua_char) -> *mut lua_char;
-    #[no_mangle]
-    fn mkstemp(__template: *mut lua_char) -> lua_int;
-    #[no_mangle]
-    fn system(__command: *const lua_char) -> lua_int;
-    #[no_mangle]
-    fn memcpy(_: *mut lua_void, _: *const lua_void, _: lua_ulong) -> *mut lua_void;
-    #[no_mangle]
-    fn memcmp(_: *const lua_void, _: *const lua_void, _: lua_ulong) -> lua_int;
-    #[no_mangle]
-    fn strcpy(_: *mut lua_char, _: *const lua_char) -> *mut lua_char;
-    #[no_mangle]
-    fn strcmp(_: *const lua_char, _: *const lua_char) -> lua_int;
-    #[no_mangle]
-    fn clock() -> clock_t;
-    #[no_mangle]
-    fn time(__timer: *mut time_t) -> time_t;
-    #[no_mangle]
-    fn difftime(__time1: time_t, __time0: time_t) -> lua_double;
-    #[no_mangle]
-    fn mktime(__tp: *mut tm) -> time_t;
-    #[no_mangle]
-    fn strftime(
-        __s: *mut lua_char,
-        __maxsize: size_t,
-        __format: *const lua_char,
-        __tp: *const tm,
-    ) -> size_t;
-    #[no_mangle]
-    fn lua_close(L: *mut lua_State) -> ();
-    #[no_mangle]
-    fn lua_settop(L: *mut lua_State, idx: lua_int) -> ();
-    #[no_mangle]
-    fn lua_type(L: *mut lua_State, idx: lua_int) -> lua_int;
-    #[no_mangle]
-    fn lua_tointegerx(L: *mut lua_State, idx: lua_int, isnum: *mut lua_int) -> lua_Integer;
-    #[no_mangle]
-    fn lua_toboolean(L: *mut lua_State, idx: lua_int) -> lua_int;
-    #[no_mangle]
-    fn lua_pushnumber(L: *mut lua_State, n: lua_Number) -> ();
-    #[no_mangle]
-    fn lua_pushinteger(L: *mut lua_State, n: lua_Integer) -> ();
-    #[no_mangle]
-    fn lua_pushstring(L: *mut lua_State, s: *const lua_char) -> *const lua_char;
-    #[no_mangle]
-    fn lua_pushboolean(L: *mut lua_State, b: lua_int) -> ();
-    #[no_mangle]
-    fn lua_getfield(L: *mut lua_State, idx: lua_int, k: *const lua_char) -> lua_int;
-    #[no_mangle]
-    fn lua_createtable(L: *mut lua_State, narr: lua_int, nrec: lua_int) -> ();
-    #[no_mangle]
-    fn lua_setfield(L: *mut lua_State, idx: lua_int, k: *const lua_char) -> ();
-    #[no_mangle]
-    fn remove(__filename: *const lua_char) -> lua_int;
-    #[no_mangle]
-    fn rename(__old: *const lua_char, __new: *const lua_char) -> lua_int;
-    #[no_mangle]
-    fn luaL_checkversion_(L: *mut lua_State, ver: lua_Number, sz: size_t) -> ();
-    #[no_mangle]
-    fn luaL_argerror(L: *mut lua_State, arg: lua_int, extramsg: *const lua_char) -> lua_int;
-    #[no_mangle]
-    fn luaL_checklstring(L: *mut lua_State, arg: lua_int, l: *mut size_t) -> *const lua_char;
-    #[no_mangle]
-    fn luaL_optlstring(
-        L: *mut lua_State,
-        arg: lua_int,
-        def: *const lua_char,
-        l: *mut size_t,
-    ) -> *const lua_char;
-    #[no_mangle]
-    fn luaL_checkinteger(L: *mut lua_State, arg: lua_int) -> lua_Integer;
-    #[no_mangle]
-    fn luaL_optinteger(L: *mut lua_State, arg: lua_int, def: lua_Integer) -> lua_Integer;
-    #[no_mangle]
-    fn luaL_checktype(L: *mut lua_State, arg: lua_int, t: lua_int) -> ();
-    #[no_mangle]
-    fn luaL_checkoption(
-        L: *mut lua_State,
-        arg: lua_int,
-        def: *const lua_char,
-        lst: *const *const lua_char,
-    ) -> lua_int;
-    #[no_mangle]
-    fn luaL_fileresult(L: *mut lua_State, stat: lua_int, fname: *const lua_char) -> lua_int;
-    #[no_mangle]
-    fn luaL_execresult(L: *mut lua_State, stat: lua_int) -> lua_int;
-    #[no_mangle]
-    fn luaL_setfuncs(L: *mut lua_State, l: *const luaL_Reg, nup: lua_int) -> ();
-    #[no_mangle]
-    fn luaL_buffinit(L: *mut lua_State, B: *mut luaL_Buffer) -> ();
-    #[no_mangle]
-    fn luaL_prepbuffsize(B: *mut luaL_Buffer, sz: size_t) -> *mut lua_char;
-    #[no_mangle]
-    fn luaL_pushresult(B: *mut luaL_Buffer) -> ();
-    #[no_mangle]
-    fn close(__fd: lua_int) -> lua_int;
-}
+use super::prelude::*;
 
 #[no_mangle]
 pub unsafe extern "C" fn luaopen_os(mut L: *mut lua_State) -> lua_int {
@@ -348,9 +243,8 @@ unsafe extern "C" fn os_exit(mut L: *mut lua_State) -> lua_int {
     if !L.is_null() {
         /* 'if' to avoid warnings for unreachable 'return' */
         exit(status);
-    } else {
-        return 0i32;
-    };
+    }
+    return 0i32;
 }
 
 unsafe extern "C" fn os_execute(mut L: *mut lua_State) -> lua_int {

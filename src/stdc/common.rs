@@ -1,5 +1,185 @@
 use types::prelude::*;
 
+extern "C" {
+    #[no_mangle]
+    pub fn snprintf(_: *mut lua_char, _: lua_ulong, _: *const lua_char, ...) -> lua_int;
+    #[no_mangle]
+    pub fn strtod(__nptr: *const lua_char, __endptr: *mut *mut lua_char) -> lua_double;
+    #[no_mangle]
+    pub fn memcpy(_: *mut lua_void, _: *const lua_void, _: lua_ulong) -> *mut lua_void;
+    #[no_mangle]
+    pub fn strcpy(_: *mut lua_char, _: *const lua_char) -> *mut lua_char;
+    #[no_mangle]
+    pub fn strpbrk(_: *const lua_char, _: *const lua_char) -> *mut lua_char;
+    #[no_mangle]
+    pub fn fgets(__s: *mut lua_char, __n: lua_int, __stream: *mut FILE) -> *mut lua_char;
+    #[no_mangle]
+    pub fn strcmp(_: *const lua_char, _: *const lua_char) -> lua_int;
+
+    #[no_mangle]
+    pub fn __ctype_toupper_loc() -> *mut *const __int32_t;
+    #[no_mangle]
+    pub fn realloc(_: *mut lua_void, _: lua_ulong) -> *mut lua_void;
+    #[no_mangle]
+    pub fn free(__ptr: *mut lua_void) -> ();
+    #[no_mangle]
+    pub fn strncmp(_: *const lua_char, _: *const lua_char, _: lua_ulong) -> lua_int;
+    #[no_mangle]
+    pub fn strstr(_: *const lua_char, _: *const lua_char) -> *mut lua_char;
+    #[no_mangle]
+    pub fn memcmp(_: *const lua_void, _: *const lua_void, _: lua_ulong) -> lua_int;
+    #[no_mangle]
+    pub fn strcoll(__s1: *const lua_char, __s2: *const lua_char) -> lua_int;
+    #[no_mangle]
+    pub fn printf(_: *const lua_char, ...) -> lua_int;
+    #[no_mangle]
+    pub fn sprintf(_: *mut lua_char, _: *const lua_char, ...) -> lua_int;
+    #[no_mangle]
+    pub fn isatty(__fd: lua_int) -> lua_int;
+    #[no_mangle]
+    pub fn readline(_: *const lua_char) -> *mut lua_char;
+    #[no_mangle]
+    pub fn add_history(_: *const lua_char) -> ();
+    #[no_mangle]
+    pub fn signal(__sig: lua_int, __handler: __sighandler_t) -> __sighandler_t;
+    #[no_mangle]
+    pub fn getenv(__name: *const lua_char) -> *mut lua_char;
+    #[no_mangle]
+    pub fn time(__timer: *mut time_t) -> time_t;
+    #[no_mangle]
+    pub fn clock() -> clock_t;
+    #[no_mangle]
+    pub fn memchr(_: *const lua_void, _: lua_int, _: lua_ulong) -> *mut lua_void;
+    #[no_mangle]
+    pub fn setlocale(__category: lua_int, __locale: *const lua_char) -> *mut lua_char;
+    #[no_mangle]
+    pub fn exit(_: lua_int) -> !;
+    #[no_mangle]
+    pub fn mkstemp(__template: *mut lua_char) -> lua_int;
+    #[no_mangle]
+    pub fn system(__command: *const lua_char) -> lua_int;
+    #[no_mangle]
+    pub fn difftime(__time1: time_t, __time0: time_t) -> lua_double;
+    #[no_mangle]
+    pub fn mktime(__tp: *mut tm) -> time_t;
+    #[no_mangle]
+    pub fn strftime(
+        __s: *mut lua_char,
+        __maxsize: size_t,
+        __format: *const lua_char,
+        __tp: *const tm,
+    ) -> size_t;
+    #[no_mangle]
+    pub fn close(__fd: lua_int) -> lua_int;
+    #[no_mangle]
+    pub fn remove(__filename: *const lua_char) -> lua_int;
+    #[no_mangle]
+    pub fn rename(__old: *const lua_char, __new: *const lua_char) -> lua_int;
+    #[no_mangle]
+    pub fn _setjmp(_: *mut __jmp_buf_tag) -> lua_int;
+    #[no_mangle]
+    pub fn abort() -> !;
+
+    // Math
+    #[no_mangle]
+    pub fn acos(_: lua_double) -> lua_double;
+    #[no_mangle]
+    pub fn asin(_: lua_double) -> lua_double;
+    #[no_mangle]
+    pub fn atan2(_: lua_double, _: lua_double) -> lua_double;
+    #[no_mangle]
+    pub fn cos(_: lua_double) -> lua_double;
+    #[no_mangle]
+    pub fn sin(_: lua_double) -> lua_double;
+    #[no_mangle]
+    pub fn tan(_: lua_double) -> lua_double;
+    #[no_mangle]
+    pub fn cosh(_: lua_double) -> lua_double;
+    #[no_mangle]
+    pub fn sinh(_: lua_double) -> lua_double;
+    #[no_mangle]
+    pub fn tanh(_: lua_double) -> lua_double;
+    #[no_mangle]
+    pub fn exp(_: lua_double) -> lua_double;
+    #[no_mangle]
+    pub fn frexp(_: lua_double, _: *mut lua_int) -> lua_double;
+    #[no_mangle]
+    pub fn ldexp(_: lua_double, _: lua_int) -> lua_double;
+    #[no_mangle]
+    pub fn log(_: lua_double) -> lua_double;
+    #[no_mangle]
+    pub fn log10(_: lua_double) -> lua_double;
+    #[no_mangle]
+    pub fn log2(_: lua_double) -> lua_double;
+    #[no_mangle]
+    pub fn pow(_: lua_double, _: lua_double) -> lua_double;
+    #[no_mangle]
+    pub fn sqrt(_: lua_double) -> lua_double;
+    #[no_mangle]
+    pub fn ceil(_: lua_double) -> lua_double;
+    #[no_mangle]
+    pub fn fabs(_: lua_double) -> lua_double;
+    #[no_mangle]
+    pub fn floor(_: lua_double) -> lua_double;
+    #[no_mangle]
+    pub fn fmod(_: lua_double, _: lua_double) -> lua_double;
+    #[no_mangle]
+    pub fn abs(_: lua_int) -> lua_int;
+
+    // IO
+    #[no_mangle]
+    pub fn localeconv() -> *mut lconv;
+    #[no_mangle]
+    pub fn tmpfile() -> *mut FILE;
+    #[no_mangle]
+    pub fn fclose(__stream: *mut FILE) -> lua_int;
+    #[no_mangle]
+    pub fn fflush(__stream: *mut FILE) -> lua_int;
+    #[no_mangle]
+    pub fn fopen(__filename: *const lua_char, __modes: *const lua_char) -> *mut FILE;
+    #[no_mangle]
+    pub fn setvbuf(__stream: *mut FILE, __buf: *mut lua_char, __modes: lua_int, __n: size_t)
+        -> lua_int;
+    #[no_mangle]
+    pub fn fprintf(_: *mut FILE, _: *const lua_char, ...) -> lua_int;
+    #[no_mangle]
+    pub fn getc(__stream: *mut FILE) -> lua_int;
+    #[no_mangle]
+    pub fn ungetc(__c: lua_int, __stream: *mut FILE) -> lua_int;
+    #[no_mangle]
+    pub fn fread(__ptr: *mut lua_void, __size: size_t, __n: size_t, __stream: *mut FILE) -> size_t;
+    #[no_mangle]
+    pub fn fwrite(__ptr: *const lua_void, __size: size_t, __n: size_t, __s: *mut FILE) -> size_t;
+    #[no_mangle]
+    pub fn fseeko(__stream: *mut FILE, __off: __off64_t, __whence: lua_int) -> lua_int;
+    #[no_mangle]
+    pub fn ftello(__stream: *mut FILE) -> __off64_t;
+    #[no_mangle]
+    pub fn clearerr(__stream: *mut FILE) -> ();
+    #[no_mangle]
+    pub fn ferror(__stream: *mut FILE) -> lua_int;
+    #[no_mangle]
+    pub fn popen(__command: *const lua_char, __modes: *const lua_char) -> *mut FILE;
+    #[no_mangle]
+    pub fn pclose(__stream: *mut FILE) -> lua_int;
+    #[no_mangle]
+    pub fn strchr(_: *const lua_char, _: lua_int) -> *mut lua_char;
+    #[no_mangle]
+    pub fn strspn(_: *const lua_char, _: *const lua_char) -> lua_ulong;
+    #[no_mangle]
+    pub fn strlen(_: *const lua_char) -> lua_ulong;
+    #[no_mangle]
+    pub fn strerror(_: lua_int) -> *mut lua_char;
+    #[no_mangle]
+    pub fn freopen(
+        __filename: *const lua_char,
+        __modes: *const lua_char,
+        __stream: *mut FILE,
+    ) -> *mut FILE;
+    #[no_mangle]
+    pub fn feof(__stream: *mut FILE) -> lua_int;
+}
+
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct tm {

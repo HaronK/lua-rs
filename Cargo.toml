@@ -7,7 +7,4 @@ publish = false
 [lib]
 crate-type = ["staticlib"]
 
-[[bin]]
-name = "lua"
-
 [dependencies]

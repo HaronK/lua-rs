@@ -1,44 +1,4 @@
-use types::prelude::*;
-
-extern "C" {
-    #[no_mangle]
-    fn strcmp(_: *const lua_char, _: *const lua_char) -> lua_int;
-    #[no_mangle]
-    fn strchr(_: *const lua_char, _: lua_int) -> *mut lua_char;
-    #[no_mangle]
-    fn luaH_new(L: *mut lua_State) -> *mut Table;
-    #[no_mangle]
-    fn luaH_setint(L: *mut lua_State, t: *mut Table, key: lua_Integer, value: *mut TValue) -> ();
-    #[no_mangle]
-    fn luaF_getlocalname(func: *const Proto, local_number: lua_int, pc: lua_int)
-        -> *const lua_char;
-    #[no_mangle]
-    static luaP_opmodes: [lu_byte; 47];
-    #[no_mangle]
-    fn luaO_chunkid(out: *mut lua_char, source: *const lua_char, len: size_t) -> ();
-    #[no_mangle]
-    fn luaO_pushvfstring(
-        L: *mut lua_State,
-        fmt: *const lua_char,
-        argp: *mut __va_list_tag,
-    ) -> *const lua_char;
-    #[no_mangle]
-    fn luaO_pushfstring(L: *mut lua_State, fmt: *const lua_char, ...) -> *const lua_char;
-    #[no_mangle]
-    fn luaT_objtypename(L: *mut lua_State, o: *const TValue) -> *const lua_char;
-    #[no_mangle]
-    fn luaD_throw(L: *mut lua_State, errcode: lua_int) -> !;
-    #[no_mangle]
-    fn luaD_callnoyield(L: *mut lua_State, func: StkId, nResults: lua_int) -> ();
-    #[no_mangle]
-    fn luaC_step(L: *mut lua_State) -> ();
-    #[no_mangle]
-    fn luaV_tonumber_(obj: *const TValue, n: *mut lua_Number) -> lua_int;
-    #[no_mangle]
-    fn luaV_tointeger(obj: *const TValue, p: *mut lua_Integer, mode: lua_int) -> lua_int;
-    #[no_mangle]
-    fn luaD_hook(L: *mut lua_State, event: lua_int, line: lua_int) -> ();
-}
+use super::prelude::*;
 
 /*
 * WARNING: if you change the order of this enumeration,

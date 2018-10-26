@@ -1,25 +1,4 @@
-use types::prelude::*;
-
-extern "C" {
-    #[no_mangle]
-    fn lua_gettop(L: *mut lua_State) -> lua_int;
-    #[no_mangle]
-    fn lua_pushinteger(L: *mut lua_State, n: lua_Integer) -> ();
-    #[no_mangle]
-    fn lua_pushboolean(L: *mut lua_State, b: lua_int) -> ();
-    #[no_mangle]
-    fn lua_createtable(L: *mut lua_State, narr: lua_int, nrec: lua_int) -> ();
-    #[no_mangle]
-    fn luaL_checkversion_(L: *mut lua_State, ver: lua_Number, sz: size_t) -> ();
-    #[no_mangle]
-    fn luaL_argerror(L: *mut lua_State, arg: lua_int, extramsg: *const lua_char) -> lua_int;
-    #[no_mangle]
-    fn luaL_checkinteger(L: *mut lua_State, arg: lua_int) -> lua_Integer;
-    #[no_mangle]
-    fn luaL_optinteger(L: *mut lua_State, arg: lua_int, def: lua_Integer) -> lua_Integer;
-    #[no_mangle]
-    fn luaL_setfuncs(L: *mut lua_State, l: *const luaL_Reg, nup: lua_int) -> ();
-}
+use super::prelude::*;
 
 #[no_mangle]
 pub unsafe extern "C" fn luaopen_bit32(mut L: *mut lua_State) -> lua_int {

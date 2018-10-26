@@ -1,19 +1,4 @@
-use types::prelude::*;
-
-extern "C" {
-    #[no_mangle]
-    fn luaC_newobj(L: *mut lua_State, tt: lua_int, sz: size_t) -> *mut GCObject;
-    /* not to be called directly */
-    #[no_mangle]
-    fn luaM_realloc_(
-        L: *mut lua_State,
-        block: *mut lua_void,
-        oldsize: size_t,
-        size: size_t,
-    ) -> *mut lua_void;
-    #[no_mangle]
-    fn luaC_upvalbarrier_(L: *mut lua_State, uv: *mut UpVal) -> ();
-}
+use super::prelude::*;
 
 #[no_mangle]
 pub unsafe extern "C" fn luaF_newproto(mut L: *mut lua_State) -> *mut Proto {

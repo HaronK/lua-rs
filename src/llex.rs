@@ -1,46 +1,4 @@
-use types::prelude::*;
-
-extern "C" {
-    #[no_mangle]
-    static luai_ctype_: [lu_byte; 257];
-    #[no_mangle]
-    fn luaO_utf8esc(buff: *mut lua_char, x: lua_ulong) -> lua_int;
-    #[no_mangle]
-    fn luaO_str2num(s: *const lua_char, o: *mut TValue) -> size_t;
-    #[no_mangle]
-    fn luaO_hexavalue(c: lua_int) -> lua_int;
-    #[no_mangle]
-    fn luaO_pushfstring(L: *mut lua_State, fmt: *const lua_char, ...) -> *const lua_char;
-    /* not to be called directly */
-    #[no_mangle]
-    fn luaM_realloc_(
-        L: *mut lua_State,
-        block: *mut lua_void,
-        oldsize: size_t,
-        size: size_t,
-    ) -> *mut lua_void;
-    #[no_mangle]
-    fn luaZ_fill(z: *mut ZIO) -> lua_int;
-    #[no_mangle]
-    fn luaG_addinfo(
-        L: *mut lua_State,
-        msg: *const lua_char,
-        src: *mut TString,
-        line: lua_int,
-    ) -> *const lua_char;
-    #[no_mangle]
-    fn luaD_throw(L: *mut lua_State, errcode: lua_int) -> !;
-    #[no_mangle]
-    fn luaC_fix(L: *mut lua_State, o: *mut GCObject) -> ();
-    #[no_mangle]
-    fn luaC_step(L: *mut lua_State) -> ();
-    #[no_mangle]
-    fn luaS_new(L: *mut lua_State, str: *const lua_char) -> *mut TString;
-    #[no_mangle]
-    fn luaS_newlstr(L: *mut lua_State, str: *const lua_char, l: size_t) -> *mut TString;
-    #[no_mangle]
-    fn luaH_set(L: *mut lua_State, t: *mut Table, key: *const TValue) -> *mut TValue;
-}
+use super::prelude::*;
 
 /*
 * WARNING: if you change the order of this enumeration,

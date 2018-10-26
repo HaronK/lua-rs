@@ -1,4 +1,4 @@
-use types::prelude::*;
+use super::prelude::*;
 
 /* two more entries for 0 and -1 (EOZ) */
 #[no_mangle]

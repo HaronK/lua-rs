@@ -1,42 +1,4 @@
-use types::prelude::*;
-
-extern "C" {
-    #[no_mangle]
-    fn frexp(_: lua_double, _: *mut lua_int) -> lua_double;
-    /*
-     ** (address of) a fixed nil value
-     */
-    #[no_mangle]
-    static luaO_nilobject_: TValue;
-    #[no_mangle]
-    fn luaO_ceillog2(x: lua_uint) -> lua_int;
-
-    #[no_mangle]
-    fn luaM_toobig(L: *mut lua_State) -> !;
-    /* not to be called directly */
-    #[no_mangle]
-    fn luaM_realloc_(
-        L: *mut lua_State,
-        block: *mut lua_void,
-        oldsize: size_t,
-        size: size_t,
-    ) -> *mut lua_void;
-    #[no_mangle]
-    fn luaD_throw(L: *mut lua_State, errcode: lua_int) -> !;
-    #[no_mangle]
-    fn luaD_rawrunprotected(L: *mut lua_State, f: Pfunc, ud: *mut lua_void) -> lua_int;
-    #[no_mangle]
-    fn luaC_newobj(L: *mut lua_State, tt: lua_int, sz: size_t) -> *mut GCObject;
-    #[no_mangle]
-    fn luaC_barrierback_(L: *mut lua_State, o: *mut Table) -> ();
-    #[no_mangle]
-    fn luaS_hashlongstr(ts: *mut TString) -> lua_uint;
-
-    #[no_mangle]
-    fn luaV_equalobj(L: *mut lua_State, t1: *const TValue, t2: *const TValue) -> lua_int;
-    #[no_mangle]
-    fn luaV_tointeger(obj: *const TValue, p: *mut lua_Integer, mode: lua_int) -> lua_int;
-}
+use super::prelude::*;
 
 #[derive(Copy, Clone)]
 #[repr(C)]

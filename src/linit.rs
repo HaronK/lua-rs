@@ -1,38 +1,4 @@
-use types::prelude::*;
-
-extern "C" {
-    #[no_mangle]
-    fn lua_settop(L: *mut lua_State, idx: lua_int) -> ();
-    #[no_mangle]
-    fn luaopen_base(L: *mut lua_State) -> lua_int;
-    #[no_mangle]
-    fn luaopen_coroutine(L: *mut lua_State) -> lua_int;
-    #[no_mangle]
-    fn luaopen_table(L: *mut lua_State) -> lua_int;
-    #[no_mangle]
-    fn luaopen_io(L: *mut lua_State) -> lua_int;
-    #[no_mangle]
-    fn luaopen_os(L: *mut lua_State) -> lua_int;
-    #[no_mangle]
-    fn luaopen_string(L: *mut lua_State) -> lua_int;
-    #[no_mangle]
-    fn luaopen_utf8(L: *mut lua_State) -> lua_int;
-    #[no_mangle]
-    fn luaopen_bit32(L: *mut lua_State) -> lua_int;
-    #[no_mangle]
-    fn luaopen_math(L: *mut lua_State) -> lua_int;
-    #[no_mangle]
-    fn luaopen_debug(L: *mut lua_State) -> lua_int;
-    #[no_mangle]
-    fn luaopen_package(L: *mut lua_State) -> lua_int;
-    #[no_mangle]
-    fn luaL_requiref(
-        L: *mut lua_State,
-        modname: *const lua_char,
-        openf: lua_CFunction,
-        glb: lua_int,
-    ) -> ();
-}
+use super::prelude::*;
 
 /* open all previous libraries */
 #[no_mangle]

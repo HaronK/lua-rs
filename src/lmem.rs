@@ -1,11 +1,4 @@
-use types::prelude::*;
-
-extern "C" {
-    #[no_mangle]
-    fn luaD_throw(L: *mut lua_State, errcode: lua_int) -> !;
-    #[no_mangle]
-    fn luaC_fullgc(L: *mut lua_State, isemergency: lua_int) -> ();
-}
+use super::prelude::*;
 
 #[no_mangle]
 pub unsafe extern "C" fn luaM_toobig(mut L: *mut lua_State) -> ! {

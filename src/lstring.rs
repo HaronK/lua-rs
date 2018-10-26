@@ -1,35 +1,4 @@
-use types::prelude::*;
-
-extern "C" {
-    #[no_mangle]
-    fn memcpy(_: *mut lua_void, _: *const lua_void, _: lua_ulong) -> *mut lua_void;
-    #[no_mangle]
-    fn memcmp(_: *const lua_void, _: *const lua_void, _: lua_ulong) -> lua_int;
-    #[no_mangle]
-    fn strcmp(_: *const lua_char, _: *const lua_char) -> lua_int;
-    #[no_mangle]
-    fn strlen(_: *const lua_char) -> lua_ulong;
-    /*
-     ** (address of) a fixed nil value
-     */
-    #[no_mangle]
-    static luaO_nilobject_: TValue;
-    #[no_mangle]
-    fn luaM_toobig(L: *mut lua_State) -> !;
-    /* not to be called directly */
-    #[no_mangle]
-    fn luaM_realloc_(
-        L: *mut lua_State,
-        block: *mut lua_void,
-        oldsize: size_t,
-        size: size_t,
-    ) -> *mut lua_void;
-
-    #[no_mangle]
-    fn luaC_fix(L: *mut lua_State, o: *mut GCObject) -> ();
-    #[no_mangle]
-    fn luaC_newobj(L: *mut lua_State, tt: lua_int, sz: size_t) -> *mut GCObject;
-}
+use super::prelude::*;
 
 /*
 ** equality for short strings, which are always internalized

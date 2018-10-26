@@ -1,4 +1,4 @@
-use types::prelude::*;
+use super::prelude::*;
 
 /*===========================================================================
   We assume that instructions are unsigned numbers.

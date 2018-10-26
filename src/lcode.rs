@@ -1,39 +1,4 @@
-use types::prelude::*;
-
-extern "C" {
-    #[no_mangle]
-    fn abs(_: lua_int) -> lua_int;
-    #[no_mangle]
-    fn luaO_arith(
-        L: *mut lua_State,
-        op: lua_int,
-        p1: *const TValue,
-        p2: *const TValue,
-        res: *mut TValue,
-    ) -> ();
-    #[no_mangle]
-    fn luaM_growaux_(
-        L: *mut lua_State,
-        block: *mut lua_void,
-        size: *mut lua_int,
-        size_elem: size_t,
-        limit: lua_int,
-        what: *const lua_char,
-    ) -> *mut lua_void;
-    #[no_mangle]
-    fn luaX_syntaxerror(ls: *mut LexState, s: *const lua_char) -> !;
-    #[no_mangle]
-    static luaP_opmodes: [lu_byte; 47];
-    #[no_mangle]
-    fn luaC_barrier_(L: *mut lua_State, o: *mut GCObject, v: *mut GCObject) -> ();
-    #[no_mangle]
-    fn luaH_set(L: *mut lua_State, t: *mut Table, key: *const TValue) -> *mut TValue;
-
-    #[no_mangle]
-    fn luaV_equalobj(L: *mut lua_State, t1: *const TValue, t2: *const TValue) -> lua_int;
-    #[no_mangle]
-    fn luaV_tointeger(obj: *const TValue, p: *mut lua_Integer, mode: lua_int) -> lua_int;
-}
+use super::prelude::*;
 
 /*
 ** grep "ORDER OP" if you change these enums
@@ -151,79 +116,7 @@ pub const OP_MOVE: OpCode = 0;
 ** list of conditional jumps that can also produce its value (generated
 ** by short-circuit operators 'and'/'or').
 */
-/* kinds of variables/expressions */
-pub type expkind = lua_uint;
-/* vararg expression; info = instruction pc */
-pub const VVARARG: expkind = 14;
-/* expression is a function call; info = instruction pc */
-pub const VCALL: expkind = 13;
-/* expression can put result in any register;
-info = instruction pc */
-pub const VRELOCABLE: expkind = 12;
-/* expression is a test/comparison;
-info = pc of corresponding jump instruction */
-pub const VJMP: expkind = 11;
-/* indexed variable;
-ind.vt = whether 't' is register or upvalue;
-ind.t = table register or upvalue;
-ind.idx = key's R/K index */
-pub const VINDEXED: expkind = 10;
-/* upvalue variable; info = index of upvalue in 'upvalues' */
-pub const VUPVAL: expkind = 9;
-/* local variable; info = local register */
-pub const VLOCAL: expkind = 8;
-/* expression has its value in a fixed register;
-info = result register */
-pub const VNONRELOC: expkind = 7;
-/* integer constant; nval = numerical integer value */
-pub const VKINT: expkind = 6;
-/* floating constant; nval = numerical float value */
-pub const VKFLT: expkind = 5;
-/* constant in 'k'; info = index of constant in 'k' */
-pub const VK: expkind = 4;
-/* constant false */
-pub const VFALSE: expkind = 3;
-/* constant true */
-pub const VTRUE: expkind = 2;
-/* constant nil */
-pub const VNIL: expkind = 1;
-/* when 'expdesc' describes the last expression a list,
-this kind means an empty list (so, no expression) */
-pub const VVOID: expkind = 0;
 
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct expdesc {
-    pub k: expkind,
-    pub u: unnamed_5,
-    pub t: lua_int,
-    pub f: lua_int,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub union unnamed_5 {
-    pub ival: lua_Integer,
-    pub nval: lua_Number,
-    pub info: lua_int,
-    pub ind: unnamed_6,
-}
-/* for indexed variables (VINDEXED) */
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct unnamed_6 {
-    pub idx: lua_short,
-    pub t: lu_byte,
-    pub vt: lu_byte,
-}
-/*
-** $Id: lcode.h,v 1.64.1.1 2017/04/19 17:20:42 roberto Exp $
-** Code generator for Lua
-** See Copyright Notice in lua.h
-*/
-/*
-** Marks the end of a patch list. It is an invalid value both as an absolute
-** address, and as a list link (would link an element to itself).
-*/
 /*
 ** grep "ORDER OPR" if you change these enums  (ORDER OP)
 */
@@ -1304,7 +1197,7 @@ pub unsafe extern "C" fn luaK_prefix(
     let mut current_block: u64;
     static mut ef: expdesc = expdesc {
         k: VKINT,
-        u: unnamed_5 {
+        u: expdesc_1 {
             ival: 0i32 as lua_Integer,
         },
         t: -1i32,

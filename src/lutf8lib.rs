@@ -1,48 +1,4 @@
-use types::prelude::*;
-
-extern "C" {
-    #[no_mangle]
-    fn lua_gettop(L: *mut lua_State) -> lua_int;
-    #[no_mangle]
-    fn lua_pushvalue(L: *mut lua_State, idx: lua_int) -> ();
-    #[no_mangle]
-    fn lua_tointegerx(L: *mut lua_State, idx: lua_int, isnum: *mut lua_int) -> lua_Integer;
-    /*
-     ** push functions (C -> stack)
-     */
-    #[no_mangle]
-    fn lua_pushnil(L: *mut lua_State) -> ();
-    #[no_mangle]
-    fn lua_pushinteger(L: *mut lua_State, n: lua_Integer) -> ();
-    #[no_mangle]
-    fn lua_pushlstring(L: *mut lua_State, s: *const lua_char, len: size_t) -> *const lua_char;
-    #[no_mangle]
-    fn lua_pushcclosure(L: *mut lua_State, fn_0: lua_CFunction, n: lua_int) -> ();
-    #[no_mangle]
-    fn lua_createtable(L: *mut lua_State, narr: lua_int, nrec: lua_int) -> ();
-    #[no_mangle]
-    fn lua_setfield(L: *mut lua_State, idx: lua_int, k: *const lua_char) -> ();
-    #[no_mangle]
-    fn luaL_checkversion_(L: *mut lua_State, ver: lua_Number, sz: size_t) -> ();
-    #[no_mangle]
-    fn luaL_argerror(L: *mut lua_State, arg: lua_int, extramsg: *const lua_char) -> lua_int;
-    #[no_mangle]
-    fn luaL_checklstring(L: *mut lua_State, arg: lua_int, l: *mut size_t) -> *const lua_char;
-    #[no_mangle]
-    fn luaL_checkinteger(L: *mut lua_State, arg: lua_int) -> lua_Integer;
-    #[no_mangle]
-    fn luaL_optinteger(L: *mut lua_State, arg: lua_int, def: lua_Integer) -> lua_Integer;
-    #[no_mangle]
-    fn luaL_checkstack(L: *mut lua_State, sz: lua_int, msg: *const lua_char) -> ();
-    #[no_mangle]
-    fn luaL_setfuncs(L: *mut lua_State, l: *const luaL_Reg, nup: lua_int) -> ();
-    #[no_mangle]
-    fn luaL_buffinit(L: *mut lua_State, B: *mut luaL_Buffer) -> ();
-    #[no_mangle]
-    fn luaL_addvalue(B: *mut luaL_Buffer) -> ();
-    #[no_mangle]
-    fn luaL_pushresult(B: *mut luaL_Buffer) -> ();
-}
+use super::prelude::*;
 
 #[no_mangle]
 pub unsafe extern "C" fn luaopen_utf8(mut L: *mut lua_State) -> lua_int {

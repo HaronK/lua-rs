@@ -1,137 +1,4 @@
-use llimits::*;
-use types::prelude::*;
-
-extern "C" {
-    #[no_mangle]
-    fn luaO_int2fb(x: lua_uint) -> lua_int;
-    #[no_mangle]
-    fn luaO_pushfstring(L: *mut lua_State, fmt: *const lua_char, ...) -> *const lua_char;
-
-    #[no_mangle]
-    fn luaM_toobig(L: *mut lua_State) -> !;
-    /* not to be called directly */
-    #[no_mangle]
-    fn luaM_realloc_(
-        L: *mut lua_State,
-        block_0: *mut lua_void,
-        oldsize: size_t,
-        size: size_t,
-    ) -> *mut lua_void;
-    #[no_mangle]
-    fn luaM_growaux_(
-        L: *mut lua_State,
-        block_0: *mut lua_void,
-        size: *mut lua_int,
-        size_elem: size_t,
-        limit: lua_int,
-        what: *const lua_char,
-    ) -> *mut lua_void;
-    #[no_mangle]
-    fn luaX_setinput(
-        L: *mut lua_State,
-        ls: *mut LexState,
-        z: *mut ZIO,
-        source: *mut TString,
-        firstchar: lua_int,
-    ) -> ();
-    #[no_mangle]
-    fn luaX_newstring(ls: *mut LexState, str: *const lua_char, l: size_t) -> *mut TString;
-    #[no_mangle]
-    fn luaX_next(ls: *mut LexState) -> ();
-    #[no_mangle]
-    fn luaX_lookahead(ls: *mut LexState) -> lua_int;
-    #[no_mangle]
-    fn luaX_syntaxerror(ls: *mut LexState, s: *const lua_char) -> !;
-    #[no_mangle]
-    fn luaX_token2str(ls: *mut LexState, token: lua_int) -> *const lua_char;
-    #[no_mangle]
-    fn luaF_newLclosure(L: *mut lua_State, nelems: lua_int) -> *mut LClosure;
-    #[no_mangle]
-    fn luaC_step(L: *mut lua_State) -> ();
-    #[no_mangle]
-    fn luaK_patchlist(fs: *mut FuncState, list: lua_int, target: lua_int) -> ();
-    #[no_mangle]
-    fn luaK_patchclose(fs: *mut FuncState, list: lua_int, level: lua_int) -> ();
-    #[no_mangle]
-    fn luaS_new(L: *mut lua_State, str: *const lua_char) -> *mut TString;
-    #[no_mangle]
-    fn luaK_jump(fs: *mut FuncState) -> lua_int;
-    #[no_mangle]
-    fn luaK_patchtohere(fs: *mut FuncState, list: lua_int) -> ();
-    #[no_mangle]
-    fn luaK_ret(fs: *mut FuncState, first: lua_int, nret: lua_int) -> ();
-    #[no_mangle]
-    fn luaK_storevar(fs: *mut FuncState, var: *mut expdesc, e: *mut expdesc) -> ();
-    #[no_mangle]
-    fn luaK_setoneret(fs: *mut FuncState, e: *mut expdesc) -> ();
-    #[no_mangle]
-    fn luaK_nil(fs: *mut FuncState, from: lua_int, n: lua_int) -> ();
-    #[no_mangle]
-    fn luaK_reserveregs(fs: *mut FuncState, n: lua_int) -> ();
-    #[no_mangle]
-    fn luaK_exp2nextreg(fs: *mut FuncState, e: *mut expdesc) -> ();
-    #[no_mangle]
-    fn luaK_setreturns(fs: *mut FuncState, e: *mut expdesc, nresults: lua_int) -> ();
-    #[no_mangle]
-    fn luaK_posfix(
-        fs: *mut FuncState,
-        op: BinOpr,
-        v1: *mut expdesc,
-        v2: *mut expdesc,
-        line: lua_int,
-    ) -> ();
-    #[no_mangle]
-    fn luaK_infix(fs: *mut FuncState, op: BinOpr, v: *mut expdesc) -> ();
-    #[no_mangle]
-    fn luaK_fixline(fs: *mut FuncState, line: lua_int) -> ();
-    #[no_mangle]
-    fn luaK_codeABC(fs: *mut FuncState, o: OpCode, A: lua_int, B: lua_int, C: lua_int) -> lua_int;
-    #[no_mangle]
-    fn luaK_stringK(fs: *mut FuncState, s: *mut TString) -> lua_int;
-    #[no_mangle]
-    fn luaK_setlist(fs: *mut FuncState, base: lua_int, nelems: lua_int, tostore: lua_int) -> ();
-    #[no_mangle]
-    fn luaK_exp2RK(fs: *mut FuncState, e: *mut expdesc) -> lua_int;
-    #[no_mangle]
-    fn luaK_exp2val(fs: *mut FuncState, e: *mut expdesc) -> ();
-    #[no_mangle]
-    fn luaK_self(fs: *mut FuncState, e: *mut expdesc, key: *mut expdesc) -> ();
-    #[no_mangle]
-    fn luaK_indexed(fs: *mut FuncState, t: *mut expdesc, k: *mut expdesc) -> ();
-    #[no_mangle]
-    fn luaK_exp2anyregup(fs: *mut FuncState, e: *mut expdesc) -> ();
-    #[no_mangle]
-    fn luaC_barrier_(L: *mut lua_State, o: *mut GCObject, v: *mut GCObject) -> ();
-    #[no_mangle]
-    fn luaK_dischargevars(fs: *mut FuncState, e: *mut expdesc) -> ();
-    /* get (pointer to) instruction of given 'expdesc' */
-    #[no_mangle]
-    fn luaK_codeABx(fs: *mut FuncState, o: OpCode, A: lua_int, Bx: lua_uint) -> lua_int;
-    #[no_mangle]
-    fn luaF_newproto(L: *mut lua_State) -> *mut Proto;
-    #[no_mangle]
-    fn luaK_prefix(fs: *mut FuncState, op: UnOpr, v: *mut expdesc, line: lua_int) -> ();
-    #[no_mangle]
-    fn luaK_exp2anyreg(fs: *mut FuncState, e: *mut expdesc) -> lua_int;
-    #[no_mangle]
-    fn luaK_getlabel(fs: *mut FuncState) -> lua_int;
-    #[no_mangle]
-    fn luaK_goiftrue(fs: *mut FuncState, e: *mut expdesc) -> ();
-    #[no_mangle]
-    fn luaK_checkstack(fs: *mut FuncState, n: lua_int) -> ();
-    #[no_mangle]
-    fn luaK_intK(fs: *mut FuncState, n: lua_Integer) -> lua_int;
-    #[no_mangle]
-    fn luaK_codek(fs: *mut FuncState, reg: lua_int, k: lua_int) -> lua_int;
-    #[no_mangle]
-    fn luaK_concat(fs: *mut FuncState, l1: *mut lua_int, l2: lua_int) -> ();
-    #[no_mangle]
-    fn luaK_goiffalse(fs: *mut FuncState, e: *mut expdesc) -> ();
-    #[no_mangle]
-    fn luaD_inctop(L: *mut lua_State) -> ();
-    #[no_mangle]
-    fn luaH_new(L: *mut lua_State) -> *mut Table;
-}
+use super::prelude::*;
 
 /*
 * WARNING: if you change the order of this enumeration,
@@ -294,69 +161,7 @@ pub const OP_MOVE: OpCode = 0;
 ** list of conditional jumps that can also produce its value (generated
 ** by short-circuit operators 'and'/'or').
 */
-/* kinds of variables/expressions */
-pub type expkind = lua_uint;
-/* vararg expression; info = instruction pc */
-pub const VVARARG: expkind = 14;
-/* expression is a function call; info = instruction pc */
-pub const VCALL: expkind = 13;
-/* expression can put result in any register;
-info = instruction pc */
-pub const VRELOCABLE: expkind = 12;
-/* expression is a test/comparison;
-info = pc of corresponding jump instruction */
-pub const VJMP: expkind = 11;
-/* indexed variable;
-ind.vt = whether 't' is register or upvalue;
-ind.t = table register or upvalue;
-ind.idx = key's R/K index */
-pub const VINDEXED: expkind = 10;
-/* upvalue variable; info = index of upvalue in 'upvalues' */
-pub const VUPVAL: expkind = 9;
-/* local variable; info = local register */
-pub const VLOCAL: expkind = 8;
-/* expression has its value in a fixed register;
-info = result register */
-pub const VNONRELOC: expkind = 7;
-/* integer constant; nval = numerical integer value */
-pub const VKINT: expkind = 6;
-/* floating constant; nval = numerical float value */
-pub const VKFLT: expkind = 5;
-/* constant in 'k'; info = index of constant in 'k' */
-pub const VK: expkind = 4;
-/* constant false */
-pub const VFALSE: expkind = 3;
-/* constant true */
-pub const VTRUE: expkind = 2;
-/* constant nil */
-pub const VNIL: expkind = 1;
-/* when 'expdesc' describes the last expression a list,
-this kind means an empty list (so, no expression) */
-pub const VVOID: expkind = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct expdesc {
-    pub k: expkind,
-    pub u: unnamed_7,
-    pub t: lua_int,
-    pub f: lua_int,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub union unnamed_7 {
-    pub ival: lua_Integer,
-    pub nval: lua_Number,
-    pub info: lua_int,
-    pub ind: unnamed_8,
-}
-/* for indexed variables (VINDEXED) */
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct unnamed_8 {
-    pub idx: lua_short,
-    pub t: lu_byte,
-    pub vt: lu_byte,
-}
+
 /*
 ** structure to chain all variables in the left-hand side of an
 ** assignment
@@ -367,15 +172,7 @@ pub struct LHS_assign {
     pub prev: *mut LHS_assign,
     pub v: expdesc,
 }
-/*
-** $Id: lcode.h,v 1.64.1.1 2017/04/19 17:20:42 roberto Exp $
-** Code generator for Lua
-** See Copyright Notice in lua.h
-*/
-/*
-** Marks the end of a patch list. It is an invalid value both as an absolute
-** address, and as a list link (would link an element to itself).
-*/
+
 /*
 ** grep "ORDER OPR" if you change these enums  (ORDER OP)
 */
@@ -525,7 +322,7 @@ unsafe extern "C" fn mainfunc(mut ls: *mut LexState, mut fs: *mut FuncState) -> 
     };
     let mut v: expdesc = expdesc {
         k: VVOID,
-        u: unnamed_7 { ival: 0 },
+        u: expdesc_1 { ival: 0 },
         t: 0,
         f: 0,
     };
@@ -962,7 +759,7 @@ unsafe extern "C" fn exprstat(mut ls: *mut LexState) -> () {
         prev: 0 as *mut LHS_assign,
         v: expdesc {
             k: VVOID,
-            u: unnamed_7 { ival: 0 },
+            u: expdesc_1 { ival: 0 },
             t: 0,
             f: 0,
         },
@@ -988,7 +785,7 @@ unsafe extern "C" fn assignment(
 ) -> () {
     let mut e: expdesc = expdesc {
         k: VVOID,
-        u: unnamed_7 { ival: 0 },
+        u: expdesc_1 { ival: 0 },
         t: 0,
         f: 0,
     };
@@ -1003,7 +800,7 @@ unsafe extern "C" fn assignment(
                 prev: 0 as *mut LHS_assign,
                 v: expdesc {
                     k: VVOID,
-                    u: unnamed_7 { ival: 0 },
+                    u: expdesc_1 { ival: 0 },
                     t: 0,
                     f: 0,
                 },
@@ -1122,7 +919,7 @@ unsafe extern "C" fn subexpr(
     let mut line: lua_int = 0;
     let mut v2: expdesc = expdesc {
         k: VVOID,
-        u: unnamed_7 { ival: 0 },
+        u: expdesc_1 { ival: 0 },
         t: 0,
         f: 0,
     };
@@ -1147,7 +944,7 @@ unsafe extern "C" fn subexpr(
     {
         v2 = expdesc {
             k: VVOID,
-            u: unnamed_7 { ival: 0 },
+            u: expdesc_1 { ival: 0 },
             t: 0,
             f: 0,
         };
@@ -1343,7 +1140,7 @@ unsafe extern "C" fn suffixedexp(mut ls: *mut LexState, mut v: *mut expdesc) -> 
                 /* '[' exp1 ']' */
                 let mut key: expdesc = expdesc {
                     k: VVOID,
-                    u: unnamed_7 { ival: 0 },
+                    u: expdesc_1 { ival: 0 },
                     t: 0,
                     f: 0,
                 };
@@ -1355,7 +1152,7 @@ unsafe extern "C" fn suffixedexp(mut ls: *mut LexState, mut v: *mut expdesc) -> 
                 /* ':' NAME funcargs */
                 let mut key_0: expdesc = expdesc {
                     k: VVOID,
-                    u: unnamed_7 { ival: 0 },
+                    u: expdesc_1 { ival: 0 },
                     t: 0,
                     f: 0,
                 };
@@ -1377,7 +1174,7 @@ unsafe extern "C" fn funcargs(mut ls: *mut LexState, mut f: *mut expdesc, mut li
     let mut fs: *mut FuncState = (*ls).fs;
     let mut args: expdesc = expdesc {
         k: VVOID,
-        u: unnamed_7 { ival: 0 },
+        u: expdesc_1 { ival: 0 },
         t: 0,
         f: 0,
     };
@@ -1450,7 +1247,7 @@ unsafe extern "C" fn constructor(mut ls: *mut LexState, mut t: *mut expdesc) -> 
     let mut cc: ConsControl = ConsControl {
         v: expdesc {
             k: VVOID,
-            u: unnamed_7 { ival: 0 },
+            u: expdesc_1 { ival: 0 },
             t: 0,
             f: 0,
         },
@@ -1614,13 +1411,13 @@ unsafe extern "C" fn recfield(mut ls: *mut LexState, mut cc: *mut ConsControl) -
     let mut reg: lua_int = (*(*ls).fs).freereg as lua_int;
     let mut key: expdesc = expdesc {
         k: VVOID,
-        u: unnamed_7 { ival: 0 },
+        u: expdesc_1 { ival: 0 },
         t: 0,
         f: 0,
     };
     let mut val: expdesc = expdesc {
         k: VVOID,
-        u: unnamed_7 { ival: 0 },
+        u: expdesc_1 { ival: 0 },
         t: 0,
         f: 0,
     };
@@ -1694,7 +1491,7 @@ unsafe extern "C" fn fieldsel(mut ls: *mut LexState, mut v: *mut expdesc) -> () 
     let mut fs: *mut FuncState = (*ls).fs;
     let mut key: expdesc = expdesc {
         k: VVOID,
-        u: unnamed_7 { ival: 0 },
+        u: expdesc_1 { ival: 0 },
         t: 0,
         f: 0,
     };
@@ -1737,7 +1534,7 @@ unsafe extern "C" fn singlevar(mut ls: *mut LexState, mut var: *mut expdesc) -> 
         /* global name? */
         let mut key: expdesc = expdesc {
             k: VVOID,
-            u: unnamed_7 { ival: 0 },
+            u: expdesc_1 { ival: 0 },
             t: 0,
             f: 0,
         };
@@ -2237,7 +2034,7 @@ unsafe extern "C" fn retstat(mut ls: *mut LexState) -> () {
     let mut fs: *mut FuncState = (*ls).fs;
     let mut e: expdesc = expdesc {
         k: VVOID,
-        u: unnamed_7 { ival: 0 },
+        u: expdesc_1 { ival: 0 },
         t: 0,
         f: 0,
     };
@@ -2354,7 +2151,7 @@ unsafe extern "C" fn localstat(mut ls: *mut LexState) -> () {
     let mut nexps: lua_int = 0;
     let mut e: expdesc = expdesc {
         k: VVOID,
-        u: unnamed_7 { ival: 0 },
+        u: expdesc_1 { ival: 0 },
         t: 0,
         f: 0,
     };
@@ -2377,7 +2174,7 @@ unsafe extern "C" fn localstat(mut ls: *mut LexState) -> () {
 unsafe extern "C" fn localfunc(mut ls: *mut LexState) -> () {
     let mut b: expdesc = expdesc {
         k: VVOID,
-        u: unnamed_7 { ival: 0 },
+        u: expdesc_1 { ival: 0 },
         t: 0,
         f: 0,
     };
@@ -2396,13 +2193,13 @@ unsafe extern "C" fn funcstat(mut ls: *mut LexState, mut line: lua_int) -> () {
     let mut ismethod: lua_int = 0;
     let mut v: expdesc = expdesc {
         k: VVOID,
-        u: unnamed_7 { ival: 0 },
+        u: expdesc_1 { ival: 0 },
         t: 0,
         f: 0,
     };
     let mut b: expdesc = expdesc {
         k: VVOID,
-        u: unnamed_7 { ival: 0 },
+        u: expdesc_1 { ival: 0 },
         t: 0,
         f: 0,
     };
@@ -2473,7 +2270,7 @@ unsafe extern "C" fn cond(mut ls: *mut LexState) -> lua_int {
     /* cond -> exp */
     let mut v: expdesc = expdesc {
         k: VVOID,
-        u: unnamed_7 { ival: 0 },
+        u: expdesc_1 { ival: 0 },
         t: 0,
         f: 0,
     };
@@ -2524,7 +2321,7 @@ unsafe extern "C" fn forlist(mut ls: *mut LexState, mut indexname: *mut TString)
     let mut fs: *mut FuncState = (*ls).fs;
     let mut e: expdesc = expdesc {
         k: VVOID,
-        u: unnamed_7 { ival: 0 },
+        u: expdesc_1 { ival: 0 },
         t: 0,
         f: 0,
     };
@@ -2703,7 +2500,7 @@ unsafe extern "C" fn fornum(
 unsafe extern "C" fn exp1(mut ls: *mut LexState) -> lua_int {
     let mut e: expdesc = expdesc {
         k: VVOID,
-        u: unnamed_7 { ival: 0 },
+        u: expdesc_1 { ival: 0 },
         t: 0,
         f: 0,
     };
@@ -2771,7 +2568,7 @@ unsafe extern "C" fn test_then_block(mut ls: *mut LexState, mut escapelist: *mut
     let mut fs: *mut FuncState = (*ls).fs;
     let mut v: expdesc = expdesc {
         k: VVOID,
-        u: unnamed_7 { ival: 0 },
+        u: expdesc_1 { ival: 0 },
         t: 0,
         f: 0,
     };

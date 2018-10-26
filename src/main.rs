@@ -55,6 +55,18 @@ pub mod lutf8lib;
 pub mod lvm;
 pub mod lzio;
 
+pub mod prelude {
+    // pub use types::prelude::*;
+    // pub use stdc::prelude::*;
+    pub use super::{types::prelude::*, stdc::prelude::*, ffi::prelude::*,
+        lapi::*, lauxlib::*, lbaselib::*, lbitlib::*, lcode::*, lcorolib::*, lctype::*, ldblib::*,
+        ldebug::*, ldo::*, ldump::*, lfunc::*, lgc::*, linit::*, liolib::*, llex::*, llimits::*,
+        lmathlib::*, lmem::*, loadlib::*, lobject::*, lopcodes::*, loslib::*, lparser::*,
+        lstate::*, lstring::*, lstrlib::*, ltable::*, ltablib::*, ltm::*, lua::*, luac::*,
+        luaconf::*, lundump::*, lutf8lib::*, lvm::*, lzio::*, *,
+    };
+}
+
 use luac::main_0;
 use types::prelude::*;
 

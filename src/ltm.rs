@@ -1,33 +1,4 @@
-use types::prelude::*;
-
-extern "C" {
-    #[no_mangle]
-    static luaO_nilobject_: TValue;
-    #[no_mangle]
-    fn luaS_new(L: *mut lua_State, str: *const lua_char) -> *mut TString;
-    #[no_mangle]
-    fn luaH_getshortstr(t: *mut Table, key: *mut TString) -> *const TValue;
-
-    #[no_mangle]
-    fn luaC_fix(L: *mut lua_State, o: *mut GCObject) -> ();
-    #[no_mangle]
-    fn luaD_callnoyield(L: *mut lua_State, func: StkId, nResults: lua_int) -> ();
-    #[no_mangle]
-    fn luaD_call(L: *mut lua_State, func: StkId, nResults: lua_int) -> ();
-    #[no_mangle]
-    fn luaG_opinterror(
-        L: *mut lua_State,
-        p1: *const TValue,
-        p2: *const TValue,
-        msg: *const lua_char,
-    ) -> !;
-    #[no_mangle]
-    fn luaG_tointerror(L: *mut lua_State, p1: *const TValue, p2: *const TValue) -> !;
-    #[no_mangle]
-    fn luaV_tonumber_(obj: *const TValue, n: *mut lua_Number) -> lua_int;
-    #[no_mangle]
-    fn luaG_concaterror(L: *mut lua_State, p1: *const TValue, p2: *const TValue) -> !;
-}
+use super::prelude::*;
 
 /*
 * WARNING: if you change the order of this enumeration,

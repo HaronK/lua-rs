@@ -1,9 +1,4 @@
-use types::prelude::*;
-
-extern "C" {
-    #[no_mangle]
-    fn memcpy(_: *mut lua_void, _: *const lua_void, _: lua_ulong) -> *mut lua_void;
-}
+use super::prelude::*;
 
 /* only for Lua functions */
 #[derive(Copy, Clone)]

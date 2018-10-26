@@ -1,6 +1,4 @@
-use lobject::*;
-use lua::*;
-use types::prelude::*;
+use super::prelude::*;
 
 #[derive(Copy, Clone)]
 #[repr(C)]

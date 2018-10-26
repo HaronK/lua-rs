@@ -1,38 +1,4 @@
-use types::prelude::*;
-
-extern "C" {
-    #[no_mangle]
-    fn memcmp(_: *const lua_void, _: *const lua_void, _: lua_ulong) -> lua_int;
-    #[no_mangle]
-    fn strlen(_: *const lua_char) -> lua_ulong;
-    #[no_mangle]
-    fn luaO_pushfstring(L: *mut lua_State, fmt: *const lua_char, ...) -> *const lua_char;
-
-    #[no_mangle]
-    fn luaM_toobig(L: *mut lua_State) -> !;
-    /* not to be called directly */
-    #[no_mangle]
-    fn luaM_realloc_(
-        L: *mut lua_State,
-        block: *mut lua_void,
-        oldsize: size_t,
-        size: size_t,
-    ) -> *mut lua_void;
-    #[no_mangle]
-    fn luaZ_read(z: *mut ZIO, b: *mut lua_void, n: size_t) -> size_t;
-    #[no_mangle]
-    fn luaD_inctop(L: *mut lua_State) -> ();
-    #[no_mangle]
-    fn luaD_throw(L: *mut lua_State, errcode: lua_int) -> !;
-    #[no_mangle]
-    fn luaF_newproto(L: *mut lua_State) -> *mut Proto;
-    #[no_mangle]
-    fn luaF_newLclosure(L: *mut lua_State, nelems: lua_int) -> *mut LClosure;
-    #[no_mangle]
-    fn luaS_newlstr(L: *mut lua_State, str: *const lua_char, l: size_t) -> *mut TString;
-    #[no_mangle]
-    fn luaS_createlngstrobj(L: *mut lua_State, l: size_t) -> *mut TString;
-}
+use super::prelude::*;
 
 #[derive(Copy, Clone)]
 #[repr(C)]
